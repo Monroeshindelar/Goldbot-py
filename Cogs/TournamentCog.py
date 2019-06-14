@@ -9,7 +9,7 @@ class TournamentCog(commands.Cog):
 
     @commands.command(name="create_tournament")
     async def create_tournament_d(self, ctx):
-        Cogs.Helper.Challonge.TournamentCommands.create_tournament("home_pytest")
+       Cogs.Helper.Challonge.TournamentCommands.create_tournament("pytest_linux")
 
 
 def setup(bot):
