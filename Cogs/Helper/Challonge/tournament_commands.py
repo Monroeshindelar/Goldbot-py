@@ -15,3 +15,10 @@ def create_tournament(tournament_name):
     r = requests.post(url=url, data=params)
     print(r.json())
 
+def destroy_tournament(tournament_name):
+    url = BASE_URL + "tournaments/" + tournament_name + ".json"
+    params = {
+        "api_key": API_KEY
+    }
+    r = requests.delete(url=url, params=params)
+    print(r.json())

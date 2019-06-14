@@ -6,13 +6,14 @@ BOT_PREFIX = "!"
 TOKEN = utilities.read_token("bin/token.txt")
 
 cogs = [
-    'Cogs.TournamentCog'
+    'Cogs.tournament_cog'
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)
 
 if __name__ == '__main__':
-    bot.load_extension('Cogs.TournamentCog')
+    for cog in cogs:
+        bot.load_extension(cog)
 
 
 @bot.event
