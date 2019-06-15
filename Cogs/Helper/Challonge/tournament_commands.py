@@ -41,3 +41,43 @@ def finalize_tournament(tournament_name):
     }
     r = requests.post(url=url, data=params)
     print(r.json())
+
+
+def reset_tournament(tournament_name):
+    url = BASE_URL + "tournaments/" + tournament_name + "reset.json"
+    params = {
+        "api_key": API_KEY
+    }
+    r = requests.post(url=url, data=params)
+    print(r.json())
+
+
+def add_users(tournament_name, users):
+    url = BASE_URL + "tournaments/" + tournament_name + "/participants"
+    params = None
+    if len(users) > 1:
+        url += "/bulk_add"
+        participants = []
+        for user in users:
+            participants.append(user.name)
+        params = {
+            "api_key": API_KEY,
+            "participants[][name]": participants
+        }
+    elif len(users) == 1:
+        params = {
+            "api_key": API_KEY,
+            "participant[name]": users[0].name
+        }
+    url += ".json"
+    r = requests.post(url=url, data=params)
+    print(r.json())
+
+
+def shuffle_seeds(tournament_name):
+    url = BASE_URL + "tournaments/" + tournament_name + "/participants/randomize.json"
+    params = {
+        "api_key": API_KEY
+    }
+    r = requests.post(url=url, data=params)
+    print(r.json())
