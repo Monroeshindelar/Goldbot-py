@@ -1,4 +1,8 @@
-def read_token(file_path):
+def read_config(file_path):
+    d = {}
     with open(file_path, "r") as f:
-        lines = f.readlines()
-        return lines[0].strip()
+        for line in f:
+            line = line.strip()
+            (key, val) = line.split('=')
+            d[key] = val
+    return d

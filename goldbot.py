@@ -2,11 +2,12 @@ import discord
 import utilities
 from discord.ext import commands
 
+CONF = utilities.read_config("bin/config.txt")
 BOT_PREFIX = "!"
-TOKEN = utilities.read_token("bin/token.txt")
+TOKEN = CONF["discord_api_key"]
 
 cogs = [
-    'Cogs.tournament_cog'
+    'cogs.tournament_cog'
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)
