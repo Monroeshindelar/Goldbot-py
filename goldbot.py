@@ -1,4 +1,3 @@
-import discord
 import utilities
 from discord.ext import commands
 
@@ -7,7 +6,8 @@ BOT_PREFIX = "!"
 TOKEN = CONF["discord_api_key"]
 
 cogs = [
-    'cogs.tournament_cog'
+    'cogs.TournamentCog',
+    'cogs.UserAccountCog'
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)
