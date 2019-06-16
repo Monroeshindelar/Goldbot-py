@@ -4,16 +4,9 @@
     <bookmark url="file://$PROJECT_DIR$/cogs/helper/challonge/tournament_commands.py" line="1" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="56151808-65ba-4a31-8b18-35250ea1a522" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/goldbot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/goldbot.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="56151808-65ba-4a31-8b18-35250ea1a522" name="Default Changelist" comment="Added starting, finalizing, adding users to tournaments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cogs/Helper/Challonge/challonge_api.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cogs/Helper/Challonge/tournament_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/helper/challonge/tournament_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cogs/tournament_cog.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/tournament_cog.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goldbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/goldbot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -134,6 +127,24 @@
               <item name="goldbot" type="b2602c69:ProjectViewProjectNode" />
               <item name="goldbot" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="goldbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="goldbot" type="462c0819:PsiDirectoryNode" />
+              <item name="cogs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="goldbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="goldbot" type="462c0819:PsiDirectoryNode" />
+              <item name="cogs" type="462c0819:PsiDirectoryNode" />
+              <item name="helper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="goldbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="goldbot" type="462c0819:PsiDirectoryNode" />
+              <item name="cogs" type="462c0819:PsiDirectoryNode" />
+              <item name="helper" type="462c0819:PsiDirectoryNode" />
+              <item name="challonge" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -209,24 +220,30 @@
       <option name="project" value="LOCAL" />
       <updated>1560620725163</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Can update matches and use extra parameters when creating tournaments">
+      <created>1560701137789</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1560701137789</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15068494" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49947312" visible="true" weight="0.28277355" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49947312" weight="0.28277355" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4182015" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info active="true" anchor="bottom" id="TODO" order="6" visible="true" weight="0.18959913" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32827735" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.32771084" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50052685" side_tool="true" weight="0.28277355" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32936078" />
@@ -237,7 +254,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added starting, finalizing, adding users to tournaments" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added starting, finalizing, adding users to tournaments" />
+    <MESSAGE value="Can update matches and use extra parameters when creating tournaments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Can update matches and use extra parameters when creating tournaments" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
