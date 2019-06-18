@@ -8,9 +8,7 @@ ACCOUNTS_FILE_PATH = CONF["accounts_file"]
 accounts = []
 
 if os.path.exists(ACCOUNTS_FILE_PATH):
-    # open the file
     with open(ACCOUNTS_FILE_PATH, "rb") as accounts_file:
-        # read the file into accounts
         accounts = pickle.load(accounts_file)
 else:
     accounts_file = open(ACCOUNTS_FILE_PATH, "wb+")
@@ -18,31 +16,26 @@ else:
 
 
 def get_account(_id):
-    return get_or_create_account(_id)
-
-
-def modify_account(old_account, new_account):
-    accounts[accounts.index(old_account)] = new_account
-    save_accounts()
+    return __get_or_create_account(_id)
 
 
 def save_accounts():
-    with open(ACCOUNTS_FILE_PATH, 'wb') as outfile:
+    with open(ACCOUNTS_FILE_PATH, 'wb+') as outfile:
         pickle.dump(accounts, outfile, pickle.HIGHEST_PROTOCOL)
 
 
-def get_or_create_account(_id):
-    acc = None
+def __get_or_create_account(_id):
+    return_account = None
     for account in accounts:
-        if account.id is _id:
-            acc = account
+        if account.get_id() == _id:
+            return_account = account
             break
-    if acc is None:
-        acc = create_account(_id)
-    return acc
+    if return_account is None:
+        return_account = __create_account(_id)
+    return return_account
 
 
-def create_account(_id):
+def __create_account(_id):
     account = UserAccount(_id)
     accounts.append(account)
     save_accounts()
