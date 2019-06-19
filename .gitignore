@@ -1,3 +1,5 @@
 bin
 bin/config.txt
+bin/accounts.pkl
+.idea
 .DS_STORE

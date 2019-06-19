@@ -1,3 +1,7 @@
+# TODO: Create a singleton class for config
+# TODO: Proper logging
+
+
 import utilities
 from discord.ext import commands
 

@@ -16,7 +16,7 @@ class UserAccountCog(commands.Cog):
     async def get_friend_code(self, ctx):
         account = get_account(ctx.message.mentions[0].id)
         if account is not None:
-            print(account.get_friend_code())
+            await ctx.message.channel.send(content=account.get_friend_code())
 
 
 def setup(bot):

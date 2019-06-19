@@ -13,13 +13,13 @@ def index_tournaments():
     return r.json()
 
 
-def create_tournament(tournament_name, extraParams):
+def create_tournament(tournament_name, extra_params):
     params = {
         "tournament[name]": tournament_name,
         "tournament[url]": tournament_name
     }
-    if extraParams is not None:
-        for arg in extraParams:
+    if extra_params is not None:
+        for arg in extra_params:
             tokens = arg.split('=')
             trim_underscores = tokens[1].split('_')
             tokens[1] = ""
