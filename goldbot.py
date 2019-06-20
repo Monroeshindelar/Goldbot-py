@@ -1,13 +1,12 @@
-# TODO: Create a singleton class for config
 # TODO: Proper logging
 
 
-import utilities
 from discord.ext import commands
+from _global.Config import Config
 
-CONF = utilities.read_config("bin/config.txt")
+TOKEN = Config.get_config_property(config_property="discord_api_key")
 BOT_PREFIX = "!"
-TOKEN = CONF["discord_api_key"]
+
 
 cogs = [
     'cogs.TournamentCog',

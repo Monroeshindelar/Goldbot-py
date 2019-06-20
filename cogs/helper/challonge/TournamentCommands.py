@@ -1,9 +1,8 @@
 import requests
-import utilities
+from _global.Config import Config
 
-CONF = utilities.read_config("bin/config.txt")
-API_KEY = CONF["challonge_api_key"]
-CHALLONGE_USERNAME = CONF["challonge_username"]
+API_KEY = Config.get_config_property("challonge_api_key")
+CHALLONGE_USERNAME = Config.get_config_property("challonge_username")
 BASE_URL = "https://" + CHALLONGE_USERNAME + ":" + API_KEY + "@api.challonge.com/v1/"
 
 
@@ -28,11 +27,11 @@ def create_tournament(tournament_name, extra_params):
 
             tokens[1] = tokens[1].strip()
 
-            newParam = {
+            new_param = {
                 "tournament[" + tokens[0] + "]": tokens[1]
             }
 
-            params.update(newParam)
+            params.update(new_param)
 
     url = BASE_URL + "tournaments.json"
     r = requests.post(url=url, data=params)
