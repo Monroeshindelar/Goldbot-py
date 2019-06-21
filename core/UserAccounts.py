@@ -1,6 +1,6 @@
 import os
 import pickle
-from utilities import read_config
+from utilities.utilities import read_config
 from core.UserAccount import UserAccount
 
 CONF = read_config("bin/config.txt")

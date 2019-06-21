@@ -1,3 +1,4 @@
+import re
 from discord.ext import commands
 from core.UserAccounts import get_account
 
@@ -9,8 +10,20 @@ class UserAccountCog(commands.Cog):
 
     @commands.command(name="set_friend_code")
     async def set_friend_code(self, ctx, *args):
-        account = get_account(ctx.message.author.id)
-        account.set_friend_code(args[0])
+        if len(args) < 1:
+            await ctx.message.channel.send(
+                content="```Usage:\n !set_friend_code friend_code"
+                        "\n\nfriend_code: Your nintendo friend code"
+            )
+            return
+        if re.match(pattern="(((SW)|(DS))-)?(\d{4}-){2}(\d{4})", string=args[0]):
+            account = get_account(ctx.message.author.id)
+            account.set_friend_code(args[0])
+            message = "Your friend code has been set!"
+        else:
+            message = "Incorrect friend code formatting. Please try again."
+
+        await ctx.message.channel.send(message)
 
     @commands.command(name="get_friend_code")
     async def get_friend_code(self, ctx):

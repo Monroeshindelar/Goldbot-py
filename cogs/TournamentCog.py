@@ -20,7 +20,7 @@ class TournamentCog(commands.Cog):
             )
             return
         elif len(args) > 1:
-            extra_params = args[1:]
+            extra_params = ctx.args[1:]
 
         TournamentCommands.create_tournament(tournament_name=args[0], extra_params=extra_params)
 

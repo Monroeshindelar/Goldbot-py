@@ -1,4 +1,4 @@
-from utilities import read_config
+from utilities.utilities import read_config
 
 
 class Config:
