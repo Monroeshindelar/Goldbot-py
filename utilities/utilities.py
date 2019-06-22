@@ -21,3 +21,8 @@ def read_or_create_file_pkl(file_path):
         _object = []
         pickle.dump(object, file, pickle.HIGHEST_PROTOCOL)
     return _object
+
+
+def save_to_file_pkl(_object, file_path):
+    with open(file_path, 'wb+') as file:
+        pickle.dump(_object, file, pickle.HIGHEST_PROTOCOL)

@@ -1,5 +1,5 @@
 import pickle
-from utilities.utilities import read_or_create_file_pkl
+from utilities.utilities import read_or_create_file_pkl, save_to_file_pkl
 from core.UserAccount import UserAccount
 from _global.Config import Config
 
@@ -12,8 +12,7 @@ def get_account(_id):
 
 
 def save_accounts():
-    with open(ACCOUNTS_FILE_PATH, 'wb+') as outfile:
-        pickle.dump(ACCOUNTS, outfile, pickle.HIGHEST_PROTOCOL)
+    save_to_file_pkl(ACCOUNTS,ACCOUNTS_FILE_PATH)
 
 
 def __get_or_create_account(_id):
