@@ -8,7 +8,11 @@ class Config:
     def get_config_property(config_property):
         if Config.__instance is None:
             Config()
-        return Config.__instance.CONF[config_property]
+
+        if config_property in Config.__instance.CONF:
+            return Config.__instance.CONF[config_property]
+        else:
+            return None
 
     def __init__(self):
         if Config.__instance is not None:

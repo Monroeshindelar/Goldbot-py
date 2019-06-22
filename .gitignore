@@ -1,3 +1,4 @@
+.gitignore
 bin
 bin/config.txt
 bin/accounts.pkl
