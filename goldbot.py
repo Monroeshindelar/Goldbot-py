@@ -11,9 +11,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 cogs = [
-    'cogs.TournamentCog',
-    'cogs.UserAccountCog',
-    'cogs.SquadlockeCog'
+    "cogs.TournamentCog",
+    "cogs.UserAccountCog",
+    "cogs.SquadlockeCog"
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)
@@ -26,6 +26,5 @@ if __name__ == '__main__':
 @bot.event
 async def on_ready():
     print('Logged in')
-
 
 bot.run(TOKEN, bot=True, reconnect=True)
