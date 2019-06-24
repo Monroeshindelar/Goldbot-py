@@ -107,6 +107,19 @@ def index_matches(tournament_name):
     return r.json()
 
 
+def get_tournament_url(tournament_name):
+    tournament = __get_tournament_json_by_name(tournament_name)
+    return "https://challonge.com/" + tournament["url"]
+
+
+def __get_tournament_json_by_name(tournament_name):
+    json = index_tournaments()
+    for tournament in json:
+        if tournament["tournament"]["name"] == tournament_name:
+            return tournament["tournament"]
+    return None
+
+
 def update_match(tournament_name, participant1_name, participant2_name, participant1_score, participant2_score):
     matches = index_matches(tournament_name)
     participant1_id = get_participant_id_by_name(tournament_name, participant1_name)
