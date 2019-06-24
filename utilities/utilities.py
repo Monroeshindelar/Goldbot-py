@@ -13,16 +13,19 @@ def read_config(file_path):
 
 
 def read_or_create_file_pkl(file_path):
+    contents = None
     if os.path.exists(file_path):
         with open(file_path, "rb") as file:
-            _object = pickle.load(file)
+            contents = pickle.load(file)
+            file.close()
     else:
         file = open(file_path, "wb+")
-        _object = []
+        contents = []
         pickle.dump(object, file, pickle.HIGHEST_PROTOCOL)
-    return _object
+        file.close()
+    return contents
 
 
-def save_to_file_pkl(_object, file_path):
+def save_to_file_pkl(content, file_path):
     with open(file_path, 'wb+') as file:
-        pickle.dump(_object, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(content, file, pickle.HIGHEST_PROTOCOL)

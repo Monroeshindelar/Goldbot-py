@@ -1,4 +1,3 @@
-import pickle
 from utilities.utilities import read_or_create_file_pkl, save_to_file_pkl
 from core.UserAccount import UserAccount
 from _global.Config import Config
