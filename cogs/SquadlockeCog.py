@@ -1,3 +1,4 @@
+from discord import embeds
 from discord.ext import commands
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
@@ -18,6 +19,12 @@ class SquadlockeCog(commands.Cog):
 
     @commands.command(name="sl_init",)
     async def squadlocke_init(self, ctx, *args):
+        if len(PARTICIPANTS) > 0:
+            await ctx.message.channel.send(
+                content="A squadlocke has already been started. \n"
+                        "Please conclude it before starting a new one."
+            )
+            return
         squadlocke_role = None
         for role in ctx.message.guild.roles:
             if role.name == SQUADLOCKE_ROLE:
@@ -32,10 +39,20 @@ class SquadlockeCog(commands.Cog):
         for member in members:
             if squadlocke_role in member.roles:
                 PARTICIPANTS.update({
-                    member.id: False
+                    member.name: False
                 })
         await SquadlockeCog.__save_squadlocke()
-        TournamentCommands.create_tournament(SQUADLOCKE_NAME + str(CHECKPOINT))
+        tournament_name = SQUADLOCKE_NAME + "_" + str(CHECKPOINT)
+        extra_params = None if len(args) > 1 else args[1:]
+        TournamentCommands.create_tournament(tournament_name=tournament_name, extra_params=extra_params)
+
+        # TODO: Add participants to the tournament here
+
+        await ctx.message.channel.send(
+            content="Squadlocke has been started.\n"
+                    "Here is a link to the first tournament:\n" +
+                    TournamentCommands.get_tournament_url(tournament_name)
+        )
 
     @commands.command(name="sl_ready_up")
     async def squadlocke_ready_up(self, ctx):
@@ -60,6 +77,29 @@ class SquadlockeCog(commands.Cog):
                         "View the bracket here:\n" +
                         TournamentCommands.get_tournament_url(SQUADLOCKE_NAME + CHECKPOINT)
             )
+
+    @commands.command(name="sl_update_match")
+    async def squadlocke_update_match(self, ctx, *args):
+        if len(args) < 4:
+            await ctx.message.channel.send(
+                content="```Usage: \n!sl_update_match participant1_name participant2_name "
+                        "participant1_score participant2_score"
+                        "\n\nparticipant1_name: name of the first participant in the match"
+                        "\nparticipant2_name: name of the second participant in the match"
+                        "\nparticipant1_score: final score of the first participant"
+                        "\nparticipant2_score: final score of the second participant```"
+            )
+            return
+        TournamentCommands.update_match(SQUADLOCKE_NAME + str(CHECKPOINT), args[0], args[1], args[2], args[3])
+
+
+    @commands.command(name="sl_get_readied_players")
+    async def squadlocke_get_readied_players(self, ctx):
+        for participant in PARTICIPANTS:
+            embed = discord.Embed(
+                title = TournamentCommands.get
+            )
+
 
     @staticmethod
     async def __save_squadlocke():

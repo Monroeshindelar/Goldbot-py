@@ -13,6 +13,7 @@ def index_tournaments():
 
 
 def create_tournament(tournament_name, extra_params):
+    # TODO: Check if the URL is taken and adjust it if it is.
     params = {
         "tournament[name]": tournament_name,
         "tournament[url]": tournament_name
@@ -89,7 +90,7 @@ def add_users(tournament_name, users):
 
 
 def destroy_participant(tournament_name, participant_name):
-    participant_id = get_participant_id_by_name(participant_name)
+    participant_id = get_participant_json_by_name(participant_name)["id"]
     url = BASE_URL + "tournaments/" + tournament_name + "/participants/" + participant_id + ".json"
     r = requests.delete(url=url)
     print(r.json())
@@ -107,23 +108,10 @@ def index_matches(tournament_name):
     return r.json()
 
 
-def get_tournament_url(tournament_name):
-    tournament = __get_tournament_json_by_name(tournament_name)
-    return "https://challonge.com/" + tournament["url"]
-
-
-def __get_tournament_json_by_name(tournament_name):
-    json = index_tournaments()
-    for tournament in json:
-        if tournament["tournament"]["name"] == tournament_name:
-            return tournament["tournament"]
-    return None
-
-
 def update_match(tournament_name, participant1_name, participant2_name, participant1_score, participant2_score):
     matches = index_matches(tournament_name)
-    participant1_id = get_participant_id_by_name(tournament_name, participant1_name)
-    participant2_id = get_participant_id_by_name(tournament_name, participant2_name)
+    participant1_id = get_participant_json_by_name(tournament_name, participant1_name)["id"]
+    participant2_id = get_participant_json_by_name(tournament_name, participant2_name)["id"]
     participants = [participant1_id, participant2_id]
     match_to_update = None
 
@@ -162,11 +150,11 @@ def update_match(tournament_name, participant1_name, participant2_name, particip
     print(r.json())
 
 
-def get_participant_id_by_name(tournament_name, participant_name):
+def get_participant_json_by_name(tournament_name, participant_name):
     participants = index_participants(tournament_name)
     for participant in participants:
         if participant['participant']['name'] == participant_name:
-            return participant['participant']['id']
+            return participant['participant']
     return None
 
 
@@ -175,4 +163,17 @@ def get_match_by_participants(tournament_name, participant1_id, participant2_id)
     for match in matches:
         if (match["player1_id"] == participant1_id) and (match["player2_id"] == participant2_id):
             return match
+    return None
+
+
+def get_tournament_url(tournament_name):
+    tournament = __get_tournament_json_by_name(tournament_name)
+    return "https://challonge.com/" + tournament["url"]
+
+
+def __get_tournament_json_by_name(tournament_name):
+    json = index_tournaments()
+    for tournament in json:
+        if tournament["tournament"]["name"] == tournament_name:
+            return tournament["tournament"]
     return None
