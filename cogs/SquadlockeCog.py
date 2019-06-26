@@ -106,6 +106,23 @@ class SquadlockeCog(commands.Cog):
             participant1_score=args[2],
             participant2_score=args[3]
         )
+        matches = TournamentCommands.index_matches(
+            tournament_name=SquadlockeCog.get_squadlocke_tournament_name()
+        )
+
+        # TODO: report to discord
+
+        finish = True
+        for match in matches:
+            if match["match"]["state"] == "open":
+                finish = False
+                break
+
+        if finish:
+            TournamentCommands.finalize_tournament(
+                tournament_name=SquadlockeCog.get_squadlocke_tournament_name()
+            )
+        # TODO: report to discord
 
     @commands.command(name="sl_get_ready_list")
     async def squadlocke_get_ready_list(self, ctx):
@@ -129,7 +146,7 @@ class SquadlockeCog(commands.Cog):
 
     @staticmethod
     def get_squadlocke_tournament_name():
-        return SQUADLOCKE_NAME + "_" + CHECKPOINT
+        return SQUADLOCKE_NAME + "_" + str(CHECKPOINT)
 
 
 def setup(bot):
