@@ -1,9 +1,9 @@
-from discord import embeds
+import discord
 from discord.ext import commands
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
 from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
-from utilities.DiscordServices import get_discord_name_by_id
+from utilities.DiscordServices import get_discord_user_by_id
 
 SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("squadlocke_data_file")
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke_guild_role")
@@ -49,7 +49,7 @@ class SquadlockeCog(commands.Cog):
 
         players = []
         for participant in PARTICIPANTS:
-            players.append(get_discord_name_by_id(participant, ctx.message.channel))
+            players.append(get_discord_user_by_id(participant, ctx.message.channel).name)
 
         TournamentCommands.add_users(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), players)
 
@@ -96,6 +96,21 @@ class SquadlockeCog(commands.Cog):
             )
             return
         TournamentCommands.update_match(SQUADLOCKE_NAME + str(CHECKPOINT), args[0], args[1], args[2], args[3])
+
+    @commands.command(name="sl_get_ready_list")
+    async def squadlocke_get_ready_list(self, ctx):
+        for participant in PARTICIPANTS:
+            user = get_discord_user_by_id(participant, ctx.message.channel)
+            embed = discord.Embed(
+                title=user.name,
+                thumbnail=user.avatar,
+                description="Ready" if PARTICIPANTS[participant] else "Not ready",
+                color=discord.Color.green() if PARTICIPANTS[participant] else discord.Color.red()
+            )
+            embed.set_thumbnail(url=user.avatar_url)
+            await ctx.message.channel.send(
+                embed=embed
+            )
 
     @staticmethod
     async def __save_squadlocke():

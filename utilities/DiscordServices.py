@@ -1,7 +1,7 @@
-def get_discord_name_by_id(id, channel):
-    name = None
+def get_discord_user_by_id(id, channel):
+    target = None
     for user in channel.members:
         if user.id == id:
-            name = user.name
+            target = user
             break
-    return name
+    return target
