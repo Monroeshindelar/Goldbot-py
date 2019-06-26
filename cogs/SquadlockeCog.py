@@ -43,9 +43,11 @@ class SquadlockeCog(commands.Cog):
                     member.id: False
                 })
         await SquadlockeCog.__save_squadlocke()
-        tournament_name = SQUADLOCKE_NAME + "_" + str(CHECKPOINT)
         extra_params = None if len(args) > 1 else args[1:]
-        TournamentCommands.create_tournament(tournament_name=tournament_name, extra_params=extra_params)
+        TournamentCommands.create_tournament(
+            tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
+            extra_params=extra_params
+        )
 
         players = []
         for participant in PARTICIPANTS:
@@ -56,7 +58,7 @@ class SquadlockeCog(commands.Cog):
         await ctx.message.channel.send(
             content="Squadlocke has been started.\n"
                     "Here is a link to the first tournament:\n" +
-                    TournamentCommands.get_tournament_url(tournament_name)
+                    TournamentCommands.get_tournament_url(SquadlockeCog.get_squadlocke_tournament_name())
         )
 
     @commands.command(name="sl_ready_up")
@@ -80,7 +82,9 @@ class SquadlockeCog(commands.Cog):
             await ctx.message.channel.send(
                 content="Everyone is ready. Starting the tournament.\n"
                         "View the bracket here:\n" +
-                        TournamentCommands.get_tournament_url(SQUADLOCKE_NAME + CHECKPOINT)
+                        TournamentCommands.get_tournament_url(
+                            tournament_name=SquadlockeCog.get_squadlocke_tournament_name()
+                        )
             )
 
     @commands.command(name="sl_update_match")
@@ -95,7 +99,13 @@ class SquadlockeCog(commands.Cog):
                         "\nparticipant2_score: final score of the second participant```"
             )
             return
-        TournamentCommands.update_match(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), args[0], args[1], args[2], args[3])
+        TournamentCommands.update_match(
+            tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
+            participant1_name=args[0],
+            participant2_name=args[1],
+            participant1_score=args[2],
+            participant2_score=args[3]
+        )
 
     @commands.command(name="sl_get_ready_list")
     async def squadlocke_get_ready_list(self, ctx):
@@ -116,6 +126,10 @@ class SquadlockeCog(commands.Cog):
     async def __save_squadlocke():
         squadlocke_object = [PARTICIPANTS, CHECKPOINT]
         save_to_file_pkl(squadlocke_object, SQUADLOCKE_DATA_FILE_PATH)
+
+    @staticmethod
+    def get_squadlocke_tournament_name():
+        return SQUADLOCKE_NAME + "_" + CHECKPOINT
 
 
 def setup(bot):
