@@ -14,6 +14,9 @@ class UserAccount:
         return self.__friend_code
 
     def set_friend_code(self, friend_code):
-        # TODO: Regex for detecting proper friend code format
-        self.__friend_code = friend_code
+        success = False
+        if re.match(pattern="(((SW)|(DS))-)?(\d{4}-){2}(\d{4})", string=friend_code):
+            self.__friend_code = friend_code
+            success = True
         core.UserAccounts.save_accounts()
+        return success

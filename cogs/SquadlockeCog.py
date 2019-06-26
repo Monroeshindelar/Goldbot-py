@@ -2,7 +2,7 @@ from discord import embeds
 from discord.ext import commands
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
-from utilities.utilities import read_or_create_file_pkl, save_to_file_pkl
+from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
 
 SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("squadlocke_data_file")
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke_guild_role")
@@ -91,15 +91,6 @@ class SquadlockeCog(commands.Cog):
             )
             return
         TournamentCommands.update_match(SQUADLOCKE_NAME + str(CHECKPOINT), args[0], args[1], args[2], args[3])
-
-
-    @commands.command(name="sl_get_readied_players")
-    async def squadlocke_get_readied_players(self, ctx):
-        for participant in PARTICIPANTS:
-            embed = discord.Embed(
-                title = TournamentCommands.get
-            )
-
 
     @staticmethod
     async def __save_squadlocke():

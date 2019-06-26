@@ -67,7 +67,10 @@ class TournamentCog(commands.Cog):
                         "\n[@user2...]: Optional other users to add to the tournament```"
             )
             return
-        TournamentCommands.add_users(tournament_name=args[0], users=ctx.message.mentions)
+        users = []
+        for user in ctx.message.mentions:
+            users.append(user.name)
+        TournamentCommands.add_users(tournament_name=args[0], users=users)
 
     @commands.command(name="destroy_participant",
                       aliases=["delete_participant"])

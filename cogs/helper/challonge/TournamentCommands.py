@@ -76,7 +76,7 @@ def add_users(tournament_name, users):
         url += "/bulk_add"
         participants = []
         for user in users:
-            participants.append(user.name)
+            participants.append(user)
         params = {
             "participants[][name]": participants
         }

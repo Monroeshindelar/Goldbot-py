@@ -1,4 +1,3 @@
-import re
 from discord.ext import commands
 from core.UserAccounts import get_account
 
@@ -16,9 +15,8 @@ class UserAccountCog(commands.Cog):
                         "\n\nfriend_code: Your nintendo friend code"
             )
             return
-        if re.match(pattern="(((SW)|(DS))-)?(\d{4}-){2}(\d{4})", string=args[0]):
-            account = get_account(ctx.message.author.id)
-            account.set_friend_code(args[0])
+        account = get_account(ctx.message.author.id)
+        if account.set_friend_code(args[0]):
             message = "Your friend code has been set!"
         else:
             message = "Incorrect friend code formatting. Please try again."
