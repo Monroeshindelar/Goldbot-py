@@ -3,6 +3,7 @@ from discord.ext import commands
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
 from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
+from utilities.DiscordServices import get_discord_name_by_id
 
 SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("squadlocke_data_file")
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke_guild_role")
@@ -39,14 +40,18 @@ class SquadlockeCog(commands.Cog):
         for member in members:
             if squadlocke_role in member.roles:
                 PARTICIPANTS.update({
-                    member.name: False
+                    member.id: False
                 })
         await SquadlockeCog.__save_squadlocke()
         tournament_name = SQUADLOCKE_NAME + "_" + str(CHECKPOINT)
         extra_params = None if len(args) > 1 else args[1:]
         TournamentCommands.create_tournament(tournament_name=tournament_name, extra_params=extra_params)
 
-        # TODO: Add participants to the tournament here
+        players = []
+        for participant in PARTICIPANTS:
+            players.append(get_discord_name_by_id(participant, ctx.message.channel))
+
+        TournamentCommands.add_users(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), players)
 
         await ctx.message.channel.send(
             content="Squadlocke has been started.\n"
