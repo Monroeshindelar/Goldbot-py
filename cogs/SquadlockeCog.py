@@ -95,7 +95,7 @@ class SquadlockeCog(commands.Cog):
                         "\nparticipant2_score: final score of the second participant```"
             )
             return
-        TournamentCommands.update_match(SQUADLOCKE_NAME + str(CHECKPOINT), args[0], args[1], args[2], args[3])
+        TournamentCommands.update_match(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), args[0], args[1], args[2], args[3])
 
     @commands.command(name="sl_get_ready_list")
     async def squadlocke_get_ready_list(self, ctx):

@@ -1,5 +1,4 @@
 # TODO: Proper logging
-
 import logging
 from discord.ext import commands
 from _global.Config import Config
