@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="56151808-65ba-4a31-8b18-35250ea1a522" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/utilities/DiscordServices.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cogs/SquadlockeCog.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/SquadlockeCog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cogs/UserAccountCog.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/UserAccountCog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/DiscordServices.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/DiscordServices.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,108 +20,71 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cogs/SquadlockeCog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="5" column="60" lean-forward="true" selection-start-line="5" selection-start-column="60" selection-end-line="5" selection-end-column="60" />
+            <state relative-caret-position="59">
+              <caret line="91" selection-start-line="91" selection-end-line="91" />
               <folding>
-                <element signature="e#715#729#0" />
-                <element signature="e#827#2202#0" />
-                <element signature="e#865#1069#0" />
-                <element signature="e#921#1036#0" />
-                <element signature="e#1158#1251#0" />
-                <element signature="e#1207#1251#0" />
-                <element signature="e#1307#1400#0" />
-                <element signature="e#1491#1622#0" />
-                <element signature="e#1543#1622#0" />
-                <element signature="e#1563#1621#0" />
-                <element signature="e#2019#2115#0" />
-                <element signature="e#2300#3283#0" />
-                <element signature="e#2310#2462#0" />
-                <element signature="e#2525#2669#0" />
-                <element signature="e#2822#2907#0" />
-                <element signature="e#2872#2907#0" />
-                <element signature="e#2938#3283#0" />
-                <element signature="e#3077#3175#0" />
-                <element signature="e#3396#4114#0" />
-                <element signature="e#3426#4003#0" />
-                <element signature="e#3482#3970#0" />
-                <element signature="e#4177#4294#0" />
-                <element signature="e#4317#4348#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/cogs/helper/challonge/TournamentCommands.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="413">
-              <caret line="175" selection-start-line="175" selection-end-line="175" />
-              <folding>
-                <element signature="e#442#1159#0" />
-                <element signature="e#513#608#0" />
-                <element signature="e#650#1054#0" />
-                <element signature="e#687#1054#0" />
-                <element signature="e#942#1016#0" />
-                <element signature="e#1207#1319#0" />
-                <element signature="e#1365#1481#0" />
-                <element signature="e#1530#1649#0" />
-                <element signature="e#1695#1810#0" />
-                <element signature="e#1858#1980#0" />
-                <element signature="e#2026#2515#0" />
-                <element signature="e#2143#2330#0" />
-                <element signature="e#2270#2330#0" />
-                <element signature="e#2365#2432#0" />
-                <element signature="e#2374#2432#0" />
-                <element signature="e#2582#2804#0" />
-                <element signature="e#2847#2980#0" />
-                <element signature="e#3023#3140#0" />
-                <element signature="e#3260#4623#0" />
-                <element signature="e#3603#3767#0" />
-                <element signature="e#3717#3767#0" />
-                <element signature="e#3834#4046#0" />
-                <element signature="e#4212#4307#0" />
-                <element signature="e#4221#4307#0" />
-                <element signature="e#4326#4421#0" />
-                <element signature="e#4335#4421#0" />
-                <element signature="e#4436#4560#0" />
-                <element signature="e#4699#4915#0" />
-                <element signature="e#4795#4899#0" />
-                <element signature="e#5004#5209#0" />
-                <element signature="e#5079#5193#0" />
+                <element signature="e#0#14#0" expanded="true" />
+                <element signature="e#764#778#0" />
+                <element signature="e#876#2463#0" />
+                <element signature="e#914#1118#0" />
+                <element signature="e#970#1085#0" />
+                <element signature="e#1207#1300#0" />
+                <element signature="e#1256#1300#0" />
+                <element signature="e#1356#1449#0" />
+                <element signature="e#1540#1669#0" />
+                <element signature="e#1592#1669#0" />
+                <element signature="e#1612#1668#0" />
+                <element signature="e#2249#2345#0" />
+                <element signature="e#2561#3632#0" />
+                <element signature="e#2571#2723#0" />
+                <element signature="e#2786#2930#0" />
+                <element signature="e#3083#3168#0" />
+                <element signature="e#3133#3168#0" />
+                <element signature="e#3199#3632#0" />
+                <element signature="e#3338#3436#0" />
+                <element signature="e#3831#4319#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cogs/TournamentCog.py">
+        <entry file="file://$PROJECT_DIR$/cogs/helper/challonge/TournamentCommands.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+            <state relative-caret-position="585">
+              <caret line="56" selection-start-line="56" selection-end-line="56" />
               <folding>
-                <element signature="e#161#175#0" />
-                <element signature="e#286#1018#0" />
-                <element signature="e#344#852#0" />
-                <element signature="e#400#819#0" />
-                <element signature="e#1184#1503#0" />
-                <element signature="e#1214#1432#0" />
-                <element signature="e#1270#1399#0" />
-                <element signature="e#1610#1923#0" />
-                <element signature="e#1640#1854#0" />
-                <element signature="e#1696#1821#0" />
-                <element signature="e#2086#2408#0" />
-                <element signature="e#2116#2336#0" />
-                <element signature="e#2172#2303#0" />
-                <element signature="e#2597#3230#0" />
-                <element signature="e#2660#3058#0" />
-                <element signature="e#2716#3025#0" />
-                <element signature="e#3397#3849#0" />
-                <element signature="e#3427#3751#0" />
-                <element signature="e#3483#3718#0" />
-                <element signature="e#3948#4874#0" />
-                <element signature="e#3978#4659#0" />
-                <element signature="e#4034#4626#0" />
-                <element signature="e#4897#4928#0" />
+                <element signature="e#0#15#0" expanded="true" />
+                <element signature="e#513#608#0" />
+                <element signature="e#650#1054#0" />
+                <element signature="e#687#1054#0" />
+                <element signature="e#942#1016#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/bin/config.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/UserAccounts.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="27" selection-start-line="27" selection-end-line="27" />
+              <folding>
+                <element signature="e#293#328#0" />
+                <element signature="e#356#401#0" />
+                <element signature="e#442#687#0" />
+                <element signature="e#501#583#0" />
+                <element signature="e#541#583#0" />
+                <element signature="e#721#815#0" />
               </folding>
             </state>
           </provider>
@@ -130,8 +93,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utilities/DiscordServices.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" selection-start-line="6" selection-end-line="6" />
+            <state relative-caret-position="210">
+              <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/cogs/UserAccountCog.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" selection-start-line="4" selection-end-line="4" />
+              <folding>
+                <element signature="e#0#32#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -190,17 +165,17 @@
         <option value="$PROJECT_DIR$/_global/Config.py" />
         <option value="$PROJECT_DIR$/core/UserAccounts.py" />
         <option value="$PROJECT_DIR$/utilities/utilities.py" />
-        <option value="$PROJECT_DIR$/bin/config.txt" />
-        <option value="$PROJECT_DIR$/utilities/DiscordServices.py" />
         <option value="$PROJECT_DIR$/cogs/helper/challonge/TournamentCommands.py" />
         <option value="$PROJECT_DIR$/cogs/TournamentCog.py" />
         <option value="$PROJECT_DIR$/core/UserAccount.py" />
-        <option value="$PROJECT_DIR$/cogs/UserAccountCog.py" />
         <option value="$PROJECT_DIR$/cogs/SquadlockeCog.py" />
+        <option value="$PROJECT_DIR$/bin/config.txt" />
+        <option value="$PROJECT_DIR$/utilities/DiscordServices.py" />
+        <option value="$PROJECT_DIR$/cogs/UserAccountCog.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1680" />
     <option name="height" value="963" />
@@ -211,56 +186,33 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
       <pane id="Scope">
         <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
           <expand>
             <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="Goldbot-py" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/IdeaProjects/PyCharm/Goldbot-py" type="442cc68d:ScopeViewTreeModel$RootNode" />
             </path>
             <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="_global" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="bin" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="Goldbot-py" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/IdeaProjects/PyCharm/Goldbot-py" type="442cc68d:ScopeViewTreeModel$RootNode" />
               <item name="cogs" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
             <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="cogs" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="helper" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="cogs" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="helper" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="challonge" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="Goldbot-py" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/IdeaProjects/PyCharm/Goldbot-py" type="442cc68d:ScopeViewTreeModel$RootNode" />
               <item name="core" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
             <path>
-              <item name="goldbot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="D:\Documents\IdeaProjects\PyCharm\goldbot" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="Goldbot-py" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/IdeaProjects/PyCharm/Goldbot-py" type="442cc68d:ScopeViewTreeModel$RootNode" />
               <item name="utilities" type="9f88c78c:ScopeViewTreeModel$FileNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -290,13 +242,13 @@
   </component>
   <component name="RunManager">
     <configuration name="goldbot" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="goldbot" />
+      <module name="Goldbot-py" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\Monroe\venv\Scripts\python.exe" />
+      <option name="SDK_HOME" value="/usr/local/bin/python3.7" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -411,7 +363,14 @@
       <option name="project" value="LOCAL" />
       <updated>1561512777039</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Update match now finishes the tournament when there are no longer any open matches">
+      <created>1561590745958</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1561590745958</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TodoView">
@@ -424,16 +383,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="0" y="23" width="1680" height="963" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1564805" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15611814" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49894625" visible="true" weight="0.3163597" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.36078006" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49894625" weight="0.31572905" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.36050516" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.18959913" />
@@ -478,7 +437,8 @@
     <MESSAGE value="Added ability to ask the tournament commands class for the tournament&#10;url" />
     <MESSAGE value="changes" />
     <MESSAGE value="Made TournamentCommands more abstract (It shouldn't know about discord). Moved friend code format checking into the user commands class. sl_init now adds users to tournaments. Renamed utilities class to Misc for now." />
-    <option name="LAST_COMMIT_MESSAGE" value="Made TournamentCommands more abstract (It shouldn't know about discord). Moved friend code format checking into the user commands class. sl_init now adds users to tournaments. Renamed utilities class to Misc for now." />
+    <MESSAGE value="Update match now finishes the tournament when there are no longer any open matches" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update match now finishes the tournament when there are no longer any open matches" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -509,65 +469,17 @@
     <entry file="file://$USER_HOME$/goldbot/Lib/site-packages/discord/client.py" />
     <entry file="file://$PROJECT_DIR$/cogs/helper/challonge/match.py" />
     <entry file="file://$PROJECT_DIR$/cogs/helper/challonge/tournament_utility.py" />
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/api.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="58" selection-start-line="58" selection-end-line="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/abc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="138" selection-start-line="138" selection-end-line="138" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/_collections_abc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="847" selection-start-line="847" selection-end-line="847" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/structures.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="43" selection-start-line="43" selection-end-line="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="809" selection-start-line="809" selection-end-line="809" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/hooks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/sessions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="412" selection-start-line="412" selection-end-line="412" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/api.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/abc.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/_collections_abc.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/structures.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/utils.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/hooks.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/requests/sessions.py" />
     <entry file="file://$PROJECT_DIR$/bin/apikey.txt" />
     <entry file="file://$PROJECT_DIR$/bin/token.txt" />
     <entry file="file://$PROJECT_DIR$/_global/Global.py" />
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/json/decoder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="608">
-          <caret line="354" selection-start-line="354" selection-end-line="354" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/json/decoder.py" />
     <entry file="file://$PROJECT_DIR$/bin/accounts.json" />
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -576,13 +488,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/importlib/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="126" selection-start-line="126" selection-end-line="126" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/importlib/__init__.py" />
     <entry file="file://$PROJECT_DIR$/cogs/MiscCog.py" />
     <entry file="file://$PROJECT_DIR$/cogs/helper/CustomHelpCommands.py" />
     <entry file="file://$PROJECT_DIR$/.gitignore">
@@ -592,190 +498,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/sldata.pkl">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/errors.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="201" selection-start-line="201" selection-end-line="201" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/selectors.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="337" selection-start-line="337" selection-end-line="337" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/base_events.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="1739" selection-start-line="1739" selection-end-line="1739" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/selector_events.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="548" selection-start-line="548" selection-end-line="548" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="269" selection-start-line="269" selection-end-line="269" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/bot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="900" selection-start-line="900" selection-end-line="900" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/core.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="334" selection-start-line="334" selection-end-line="334" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/events.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="401">
-          <caret line="100" selection-start-line="100" selection-end-line="100" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/queues.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="158" selection-start-line="158" selection-end-line="158" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/logging/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="1369" selection-start-line="1369" selection-end-line="1369" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/cog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="229" selection-start-line="229" selection-end-line="229" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/copyreg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="107" selection-start-line="107" selection-end-line="107" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/goldbot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="27" selection-start-line="27" selection-end-line="27" />
-          <folding>
-            <element signature="e#24#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/config.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="56" lean-forward="true" selection-start-line="4" selection-start-column="56" selection-end-line="4" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/_global/Config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
-          <folding>
-            <element signature="e#150#352#0" />
-            <element signature="e#386#624#0" />
-            <element signature="e#546#624#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/UserAccounts.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
-          <folding>
-            <element signature="e#293#328#0" />
-            <element signature="e#356#401#0" />
-            <element signature="e#442#687#0" />
-            <element signature="e#501#583#0" />
-            <element signature="e#541#583#0" />
-            <element signature="e#721#815#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utilities/Misc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="14" column="39" selection-start-line="14" selection-start-column="39" selection-end-line="14" selection-end-column="39" />
-          <folding>
-            <element signature="e#58#302#0" />
-            <element signature="e#135#273#0" />
-            <element signature="e#172#273#0" />
-            <element signature="e#349#678#0" />
-            <element signature="e#407#508#0" />
-            <element signature="e#455#508#0" />
-            <element signature="e#527#658#0" />
-            <element signature="e#727#823#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/UserAccount.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
-          <folding>
-            <element signature="e#111#168#0" />
-            <element signature="e#200#216#0" />
-            <element signature="e#257#282#0" />
-            <element signature="e#336#574#0" />
-            <element signature="e#451#511#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cogs/UserAccountCog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
-          <folding>
-            <element signature="e#1#33#0" expanded="true" />
-            <element signature="e#161#175#0" />
-            <element signature="e#280#888#0" />
-            <element signature="e#310#510#0" />
-            <element signature="e#366#477#0" />
-            <element signature="e#986#1145#0" />
-            <element signature="e#1168#1200#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/sldata.pkl" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/errors.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/selectors.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/base_events.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/selector_events.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/client.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/bot.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/core.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/events.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/asyncio/queues.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/logging/__init__.py" />
+    <entry file="file://$USER_HOME$/venv/Lib/site-packages/discord/ext/commands/cog.py" />
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/copyreg.py" />
     <entry file="file://$PROJECT_DIR$/cogs/TournamentCog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+        <state relative-caret-position="105">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
           <folding>
-            <element signature="e#161#175#0" />
+            <element signature="e#0#32#0" expanded="true" />
             <element signature="e#286#1018#0" />
             <element signature="e#344#852#0" />
             <element signature="e#400#819#0" />
@@ -788,95 +529,132 @@
             <element signature="e#2086#2408#0" />
             <element signature="e#2116#2336#0" />
             <element signature="e#2172#2303#0" />
-            <element signature="e#2597#3230#0" />
             <element signature="e#2660#3058#0" />
             <element signature="e#2716#3025#0" />
-            <element signature="e#3397#3849#0" />
-            <element signature="e#3427#3751#0" />
-            <element signature="e#3483#3718#0" />
-            <element signature="e#3948#4874#0" />
-            <element signature="e#3978#4659#0" />
-            <element signature="e#4034#4626#0" />
-            <element signature="e#4897#4928#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utilities/DiscordServices.py">
+    <entry file="file://$PROJECT_DIR$/core/UserAccount.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        <state relative-caret-position="225">
+          <caret line="15" selection-start-line="15" selection-end-line="15" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/_global/Config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#386#624#0" />
+            <element signature="e#546#624#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utilities/Misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="e#58#302#0" />
+            <element signature="e#135#273#0" />
+            <element signature="e#172#273#0" />
+            <element signature="e#527#658#0" />
+            <element signature="e#727#823#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/goldbot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cogs/SquadlockeCog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="5" column="60" lean-forward="true" selection-start-line="5" selection-start-column="60" selection-end-line="5" selection-end-column="60" />
+        <state relative-caret-position="59">
+          <caret line="91" selection-start-line="91" selection-end-line="91" />
           <folding>
-            <element signature="e#715#729#0" />
-            <element signature="e#827#2202#0" />
-            <element signature="e#865#1069#0" />
-            <element signature="e#921#1036#0" />
-            <element signature="e#1158#1251#0" />
-            <element signature="e#1207#1251#0" />
-            <element signature="e#1307#1400#0" />
-            <element signature="e#1491#1622#0" />
-            <element signature="e#1543#1622#0" />
-            <element signature="e#1563#1621#0" />
-            <element signature="e#2019#2115#0" />
-            <element signature="e#2300#3283#0" />
-            <element signature="e#2310#2462#0" />
-            <element signature="e#2525#2669#0" />
-            <element signature="e#2822#2907#0" />
-            <element signature="e#2872#2907#0" />
-            <element signature="e#2938#3283#0" />
-            <element signature="e#3077#3175#0" />
-            <element signature="e#3396#4114#0" />
-            <element signature="e#3426#4003#0" />
-            <element signature="e#3482#3970#0" />
-            <element signature="e#4177#4294#0" />
-            <element signature="e#4317#4348#0" />
+            <element signature="e#0#14#0" expanded="true" />
+            <element signature="e#764#778#0" />
+            <element signature="e#876#2463#0" />
+            <element signature="e#914#1118#0" />
+            <element signature="e#970#1085#0" />
+            <element signature="e#1207#1300#0" />
+            <element signature="e#1256#1300#0" />
+            <element signature="e#1356#1449#0" />
+            <element signature="e#1540#1669#0" />
+            <element signature="e#1592#1669#0" />
+            <element signature="e#1612#1668#0" />
+            <element signature="e#2249#2345#0" />
+            <element signature="e#2561#3632#0" />
+            <element signature="e#2571#2723#0" />
+            <element signature="e#2786#2930#0" />
+            <element signature="e#3083#3168#0" />
+            <element signature="e#3133#3168#0" />
+            <element signature="e#3199#3632#0" />
+            <element signature="e#3338#3436#0" />
+            <element signature="e#3831#4319#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cogs/helper/challonge/TournamentCommands.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="413">
-          <caret line="175" selection-start-line="175" selection-end-line="175" />
+        <state relative-caret-position="585">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
           <folding>
-            <element signature="e#442#1159#0" />
+            <element signature="e#0#15#0" expanded="true" />
             <element signature="e#513#608#0" />
             <element signature="e#650#1054#0" />
             <element signature="e#687#1054#0" />
             <element signature="e#942#1016#0" />
-            <element signature="e#1207#1319#0" />
-            <element signature="e#1365#1481#0" />
-            <element signature="e#1530#1649#0" />
-            <element signature="e#1695#1810#0" />
-            <element signature="e#1858#1980#0" />
-            <element signature="e#2026#2515#0" />
-            <element signature="e#2143#2330#0" />
-            <element signature="e#2270#2330#0" />
-            <element signature="e#2365#2432#0" />
-            <element signature="e#2374#2432#0" />
-            <element signature="e#2582#2804#0" />
-            <element signature="e#2847#2980#0" />
-            <element signature="e#3023#3140#0" />
-            <element signature="e#3260#4623#0" />
-            <element signature="e#3603#3767#0" />
-            <element signature="e#3717#3767#0" />
-            <element signature="e#3834#4046#0" />
-            <element signature="e#4212#4307#0" />
-            <element signature="e#4221#4307#0" />
-            <element signature="e#4326#4421#0" />
-            <element signature="e#4335#4421#0" />
-            <element signature="e#4436#4560#0" />
-            <element signature="e#4699#4915#0" />
-            <element signature="e#4795#4899#0" />
-            <element signature="e#5004#5209#0" />
-            <element signature="e#5079#5193#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/config.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/UserAccounts.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
+          <folding>
+            <element signature="e#293#328#0" />
+            <element signature="e#356#401#0" />
+            <element signature="e#442#687#0" />
+            <element signature="e#501#583#0" />
+            <element signature="e#541#583#0" />
+            <element signature="e#721#815#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utilities/DiscordServices.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cogs/UserAccountCog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>

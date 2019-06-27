@@ -1,5 +1,7 @@
 from discord.ext import commands
 from core.UserAccounts import get_account
+from _global.Config import Config
+from utilities.DiscordServices import get_discord_role_by_name
 
 
 class UserAccountCog(commands.Cog):
@@ -28,6 +30,13 @@ class UserAccountCog(commands.Cog):
         account = get_account(ctx.message.mentions[0].id)
         if account is not None:
             await ctx.message.channel.send(content=account.get_friend_code())
+
+    @commands.command(name="add_role")
+    async def add_role(self, ctx):
+        account = ctx.message.author
+        role = ctx.message.role_mentions
+
+
 
 
 def setup(bot):
