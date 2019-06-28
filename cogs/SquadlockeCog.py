@@ -152,7 +152,7 @@ class SquadlockeCog(commands.Cog):
             )
             participant2 = TournamentCommands.get_participant_json_by_id(
                 tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
-                participant1=match["match"]["player2_id"]
+                participant_id=match["match"]["player2_id"]
             )
 
             embed = discord.Embed(
