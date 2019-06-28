@@ -6,7 +6,8 @@
 # TODO: Make commands more intuitive and user friendly??
 # TODO: SLCog method to get current matches
 # TODO: I don't like the way I create default sl tournament names. Think of a way to handle that better
-
+# TODO: Write get x json by id / name in TournamentCommands to return as many objects as there are args
+# TODO: If pickled file doesnt load because its corrupt destroy it and create a new one
 
 import logging
 from discord.ext import commands

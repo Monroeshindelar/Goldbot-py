@@ -102,9 +102,12 @@ def shuffle_seeds(tournament_name):
     print(r.json())
 
 
-def index_matches(tournament_name):
+def index_matches(tournament_name, state="all"):
     url = BASE_URL + "tournaments/" + tournament_name + "/matches.json"
-    r = requests.get(url=url)
+    params = {
+        "state": state
+    }
+    r = requests.get(url=url, params=params)
     return r.json()
 
 
@@ -155,6 +158,14 @@ def get_participant_json_by_name(tournament_name, participant_name):
     for participant in participants:
         if participant['participant']['name'] == participant_name:
             return participant['participant']
+    return None
+
+
+def get_participant_json_by_id(tournament_name, participant_id):
+    participants = index_participants(tournament_name)
+    for participant in participants:
+        if participant["participant"]["id"] == participant_id:
+            return participant["participant"]
     return None
 
 

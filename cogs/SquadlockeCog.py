@@ -139,6 +139,32 @@ class SquadlockeCog(commands.Cog):
                 embed=embed
             )
 
+    @commands.command(name="get_current_matches")
+    async def get_matches_squadlocke(self, ctx):
+        open_matches = TournamentCommands.index_matches(
+            tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
+            state="open"
+        )
+        for match in open_matches:
+            participant1 = TournamentCommands.get_participant_json_by_id(
+                tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
+                participant_id=match["match"]["player1_id"]
+            )
+            participant2 = TournamentCommands.get_participant_json_by_id(
+                tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
+                participant1=match["match"]["player2_id"]
+            )
+
+            embed = discord.Embed(
+                title="Upcoming Match",
+                description=participant1["name"] + " vs. " + participant2["name"],
+                color=discord.Color.green()
+            )
+            await ctx.channel.send(
+                embed=embed
+            )
+
+
     @staticmethod
     async def __save_squadlocke():
         squadlocke_object = [PARTICIPANTS, CHECKPOINT]
