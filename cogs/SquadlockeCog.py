@@ -21,7 +21,7 @@ class SquadlockeCog(commands.Cog):
     @commands.command(name="sl_init",)
     async def squadlocke_init(self, ctx, *args):
         if len(PARTICIPANTS) > 0:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="A squadlocke has already been started. \n"
                         "Please conclude it before starting a new one."
             )
@@ -36,7 +36,7 @@ class SquadlockeCog(commands.Cog):
             for mention in ctx.message.mentions:
                 mention.add_roles(roles=squadlocke_role)
 
-        members = ctx.message.channel.members
+        members = ctx.channel.members
         for member in members:
             if squadlocke_role in member.roles:
                 PARTICIPANTS.update({
@@ -51,11 +51,11 @@ class SquadlockeCog(commands.Cog):
 
         players = []
         for participant in PARTICIPANTS:
-            players.append(get_discord_user_by_id(participant, ctx.message.channel).name)
+            players.append(get_discord_user_by_id(participant, ctx.channel).name)
 
         TournamentCommands.add_users(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), players)
 
-        await ctx.message.channel.send(
+        await ctx.channel.send(
             content="Squadlocke has been started.\n"
                     "Here is a link to the first tournament:\n" +
                     TournamentCommands.get_tournament_url(SquadlockeCog.get_squadlocke_tournament_name())
@@ -69,7 +69,7 @@ class SquadlockeCog(commands.Cog):
             PARTICIPANTS[ctx.message.author.id] = True
             message = "You have been readied up!"
             await SquadlockeCog.__save_squadlocke()
-        await ctx.message.channel.send(
+        await ctx.channel.send(
             content=message
         )
         start = True
@@ -79,7 +79,7 @@ class SquadlockeCog(commands.Cog):
                 break
         if start:
             TournamentCommands.start_tournament(SQUADLOCKE_NAME + str(CHECKPOINT))
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="Everyone is ready. Starting the tournament.\n"
                         "View the bracket here:\n" +
                         TournamentCommands.get_tournament_url(
@@ -90,7 +90,7 @@ class SquadlockeCog(commands.Cog):
     @commands.command(name="sl_update_match")
     async def squadlocke_update_match(self, ctx, *args):
         if len(args) < 4:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!sl_update_match participant1_name participant2_name "
                         "participant1_score participant2_score"
                         "\n\nparticipant1_name: name of the first participant in the match"
@@ -127,7 +127,7 @@ class SquadlockeCog(commands.Cog):
     @commands.command(name="sl_get_ready_list")
     async def squadlocke_get_ready_list(self, ctx):
         for participant in PARTICIPANTS:
-            user = get_discord_user_by_id(participant, ctx.message.channel)
+            user = get_discord_user_by_id(participant, ctx.channel)
             embed = discord.Embed(
                 title=user.name,
                 thumbnail=user.avatar,
@@ -135,7 +135,7 @@ class SquadlockeCog(commands.Cog):
                 color=discord.Color.green() if PARTICIPANTS[participant] else discord.Color.red()
             )
             embed.set_thumbnail(url=user.avatar_url)
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 embed=embed
             )
 

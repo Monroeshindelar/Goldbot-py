@@ -11,7 +11,7 @@ class TournamentCog(commands.Cog):
     async def create_tournament_d(self, ctx, *args):
         extra_params = None
         if len(args) < 1:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!create_tournament tournament_name [tournament[param]=value]"
                         "\n\ntournament_name: name of tournament to create (no spaces)"
                         "\n[tournament[param]=value]: Optional tournament settings"
@@ -28,7 +28,7 @@ class TournamentCog(commands.Cog):
                       aliases=["delete_tournament"])
     async def destroy_tournament_d(self, ctx, *args):
         if len(args) < 1:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!destroy_tournament tournament_name"
                         "\n\ntournament_name: name of tournament to destroy```"
             )
@@ -38,7 +38,7 @@ class TournamentCog(commands.Cog):
     @commands.command(name="start_tournament")
     async def start_tournament(self, ctx, *args):
         if len(args) < 1:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!start_tournament tournament_name"
                         "\n\ntournament_name: name of tournament to start```"
             )
@@ -49,7 +49,7 @@ class TournamentCog(commands.Cog):
                       aliases=["end_tournament"])
     async def finalize_tournament(self, ctx, *args):
         if len(args) < 1:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!finalize_tournament tournament_name"
                         "\n\ntournament_name: name of tournament to finalize```"
             )
@@ -60,7 +60,7 @@ class TournamentCog(commands.Cog):
                       aliases=["add_user", "add_participants", "add_participant"])
     async def add_user_to_tournament(self, ctx, *args):
         if len(args) < 1 or len(ctx.message.mentions) < 1:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!add_partipants tournament_name @user [@user2...]"
                         "\n\ntournament_name: tournament to add participants to"
                         "\n@user: Mentioned user to add to the tournament"
@@ -76,7 +76,7 @@ class TournamentCog(commands.Cog):
                       aliases=["delete_participant"])
     async def destroy_participant(self, ctx, *args):
         if len(args) < 2:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!destroy_participant tournament_name participant_name"
                         "\n\ntournament_name: name of tournament the participant is in"
                         "\nparticipant_name: name of participant to destroy```"
@@ -87,7 +87,7 @@ class TournamentCog(commands.Cog):
     @commands.command(name="update_match")
     async def update_match(self, ctx, *args):
         if len(args) < 5:
-            await ctx.message.channel.send(
+            await ctx.channel.send(
                 content="```Usage: \n!update_match tournament_name participant1_name participant2_name "
                         "participant1_score participant2_score"
                         "\n\ntournament_name: name of the tournament where the match exists"
