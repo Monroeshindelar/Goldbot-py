@@ -38,12 +38,31 @@ class UserAccountCog(commands.Cog):
                   "is not a user manageable role."
         account = ctx.message.author
         role = ctx.message.role_mentions[0]
-        for role_name in OPTIONAL_ROLES:
-            if role_name == role.name:
-                await account.add_roles(role)
-                message = "Role has been successfully assigned."
-                break
+        if UserAccountCog.__role_is_optional(role):
+            await account.add_roles(role)
+            message = "Role has been successfully assigned."
         await ctx.channel.send(content=message)
+
+    @commands.command(name="remove_role")
+    async def remove_role(self, ctx):
+        message = "The role you were trying to remove either doesn't exist or is not a user" \
+                  " manageable role."
+        account = ctx.message.author
+        role = ctx.message.role_mentions[0]
+        if role in account.roles:
+            if UserAccountCog.__role_is_optional(role):
+                await account.remove_roles(role)
+                message = "Role has been successfully removed."
+        await ctx.channel.send(content=message)
+
+    @staticmethod
+    def __role_is_optional(role):
+        optional = False
+        for role_name in OPTIONAL_ROLES:
+            if role.name == role_name:
+                optional = True
+                break
+        return optional
 
 
 def setup(bot):
