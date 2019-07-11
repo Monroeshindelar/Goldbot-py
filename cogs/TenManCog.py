@@ -1,8 +1,9 @@
 import discord
+import random
 from discord.ext import commands
 from _global.Config import Config
 from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
-from utilities.DiscordServices import get_discord_role_by_name, get_discord_channel_by_name
+from utilities.DiscordServices import get_discord_role_by_name, get_discord_channel_by_name, get_discord_user_by_id
 from utilities.Misc import read_config
 
 MASTER_ROLE = Config.get_config_property("tenman_master_role_name")
@@ -31,8 +32,8 @@ class TenManCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="sl_init")
-    async def init_tenman(self, ctx, *args):
+    @commands.command(name="tm_init")
+    async def init_tenman(self, ctx):
         if ctx.message.mentions < 10:
             # error
             return
@@ -49,7 +50,7 @@ class TenManCog(commands.Cog):
         remaining_players = ""
         for mention in ctx.message.mentions:
             PARTICIPANTS.update({
-                "name": mention.name,
+                "id": mention.id,
                 "picked": False
             })
             remaining_players += mention.name + "\n"
@@ -76,6 +77,42 @@ class TenManCog(commands.Cog):
         REMAINING_PLAYERS_MESSAGE_ID = remaining_players_message.id
         IS_TEAM_A_TURN = True
         IS_BAN_PHASE = True
+
+    @commands.command(name="tm_pick_captains")
+    async def pick_captains(self, ctx, *args):
+        captains = []
+        if len(args):
+            if len(args) == 0:
+                for x in range(2):
+                    while True:
+                        cap_index = random.randint(0,len(PARTICIPANTS))
+                        potential_cap = PARTICIPANTS[cap_index]
+                        if not potential_cap["picked"]:
+                            potential_cap["picked"] = True
+                            captain_id = potential_cap["id"]
+                            captains.append(get_discord_user_by_id(captain_id))
+                            break
+        else:
+            if len(ctx.message.mentions) > 1:
+                captains.append(ctx.message.mentions[0])
+                captains.append(ctx.message.mentions[1])
+                for participant in PARTICIPANTS:
+                    if participant["id"] == captains[0]["id"] or participant.id == captains[1]["id"]:
+                        participant["picked"] = True
+        # assign captain roles to captain
+        # build and send embed for the captains
+
+    @commands.command(name="tm_pick_player")
+    async def pick_player(self, ctx):
+        # if its a's turn and b tries to pick, fail
+        potential_pick = None
+        if len(ctx.message.mentions) > 0:
+            potential_pick = ctx.message.mentions[0]
+
+        for participant in PARTICIPANTS:
+            if (participant["id"] == potential_pick.id) and not participant["picked"]:
+                participant["picked"] = True
+                # send the embad
 
 
 def setup(bot):
