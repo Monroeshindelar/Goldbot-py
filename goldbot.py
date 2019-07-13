@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 cogs = [
     "cogs.TournamentCog",
     "cogs.UserAccountCog",
-    "cogs.SquadlockeCog"
+    "cogs.SquadlockeCog",
+    "cogs.TenManCog"
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)

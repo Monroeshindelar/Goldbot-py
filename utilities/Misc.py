@@ -2,12 +2,12 @@ import os
 import pickle
 
 
-def read_config(file_path):
+def read_config(file_path, delim="="):
     config_dictionary = {}
     with open(file_path, "r") as config_file:
         for line in config_file:
             line = line.strip()
-            (key, val) = line.split('=')
+            (key, val) = line.split(delim)
             config_dictionary[key] = val
     return config_dictionary
 

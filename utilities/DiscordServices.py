@@ -1,3 +1,5 @@
+import discord
+
 def get_discord_user_by_id(id, guild):
     target = None
     for user in guild.members:
@@ -23,3 +25,14 @@ def get_discord_channel_by_name(channel_name, guild):
             target = channel
             break
     return target
+
+
+def build_embed(title, thumbnail, description, color):
+    embed = discord.Embed(
+        title=title,
+        thumbnail=thumbnail,
+        description=description,
+        color=color
+    )
+    embed.set_thumbnail(url=thumbnail)
+    return embed
