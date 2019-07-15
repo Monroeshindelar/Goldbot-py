@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
-from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
+from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl, fix_corrupt_file
 from utilities.DiscordServices import get_discord_user_by_id
 
 SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("squadlocke_data_file")
@@ -11,6 +11,8 @@ SQUADLOCKE_NAME = Config.get_config_property("squadlocke_default_checkpoint_name
 SL_SERIALIZE = read_or_create_file_pkl(SQUADLOCKE_DATA_FILE_PATH)
 PARTICIPANTS = {} if len(SL_SERIALIZE) < 1 else SL_SERIALIZE[0]
 CHECKPOINT = 1 if len(SL_SERIALIZE) < 2 else SL_SERIALIZE[1]
+
+save_to_file_pkl([PARTICIPANTS, CHECKPOINT], SQUADLOCKE_DATA_FILE_PATH)
 
 
 class SquadlockeCog(commands.Cog):

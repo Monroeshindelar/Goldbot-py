@@ -29,3 +29,8 @@ def read_or_create_file_pkl(file_path):
 def save_to_file_pkl(content, file_path):
     with open(file_path, 'wb+') as file:
         pickle.dump(content, file, pickle.HIGHEST_PROTOCOL)
+
+
+def fix_corrupt_file(file_path):
+    os.remove(file_path)
+    read_or_create_file_pkl(file_path)
