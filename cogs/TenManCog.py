@@ -172,27 +172,27 @@ class TenManCog(commands.Cog):
         potential_pick = None
         # get team role to assign
         team_role = ROLES[TEAM_A_ROLE] if caller_team == "A" else ROLES[TEAM_B_ROLE]
-        message = None
-        picked_embed = build_embed(title="", thumbnail="", description="", color=discord.Color.purple())
 
         if len(ctx.message.mentions) > 0:
             potential_pick = ctx.message.mentions[0]
+
+        message = None
+        embed = None
 
         if potential_pick is not None and not PARTICIPANTS[potential_pick.id]["picked"]:
             PARTICIPANTS[potential_pick.id]["picked"] = True
             await potential_pick.add_roles(team_role)
             title = "Team " + caller_team + " picked: "
             color = discord.Color.red()
-            picked_embed = build_embed(title=title, thumbnail=potential_pick.avatar_url, description=potential_pick.avatar_url,
+            embed = build_embed(title=title, thumbnail=potential_pick.avatar_url, description=potential_pick.name,
                                 color=color)
             FLAGS["IS_TEAM_A_TURN"] = not FLAGS["IS_TEAM_A_TURN"]
         elif potential_pick is None or PARTICIPANTS[potential_pick.id] is None:
             message = "That user either doesnt exist or is not participating in the ten man."
         elif PARTICIPANTS[potential_pick.id]["picked"]:
             message = potential_pick.name + " has already been picked."
-
-        if picked_embed is not None:
-            await ctx.channel.send(embed=picked_embed)
+        if embed is not None:
+            await ctx.channel.send(embed=embed)
         elif message is not None:
             await ctx.channel.send(content=message)
 
