@@ -60,7 +60,7 @@ class TenManCog(commands.Cog):
             content="```Remaining Maps:\n" + remaining_maps + "```"
         )
         MESSAGES.update({
-            "REMAINING_MAPS_MESSAGE_ID": remaining_maps_message
+            "REMAINING_MAPS_MESSAGE_ID": remaining_maps_message.id
         })
 
         remaining_players_message = await ctx.channel.send(
@@ -134,6 +134,19 @@ class TenManCog(commands.Cog):
         # assign captain roles to captain
         await captains[0].add_roles(captain_A_Role)
         await captains[1].add_roles(captain_B_Role)
+
+        # build and send embed for the captains
+        capAEmbed = build_embed(title="Team A Captain", thumbnail=captains[0].avatar_url,
+                                description=captains[0].name + " has been picked to be the captain of Team A",
+                                color=discord.Color.red())
+
+        capBEmbed = build_embed(title="Team B Captain", thumbnail=captains[1].avatar_url,
+                                description=captains[1].name + " has been picked to be the captain of Team B",
+                                color=discord.Color.blue())
+        embeds = [capAEmbed, capBEmbed]
+        for embed in embeds:
+            await ctx.channel.send(embed=embed)
+
         # update all the messages
         message = await ctx.channel.fetch_message(MESSAGES["REMAINING_PLAYERS_MESSAGE_ID"])
         new_content = "```Remaining Players:\n" + TenManCog.__get_remaining_participants(ctx) + "```"
@@ -147,17 +160,6 @@ class TenManCog(commands.Cog):
         new_content = "```Team " + captains[1].name + ":\n" + captains[1].name + "```"
         await message.edit(content=new_content)
 
-        # build and send embed for the captains
-        capAEmbed = build_embed(title="Team A Captain", thumbnail=captains[0].avatar_url,
-                                description=captains[0].name + " has been picked to be the captain of Team A",
-                                color=discord.Color.red())
-
-        capBEmbed = build_embed(title="Team B Captain", thumbnail=captains[1].avatar_url,
-                                description=captains[1].name + " has been picked to be the captain of Team B",
-                                color=discord.Color.blue())
-        embeds = [capAEmbed, capBEmbed]
-        for embed in embeds:
-            await ctx.channel.send(embed=embed)
         await captains[0].move_to(CHANNELS[TEAM_A_CHANNEL_NAME])
         await captains[1].move_to(CHANNELS[TEAM_B_CHANNEL_NAME])
 
@@ -166,7 +168,7 @@ class TenManCog(commands.Cog):
         # set permissions to captains
         caller_team = TenManCog.__get_caller_team(ctx)
         if not TenManCog.__caller_turn_to_call(caller_team):
-            # error message to discord
+            await ctx.channel.send(content="It is the other captains turn to pick a player.")
             return
 
         potential_pick = None
@@ -187,14 +189,14 @@ class TenManCog(commands.Cog):
             embed = build_embed(title=title, thumbnail=potential_pick.avatar_url, description=potential_pick.name,
                                 color=color)
             FLAGS["IS_TEAM_A_TURN"] = not FLAGS["IS_TEAM_A_TURN"]
+            to_edit = ctx.channel.fetch_message(MESSAGES["REMAINING_PLAYERS_MESSAGE_ID"])
+            await to_edit.edit(content="```Remaining Players:\n" + TenManCog.__get_remaining_participants() + "```")
         elif potential_pick is None or PARTICIPANTS[potential_pick.id] is None:
             message = "That user either doesnt exist or is not participating in the ten man."
         elif PARTICIPANTS[potential_pick.id]["picked"]:
             message = potential_pick.name + " has already been picked."
-        if embed is not None:
-            await ctx.channel.send(embed=embed)
-        elif message is not None:
-            await ctx.channel.send(content=message)
+
+        await ctx.message.send(content=message, embed=embed)
 
         channel = CHANNELS[TEAM_A_CHANNEL_NAME] if caller_team == "A" else CHANNELS[TEAM_B_CHANNEL_NAME]
         await potential_pick.move_to(channel)
@@ -204,8 +206,11 @@ class TenManCog(commands.Cog):
         if len(args) < 1:
             # error message
             return
+
+        # if not all players picked, error message to discord
+
         if FLAGS["IS_BAN_PHASE"]:
-            # message to discord
+            ctx.channel.send(content="Its not currently time to pick a map.")
             return
 
         caller_team = TenManCog.__get_caller_team(ctx)
@@ -214,22 +219,22 @@ class TenManCog(commands.Cog):
         if success:
             title = "Team " + ctx.message.author.name + " picked: "
             map_name = args[0].lower().capitalize()
-            embed = build_embed(title=title, thumbnail=MAPS_REMAINING[map_name], description=map_name,
-                                color=discord.Color.red())
+            embed = build_embed(title=title, thumbnail=MAPS_REMAINING[map_name]["thumbnail"], description=map_name,
+                                color=discord.Color.green())
             if caller_team == "B":
                 FLAGS["IS_BAN_PHASE"] = not FLAGS["IS_BAN_PHASE"]
 
-            # update message
-            message = await ctx.channel.fetch_message(MESSAGES["MAPS_REMAINING_MESSAGE_ID"])
-            await message.edit(TenManCog.__get_remaining_maps())
-
-            message = await ctx.channel.fetch_message(MESSAGES["MAP_HISTORY_MESSAGE_ID"])
-            content = message.content
-            content = content[3:len(content)-3]
-            content += "```" + content + map_name + " - picked by" + ctx.message.author.name + "\n```"
-            await message.edit(content=content)
             # send embed
             await ctx.channel.send(embed=embed)
+            # update message
+            message = await ctx.channel.fetch_message(MESSAGES["REMAINING_MAPS_MESSAGE_ID"])
+            await message.edit(content="```Remaining Maps:\n" + TenManCog.__get_remaining_maps() + "```")
+
+            message = await ctx.channel.fetch_message(MESSAGES["MAPS_HISTORY_MESSAGE_ID"])
+            content = message.content
+            content = content[3:len(content)-3]
+            content += "```" + content + "\n" + map_name + " - picked by " + ctx.message.author.name + "\n```"
+            await message.edit(content=content)
 
     @commands.command(name="tm_ban_map")
     async def ban_map(self, ctx, *args):
@@ -240,7 +245,7 @@ class TenManCog(commands.Cog):
         # if not all players picked, error message to discord
 
         if not FLAGS["IS_BAN_PHASE"]:
-            # error message to discord
+            ctx.channel.send(content="Its not currently time to ban a map.")
             return
 
         caller_team = TenManCog.__get_caller_team(ctx)
@@ -249,41 +254,37 @@ class TenManCog(commands.Cog):
         if success:
             title = "Team " + ctx.message.author.name + " banned: "
             map_name = args[0].lower().capitalize()
-            embed = build_embed(title=title, thumbnail=MAPS_REMAINING[map_name], description=map_name,
+            embed = build_embed(title=title, thumbnail=MAPS_REMAINING[map_name]["thumbnail"], description=map_name,
                                 color=discord.Color.red())
             if caller_team == "B":
                 FLAGS["IS_BAN_PHASE"] = not FLAGS["IS_BAN_PHASE"]
-            # update message
-            message = await ctx.channel.fetch_message(MESSAGES["MAPS_REMAINING_MESSAGE_ID"])
-            await message.edit(TenManCog.__get_remaining_maps())
 
-            message = await ctx.channel.fetch_message(MESSAGES["MAP_HISTORY_MESSAGE_ID"])
-            content = message.content
-            content = content[3:len(content)-3]
-            content += "```" + content + map_name + " - banned by" + ctx.message.author.name + "\n```"
-            await message.edit(content=content)
             # send embed
             await ctx.channel.send(embed=embed)
+            # update message
+            message = await ctx.channel.fetch_message(MESSAGES["REMAINING_MAPS_MESSAGE_ID"])
+            await message.edit(content="```Remaining Maps:\n" + TenManCog.__get_remaining_maps() + "```")
 
-        @commands.command(name="tm_free")
-        async def free(self, ctx):
-            roles_to_remove = [
-                ROLES[MASTER_ROLE],
-                ROLES[CAP_A_ROLE],
-                ROLES[CAP_B_ROLE],
-                ROLES[TEAM_A_ROLE],
-                ROLES[TEAM_B_ROLE]
-            ]
-            ctx.channel.send(content="Beginning deconstruction.")
-            for participant in PARTICIPANTS:
-                discord_user = get_discord_user_by_id(participant, ctx.channel)
-                await discord_user.remove_roles(roles_to_remove)
+            message = await ctx.channel.fetch_message(MESSAGES["MAPS_HISTORY_MESSAGE_ID"])
+            content = message.content
+            content = content[3:len(content)-3]
+            content += "```" + content + "\n" + map_name + " - banned by " + ctx.message.author.name + "\n```"
+            await message.edit(content=content)
+
+    @commands.command(name="tm_free")
+    async def tm_free(self, ctx):
+        await ctx.channel.send(content="Beginning deconstruction.")
+        for participant in PARTICIPANTS:
+            discord_user = get_discord_user_by_id(participant, ctx.channel)
+            await discord_user.remove_roles(ROLES[CAP_A_ROLE], ROLES[CAP_B_ROLE], ROLES[TEAM_A_ROLE], ROLES[TEAM_B_ROLE])
+
+        await ctx.channel.send(content="Players freed.")
 
     @staticmethod
     def __select_map(map_name):
         for map in MAPS_REMAINING:
-            if (map["name"].lower() == map_name.lower()) and not map["selected"]:
-                map["selected"] = True
+            if (map.lower() == map_name.lower()) and not MAPS_REMAINING[map]["selected"]:
+                MAPS_REMAINING[map]["selected"] = True
                 return True
         return False
 
