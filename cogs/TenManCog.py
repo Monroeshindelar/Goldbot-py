@@ -5,6 +5,7 @@ from discord.ext.commands import UserConverter, RoleConverter, TextChannelConver
 from _global.Config import Config
 from utilities.Misc import read_config
 from utilities.DiscordServices import build_embed
+from cogs.errorhandling import TenManErrorHandling
 
 MASTER_ROLE = Config.get_config_property("tenman_master_role_name")
 MASTER_VOICE_CHANNEL = Config.get_config_property("tenman_master_voice_channel_name")
@@ -110,11 +111,11 @@ class TenManCog(commands.Cog):
 
     @commands.command(name="tm_pick_captains")
     @commands.has_role(MASTER_ROLE)
-    async def pick_captains(self, ctx, *args):
+    async def pick_captains(self, ctx):
         captains = []
         captain_A_Role = ROLES[CAP_A_ROLE]
         captain_B_Role = ROLES[CAP_B_ROLE]
-        if len(args) == 0:
+        if len(ctx.message.mentions) == 0:
             for x in range(2):
                 while True:
                     cap_index = random.randint(0, len(PARTICIPANTS) - 1)
@@ -123,7 +124,6 @@ class TenManCog(commands.Cog):
                     if not potential_cap["picked"]:
                         potential_cap["picked"] = True
                         captain_id = potential_cap_id
-                        # captains.append(get_discord_user_by_id(captain_id, ctx.channel))
                         captains.append(await UserConverter().convert(ctx=ctx, argument=captain_id))
                         break
         else:
@@ -138,14 +138,14 @@ class TenManCog(commands.Cog):
         await captains[1].add_roles(captain_B_Role)
 
         # build and send embed for the captains
-        capAEmbed = build_embed(title="Team A Captain", thumbnail=captains[0].avatar_url,
-                                description=captains[0].name + " has been picked to be the captain of Team A",
-                                color=discord.Color.red())
+        cap_a_embed = build_embed(title="Team A Captain", thumbnail=captains[0].avatar_url,
+                                  description=captains[0].name + " has been picked to be the captain of Team A",
+                                  color=discord.Color.red())
 
-        capBEmbed = build_embed(title="Team B Captain", thumbnail=captains[1].avatar_url,
-                                description=captains[1].name + " has been picked to be the captain of Team B",
-                                color=discord.Color.blue())
-        embeds = [capAEmbed, capBEmbed]
+        cap_b_embed = build_embed(title="Team B Captain", thumbnail=captains[1].avatar_url,
+                                  description=captains[1].name + " has been picked to be the captain of Team B",
+                                  color=discord.Color.blue())
+        embeds = [cap_a_embed, cap_b_embed]
         for embed in embeds:
             await ctx.channel.send(embed=embed)
 
@@ -169,8 +169,6 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_pick_player")
     @commands.has_any_role(CAP_A_ROLE, CAP_B_ROLE)
     async def pick_player(self, ctx):
-        # set permissions to captains
-
         caller_team = TenManCog.__get_caller_team(ctx)
         if not TenManCog.__caller_turn_to_call(caller_team):
             await ctx.channel.send(content="It is the other captains turn to pick a player.")
@@ -194,8 +192,9 @@ class TenManCog(commands.Cog):
             embed = build_embed(title=title, thumbnail=potential_pick.avatar_url, description=potential_pick.name,
                                 color=color)
             FLAGS["IS_TEAM_A_TURN"] = not FLAGS["IS_TEAM_A_TURN"]
-            to_edit = ctx.channel.fetch_message(MESSAGES["REMAINING_PLAYERS_MESSAGE_ID"])
-            await to_edit.edit(content="```Remaining Players:\n" + TenManCog.__get_remaining_participants() + "```")
+            to_edit = await ctx.channel.fetch_message(MESSAGES["REMAINING_PLAYERS_MESSAGE_ID"])
+            remaining_players = await TenManCog.__get_remaining_participants(ctx)
+            await to_edit.edit(content="```Remaining Players:\n" + remaining_players + "```")
         elif potential_pick is None or PARTICIPANTS[potential_pick.id] is None:
             message = "That user either doesnt exist or is not participating in the ten man."
         elif PARTICIPANTS[potential_pick.id]["picked"]:
@@ -208,11 +207,7 @@ class TenManCog(commands.Cog):
 
     @commands.command(name="tm_pick_map")
     @commands.has_any_role(CAP_A_ROLE, CAP_B_ROLE)
-    async def pick_map(self, ctx, *args):
-        if len(args) < 1:
-            # error message
-            return
-
+    async def pick_map(self, ctx, map_name: str):
         # if not all players picked, error message to discord
 
         if FLAGS["IS_BAN_PHASE"]:
@@ -221,10 +216,10 @@ class TenManCog(commands.Cog):
 
         caller_team = TenManCog.__get_caller_team(ctx)
 
-        success = TenManCog.__select_map(args[0])
+        success = TenManCog.__select_map(map_name)
         if success:
             title = "Team " + ctx.message.author.name + " picked: "
-            map_name = args[0].lower().capitalize()
+            map_name = map_name.lower().capitalize()
             embed = build_embed(title=title, thumbnail=MAPS_REMAINING[map_name]["thumbnail"], description=map_name,
                                 color=discord.Color.green())
             if caller_team == "B":
@@ -244,10 +239,10 @@ class TenManCog(commands.Cog):
 
     @commands.command(name="tm_ban_map")
     @commands.has_any_role(CAP_A_ROLE, CAP_B_ROLE)
-    async def ban_map(self, ctx, *args):
-        if len(args) < 1:
-            # error message
-            return
+    async def ban_map(self, ctx, map_name: str):
+        #if len(args) < 1:
+        #    # error message
+        #    return
 
         # if not all players picked, error message to discord
 
@@ -257,10 +252,11 @@ class TenManCog(commands.Cog):
 
         caller_team = TenManCog.__get_caller_team(ctx)
 
-        success = TenManCog.__select_map(args[0])
+        success = TenManCog.__select_map(map_name)
         if success:
             title = "Team " + ctx.message.author.name + " banned: "
-            map_name = args[0].lower().capitalize()
+            # map_name = args[0].lower().capitalize()
+            map_name = map_name.lower().capitalize()
             embed = build_embed(title=title, thumbnail=MAPS_REMAINING[map_name]["thumbnail"], description=map_name,
                                 color=discord.Color.red())
             if caller_team == "B":

@@ -13,7 +13,7 @@ from discord.ext import commands
 from _global.Config import Config
 
 TOKEN = Config.get_config_property(config_property="discord_api_key")
-BOT_PREFIX = "!"
+BOT_PREFIX = "."
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
