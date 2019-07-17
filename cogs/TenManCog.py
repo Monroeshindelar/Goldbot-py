@@ -1,11 +1,10 @@
 import discord
 import random
 from discord.ext import commands
+from discord.ext.commands import UserConverter, RoleConverter, TextChannelConverter, VoiceChannelConverter
 from _global.Config import Config
-from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
-from utilities.DiscordServices import get_discord_role_by_name, get_discord_channel_by_name, \
-    get_discord_user_by_id, build_embed
 from utilities.Misc import read_config
+from utilities.DiscordServices import build_embed
 
 MASTER_ROLE = Config.get_config_property("tenman_master_role_name")
 MASTER_VOICE_CHANNEL = Config.get_config_property("tenman_master_voice_channel_name")
@@ -73,13 +72,13 @@ class TenManCog(commands.Cog):
         role_names = [MASTER_ROLE, CAP_A_ROLE, CAP_B_ROLE, TEAM_A_ROLE, TEAM_B_ROLE]
         for role in role_names:
             ROLES.update({
-                role: get_discord_role_by_name(role, ctx.guild)
+                role: await RoleConverter().convert(ctx=ctx, argument=role)
             })
 
         channel_names = [MASTER_VOICE_CHANNEL, TEAM_A_CHANNEL_NAME, TEAM_B_CHANNEL_NAME]
         for channel in channel_names:
             CHANNELS.update({
-                channel: get_discord_channel_by_name(channel, ctx.message.guild)
+                channel: await VoiceChannelConverter().convert(ctx=ctx, argument=channel)
             })
 
         team_A_players_message = await ctx.channel.send(
@@ -122,7 +121,8 @@ class TenManCog(commands.Cog):
                     if not potential_cap["picked"]:
                         potential_cap["picked"] = True
                         captain_id = potential_cap_id
-                        captains.append(get_discord_user_by_id(captain_id, ctx.channel))
+                        # captains.append(get_discord_user_by_id(captain_id, ctx.channel))
+                        captains.append(await UserConverter().convert(ctx=ctx, argument=captain_id))
                         break
         else:
             if len(ctx.message.mentions) > 1:
@@ -149,7 +149,8 @@ class TenManCog(commands.Cog):
 
         # update all the messages
         message = await ctx.channel.fetch_message(MESSAGES["REMAINING_PLAYERS_MESSAGE_ID"])
-        new_content = "```Remaining Players:\n" + TenManCog.__get_remaining_participants(ctx) + "```"
+        remaining_players = await TenManCog.__get_remaining_participants(ctx)
+        new_content = "```Remaining Players:\n" + remaining_players + "```"
         await message.edit(content=new_content)
 
         message = await ctx.channel.fetch_message(MESSAGES["TEAM_A_PLAYERS_MESSAGE_ID"])
@@ -275,7 +276,8 @@ class TenManCog(commands.Cog):
     async def tm_free(self, ctx):
         await ctx.channel.send(content="Beginning deconstruction.")
         for participant in PARTICIPANTS:
-            discord_user = get_discord_user_by_id(participant, ctx.channel)
+            # discord_user = get_discord_user_by_id(participant, ctx.channel)
+            discord_user = await UserConverter().convert(ctx=ctx, argument=participant)
             await discord_user.remove_roles(ROLES[CAP_A_ROLE], ROLES[CAP_B_ROLE], ROLES[TEAM_A_ROLE], ROLES[TEAM_B_ROLE])
 
         await ctx.channel.send(content="Players freed.")
@@ -309,11 +311,12 @@ class TenManCog(commands.Cog):
             return True
 
     @staticmethod
-    def __get_remaining_participants(ctx):
+    async def __get_remaining_participants(ctx):
         remaining_participants = ""
         for participant in PARTICIPANTS:
             if not PARTICIPANTS[participant]["picked"]:
-                remaining_participants += get_discord_user_by_id(participant, ctx.channel).name + "\n"
+                current_remaining_participant = await UserConverter().convert(ctx=ctx, argument=str(participant))
+                remaining_participants += current_remaining_participant.name + "\n"
         return remaining_participants
 
     @staticmethod

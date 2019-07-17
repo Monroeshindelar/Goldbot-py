@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import UserConverter
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
-from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl, fix_corrupt_file
-from utilities.DiscordServices import get_discord_user_by_id
+from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
 
 SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("squadlocke_data_file")
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke_guild_role")
@@ -53,7 +53,8 @@ class SquadlockeCog(commands.Cog):
 
         players = []
         for participant in PARTICIPANTS:
-            players.append(get_discord_user_by_id(participant, ctx.channel).name)
+            participant = await UserConverter().convert(ctx=ctx, argument=str(participant))
+            players.append(participant.name)
 
         TournamentCommands.add_users(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), players)
 
@@ -129,7 +130,7 @@ class SquadlockeCog(commands.Cog):
     @commands.command(name="sl_get_ready_list")
     async def squadlocke_get_ready_list(self, ctx):
         for participant in PARTICIPANTS:
-            user = get_discord_user_by_id(participant, ctx.channel)
+            user = await UserConverter().convert(ctx=ctx, argument=str(participant))
             embed = discord.Embed(
                 title=user.name,
                 thumbnail=user.avatar,
@@ -165,7 +166,6 @@ class SquadlockeCog(commands.Cog):
             await ctx.channel.send(
                 embed=embed
             )
-
 
     @staticmethod
     async def __save_squadlocke():
