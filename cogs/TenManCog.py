@@ -28,6 +28,7 @@ class TenManCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="tm_init")
+    @commands.has_role(MASTER_ROLE)
     async def init_tenman(self, ctx):
         # if ctx.message.mentions < 10:
             # error
@@ -108,6 +109,7 @@ class TenManCog(commands.Cog):
         })
 
     @commands.command(name="tm_pick_captains")
+    @commands.has_role(MASTER_ROLE)
     async def pick_captains(self, ctx, *args):
         captains = []
         captain_A_Role = ROLES[CAP_A_ROLE]
@@ -165,8 +167,10 @@ class TenManCog(commands.Cog):
         await captains[1].move_to(CHANNELS[TEAM_B_CHANNEL_NAME])
 
     @commands.command(name="tm_pick_player")
+    @commands.has_any_role(CAP_A_ROLE, CAP_B_ROLE)
     async def pick_player(self, ctx):
         # set permissions to captains
+
         caller_team = TenManCog.__get_caller_team(ctx)
         if not TenManCog.__caller_turn_to_call(caller_team):
             await ctx.channel.send(content="It is the other captains turn to pick a player.")
@@ -203,6 +207,7 @@ class TenManCog(commands.Cog):
         await potential_pick.move_to(channel)
 
     @commands.command(name="tm_pick_map")
+    @commands.has_any_role(CAP_A_ROLE, CAP_B_ROLE)
     async def pick_map(self, ctx, *args):
         if len(args) < 1:
             # error message
@@ -238,6 +243,7 @@ class TenManCog(commands.Cog):
             await message.edit(content=content)
 
     @commands.command(name="tm_ban_map")
+    @commands.has_any_role(CAP_A_ROLE, CAP_B_ROLE)
     async def ban_map(self, ctx, *args):
         if len(args) < 1:
             # error message
@@ -273,6 +279,7 @@ class TenManCog(commands.Cog):
             await message.edit(content=content)
 
     @commands.command(name="tm_free")
+    @commands.has_role(MASTER_ROLE)
     async def tm_free(self, ctx):
         await ctx.channel.send(content="Beginning deconstruction.")
         for participant in PARTICIPANTS:
