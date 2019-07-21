@@ -5,7 +5,6 @@ from discord.ext.commands import UserConverter, RoleConverter, TextChannelConver
 from _global.Config import Config
 from utilities.Misc import read_config
 from utilities.DiscordServices import build_embed
-from cogs.errorhandling import TenManErrorHandling
 
 MASTER_ROLE = Config.get_config_property("tenman_master_role_name")
 MASTER_VOICE_CHANNEL = Config.get_config_property("tenman_master_voice_channel_name")
@@ -31,6 +30,14 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_init")
     @commands.has_role(MASTER_ROLE)
     async def init_tenman(self, ctx):
+        """
+        Initializes the ten man with mentioned users.
+        Expects 10 mentioned users.
+
+        SYNOPSIS
+            .tm_init [@mentioned...]
+
+        """
         # if ctx.message.mentions < 10:
             # error
         #    return
@@ -112,6 +119,16 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_pick_captains")
     @commands.has_role(MASTER_ROLE)
     async def pick_captains(self, ctx):
+        """
+        Picks the captains for the ten man
+        Supplying no additional parameters picks captains randomly
+        Mention two users to select captains manually
+
+        SYNOPSIS
+            .tm_pick_captains
+
+            .tm_pick_captains @mentioned @mentioned
+        """
         captains = []
         captain_A_Role = ROLES[CAP_A_ROLE]
         captain_B_Role = ROLES[CAP_B_ROLE]
@@ -169,6 +186,14 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_pick_player")
     @commands.has_any_role(CAP_A_ROLE, CAP_B_ROLE)
     async def pick_player(self, ctx):
+        """
+        Picks player for team of the calling captain
+        Expects one mentioned user
+        Expects caller to be a captain
+
+        SYNOPSIS
+            .tm_pick_player @mentioned
+        """
         caller_team = TenManCog.__get_caller_team(ctx)
         if not TenManCog.__caller_turn_to_call(caller_team):
             await ctx.channel.send(content="It is the other captains turn to pick a player.")
