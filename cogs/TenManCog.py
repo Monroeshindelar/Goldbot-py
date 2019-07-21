@@ -1,10 +1,13 @@
 import discord
 import random
+import logging
 from discord.ext import commands
 from discord.ext.commands import UserConverter, RoleConverter, TextChannelConverter, VoiceChannelConverter
 from _global.Config import Config
 from utilities.Misc import read_config
 from utilities.DiscordServices import build_embed
+
+logging.getLogger("goldlog")
 
 MASTER_ROLE = Config.get_config_property("tenman_master_role_name")
 MASTER_VOICE_CHANNEL = Config.get_config_property("tenman_master_voice_channel_name")
@@ -38,9 +41,6 @@ class TenManCog(commands.Cog):
             .tm_init [@mentioned...]
 
         """
-        # if ctx.message.mentions < 10:
-            # error
-        #    return
         maps = Config.get_config_property("tenman_default_map_pool")
         maps = maps.split(",")
         map_thumbnails = read_config("bin/resources/map_thumbnails.txt", " ")
