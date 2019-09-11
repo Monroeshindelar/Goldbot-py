@@ -8,7 +8,7 @@ class TournamentCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="create_tournament")
-    async def create_tournament_d(self, ctx, *args):
+    async def create_tournament(self, ctx, *args):
         extra_params = None
         if len(args) < 1:
             await ctx.channel.send(

@@ -1,9 +1,12 @@
 import discord
+import logging
 from discord.ext import commands
 from discord.ext.commands import UserConverter
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
 from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
+
+LOGGER = logging.getLogger("goldlog")
 
 SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("squadlocke_data_file")
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke_guild_role")
@@ -18,6 +21,7 @@ save_to_file_pkl([PARTICIPANTS, CHECKPOINT], SQUADLOCKE_DATA_FILE_PATH)
 class SquadlockeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        LOGGER.info("Initialized squadlocke command cog.")
 
     @commands.command(name="sl_init",)
     async def squadlocke_init(self, ctx, *args):

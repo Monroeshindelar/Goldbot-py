@@ -18,7 +18,6 @@ BOT_PREFIX = "."
 
 
 cogs = [
-    "cogs.error.TenManCogErrorHandling",
     "cogs.TournamentCog",
     "cogs.UserAccountCog",
     "cogs.SquadlockeCog",
@@ -41,7 +40,9 @@ async def on_command_error(ctx, error):
         for role in error.missing_roles:
             message += "`" + role + "`\n"
     elif isinstance(error, commands.MissingRequiredArgument):
-        message = "You are missing required arguments for this command:\n`" + error.param + "`"
+        message = "You are missing required arguments for this command:\n`" + error.param.name + "`"
+    elif isinstance(error, commands.BadArgument):
+        message = error.args[0]
 
     await ctx.channel.send(content=message)
 
