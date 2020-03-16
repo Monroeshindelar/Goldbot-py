@@ -5,10 +5,14 @@ from discord.ext.commands import UserConverter
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
 from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
+from core.squadlocke.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
+from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
+from utilities.DiscordServices import build_embed
+from core.squadlocke.RouteEncounter import RouteEncounter
 
 LOGGER = logging.getLogger("goldlog")
 
-SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("squadlocke_data_file")
+SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("save_file_directory") + "sldata.pkl"
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke_guild_role")
 SQUADLOCKE_NAME = Config.get_config_property("squadlocke_default_checkpoint_name")
 SL_SERIALIZE = read_or_create_file_pkl(SQUADLOCKE_DATA_FILE_PATH)
@@ -30,14 +34,17 @@ class SquadlockeCog(commands.Cog):
                 content="A squadlocke has already been started. \n"
                         "Please conclude it before starting a new one."
             )
+            LOGGER.warning("SquadlockeCommand::squadlocke_init - call failed because one is already initialized.")
             return
         squadlocke_role = None
+        LOGGER.info("SquadlockeCommand::squadlocke_init - Getting role.")
         for role in ctx.message.guild.roles:
             if role.name == SQUADLOCKE_ROLE:
                 squadlocke_role = role
                 break
 
         if len(ctx.message.mentions) > 0:
+            LOGGER.info("SquadlockeCommand::squadlocke_init - Assigning roles to members")
             for mention in ctx.message.mentions:
                 mention.add_roles(roles=squadlocke_role)
 
@@ -104,6 +111,7 @@ class SquadlockeCog(commands.Cog):
                         "\nparticipant1_score: final score of the first participant"
                         "\nparticipant2_score: final score of the second participant```"
             )
+            LOGGER.warning("SquadlockeCommand::sl_update_match - Failed due to insufficient number of arguments.")
             return
         TournamentCommands.update_match(
             tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
@@ -132,6 +140,7 @@ class SquadlockeCog(commands.Cog):
 
     @commands.command(name="sl_get_ready_list")
     async def squadlocke_get_ready_list(self, ctx):
+        LOGGER.info("SquadlockeCommand::sl_get_ready_list - called successfully by " + ctx.message.author.name)
         for participant in PARTICIPANTS:
             user = await UserConverter().convert(ctx=ctx, argument=str(participant))
             embed = discord.Embed(
@@ -172,12 +181,69 @@ class SquadlockeCog(commands.Cog):
 
     @staticmethod
     async def __save_squadlocke():
+        LOGGER.info("SquadlockeCommand::save_squadlocke - Saving current squadlocke state.")
         squadlocke_object = [PARTICIPANTS, CHECKPOINT]
         save_to_file_pkl(squadlocke_object, SQUADLOCKE_DATA_FILE_PATH)
 
     @staticmethod
     def get_squadlocke_tournament_name():
         return SQUADLOCKE_NAME + "_" + str(CHECKPOINT)
+
+    @commands.command(name="slencounter")
+    async def t(self, ctx, *args):
+        a, ua = SquadlockeArgParsers.SLENCOUNTER_ARG_PARSER.parse_known_args(args)
+        re = RouteEncounter(ua[0])
+        if a.get_info:
+            encounter_info = re.get_info()
+            i = 0
+            for section in encounter_info:
+                for weather in encounter_info[section]:
+                    message = "```Section: " + section + " (id: " + str(i) + ")\n" + "Weather: " + weather + " (id: " \
+                              + str(WEATHER_DICT[weather]) + ")\n\n" + encounter_info[section][weather] + "```"
+                    await ctx.channel.send(message)
+                i = i + 1
+            return
+        if not a.all:
+            re.add_area_filter([2, 3, 6, 7], -1)
+        if a.f:
+            re.add_area_filter([2], False)
+        if a.w is not None:
+            re.add_weather_filter(a.w.split(","), 0)
+        if a.s is not None:
+            re.add_section_filter(a.s.split(","), 0)
+        if a.a is not None:
+            re.add_area_filter(a.a.split(","), 0)
+
+        enc = re.get_encounter()
+        if enc is None:
+            await ctx.channel.send("There are no encounters available on this route with the specified filters.")
+            return
+        v1, v2 = enc.get()
+
+        generic_embed_descr = 'Encounter rate: ' + str(v1.get('rate')) + '%\n Normalized encounter rate: ' + \
+                              str(v1.get('n_rate')) + '%\n Area: ' + ENCOUNTER_AREA_DICT.inverse[v1.get('area')][0] \
+                              + "\n Section: " + v1.get('section')
+
+        if v1.get('weather') != 'None':
+            generic_embed_descr += '\n Weather: ' + v1.get('weather')
+
+        embed_color = discord.Color.purple()
+        v2embed = None
+
+        if v2 is not None:
+            v2_embed_descr = "Exclusive to Pokémon Shield!\n" + generic_embed_descr
+            generic_embed_descr = "Exclusive to Pokémon Sword!\n" + generic_embed_descr
+            v2embed = build_embed(title=v2.get('name'), thumbnail='https://serebii.net' + v2.get('sprite'),
+                                  description=v2_embed_descr, color=discord.Color.red())
+            embed_color = discord.Color.blue()
+
+        v1embed = build_embed(title=v1.get('name'), thumbnail='https://serebii.net' + v1.get('sprite'),
+                              description=generic_embed_descr, color=embed_color)
+
+        await ctx.channel.send(embed=v1embed)
+
+        if v2embed is not None:
+            await ctx.channel.send(embed=v2embed)
 
 
 def setup(bot):

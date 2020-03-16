@@ -5,6 +5,7 @@ from _global.Config import Config
 
 LOGGER = logging.getLogger("goldlog")
 
+SERVER_SAVE_FILE = Config.get_config_property("save_file_directory") + "server.pkl"
 OPTIONAL_ROLES = Config.get_config_property("optional_role_names").split(',')
 
 
@@ -74,6 +75,11 @@ class UserAccountCog(commands.Cog):
                 LOGGER.warning("UserCommands::remove_role call failed for " + account.name + ".  Bad arguments")
                 raise commands.BadArgument("The role you are trying to remove either doesnt exist or "
                                            "is not a user manageable role.")
+
+    @commands.command(name="make_role_optional")
+    @commands.has_permissions(administrator=True)
+    async def make_role_optional(self, ctx):
+        return False
 
     @staticmethod
     def __role_is_optional(role):

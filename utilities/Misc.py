@@ -1,5 +1,9 @@
 import os
 import pickle
+import requests
+import logging
+
+LOGGER = logging.getLogger("goldlog")
 
 
 def read_config(file_path, delim="="):
@@ -34,3 +38,18 @@ def save_to_file_pkl(content, file_path):
 def fix_corrupt_file(file_path):
     os.remove(file_path)
     read_or_create_file_pkl(file_path)
+
+
+def download_image_from_web(url, file_name):
+    if os.path.isfile(file_name):
+        with open(file_name, 'wb') as handle:
+            response = requests.get(url, stream=True)
+
+            if not response.ok:
+                LOGGER.warn(response)
+
+            for block in response.iter_content(1024):
+                if not block:
+                    break
+
+                handle.write(block)

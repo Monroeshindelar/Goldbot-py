@@ -1,16 +1,21 @@
+import logging
 from discord.ext import commands
 from cogs.helper.challonge import TournamentCommands
 
+LOGGER = logging.getLogger("goldlog")
+
 
 class TournamentCog(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
+        LOGGER.info("Initialized tournament commands cog.")
 
     @commands.command(name="create_tournament")
     async def create_tournament(self, ctx, *args):
         extra_params = None
         if len(args) < 1:
+            LOGGER.warning("TournamentCommand::create_tournament - Failed call by " + ctx.message.author.name
+                           + " due to insufficient number arguments.")
             await ctx.channel.send(
                 content="```Usage: \n!create_tournament tournament_name [tournament[param]=value]"
                         "\n\ntournament_name: name of tournament to create (no spaces)"
@@ -32,6 +37,8 @@ class TournamentCog(commands.Cog):
                 content="```Usage: \n!destroy_tournament tournament_name"
                         "\n\ntournament_name: name of tournament to destroy```"
             )
+            LOGGER.warning("TournamentCommands::destroy_tournament - Failed call by " + ctx.message.author.name +
+                           " due to insufficient number of arguments.")
             return
         TournamentCommands.destroy_tournament(tournament_name=args[0])
 
@@ -42,6 +49,8 @@ class TournamentCog(commands.Cog):
                 content="```Usage: \n!start_tournament tournament_name"
                         "\n\ntournament_name: name of tournament to start```"
             )
+            LOGGER.warning("TournamentCommand::start_tournament - Failed call by " + ctx.message.author.name +
+                           " due to insufficient number of arguments")
             return
         TournamentCommands.start_tournament(tournament_name=args[0])
 
@@ -53,6 +62,8 @@ class TournamentCog(commands.Cog):
                 content="```Usage: \n!finalize_tournament tournament_name"
                         "\n\ntournament_name: name of tournament to finalize```"
             )
+            LOGGER.warning("TournamentCommand::finalize_tournament - Failed call by " + ctx.message.author.name +
+                           " due to insufficient number of arguments")
             return
         TournamentCommands.finalize_tournament(tournament_name=args[0])
 
@@ -66,6 +77,8 @@ class TournamentCog(commands.Cog):
                         "\n@user: Mentioned user to add to the tournament"
                         "\n[@user2...]: Optional other users to add to the tournament```"
             )
+            LOGGER.warning("TournamentCommand::add_user - Failed call by " + ctx.message.author.name +
+                           " due to insufficient number of arguments")
             return
         users = []
         for user in ctx.message.mentions:
@@ -81,6 +94,8 @@ class TournamentCog(commands.Cog):
                         "\n\ntournament_name: name of tournament the participant is in"
                         "\nparticipant_name: name of participant to destroy```"
             )
+            LOGGER.warning("TournamentCommand::destroy_participant - Failed call by " + ctx.message.author.name +
+                           " due to insufficient number of arguments")
             return
         TournamentCommands.destroy_participant(tournament_name=args[0], participant_name=args[1])
 
@@ -96,6 +111,8 @@ class TournamentCog(commands.Cog):
                         "\nparticipant1_score: final score of the first participant"
                         "\nparticipant2_score: final score of the second participant```"
             )
+            LOGGER.warning("TournamentCommand::update_match - Failed call by " + ctx.message.author.name +
+                           " due to insufficient number of arguments")
             return
         TournamentCommands.update_match(tournament_name=args[0], participant1_name=args[1], participant2_name=args[2],
                                         participant1_score=args[3], participant2_score=args[4])

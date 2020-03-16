@@ -1,6 +1,8 @@
 import requests
+import logging
 from _global.Config import Config
 
+LOGGER = logging.getLogger("goldlog")
 API_KEY = Config.get_config_property("challonge_api_key")
 CHALLONGE_USERNAME = Config.get_config_property("challonge_username")
 BASE_URL = "https://" + CHALLONGE_USERNAME + ":" + API_KEY + "@api.challonge.com/v1/"
@@ -43,24 +45,28 @@ def destroy_tournament(tournament_name):
     url = BASE_URL + "tournaments/" + tournament_name + ".json"
     r = requests.delete(url=url)
     print(r.json())
+    LOGGER.info("Delete request sent to Challonge api.")
 
 
 def start_tournament(tournament_name):
     url = BASE_URL + "tournaments/" + tournament_name + "/start.json"
     r = requests.post(url=url)
     print(r.json())
+    LOGGER.info("Request to start tournament sent to Challonge api.")
 
 
 def finalize_tournament(tournament_name):
     url = BASE_URL + "tournaments/" + tournament_name + "/finalize.json"
     r = requests.post(url=url)
     print(r.json())
+    LOGGER.info("Request to finalize tournament sent to Challonge api.")
 
 
 def reset_tournament(tournament_name):
     url = BASE_URL + "tournaments/" + tournament_name + "reset.json"
     r = requests.post(url=url)
     print(r.json())
+    LOGGER.info("Request to reset tournament sent to Challonge api.")
 
 
 def index_participants(tournament_name):
@@ -87,6 +93,7 @@ def add_users(tournament_name, users):
     url += ".json"
     r = requests.post(url=url, data=params)
     print(r.json())
+    LOGGER.info("Request to add users to tournament sent to Challonge api.")
 
 
 def destroy_participant(tournament_name, participant_name):
@@ -94,12 +101,14 @@ def destroy_participant(tournament_name, participant_name):
     url = BASE_URL + "tournaments/" + tournament_name + "/participants/" + participant_id + ".json"
     r = requests.delete(url=url)
     print(r.json())
+    LOGGER.info("Request to destroy participants sent to Challonge api.")
 
 
 def shuffle_seeds(tournament_name):
     url = BASE_URL + "tournaments/" + tournament_name + "/participants/randomize.json"
     r = requests.post(url=url)
     print(r.json())
+    LOGGER.info("Request to shuffle tournament seeds sent to Challonge api.")
 
 
 def index_matches(tournament_name, state="all"):
@@ -151,6 +160,7 @@ def update_match(tournament_name, participant1_name, participant2_name, particip
     }
     r = requests.put(url=url, data=params)
     print(r.json())
+    LOGGER.info("Request to get matches sent to Challonge api.")
 
 
 def get_participant_json_by_name(tournament_name, participant_name):
