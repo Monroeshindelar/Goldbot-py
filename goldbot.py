@@ -27,8 +27,7 @@ cogs = [
     "cogs.TournamentCog",
     "cogs.UserAccountCog",
     "cogs.SquadlockeCog",
-    "cogs.TenManCog",
-    "cogs.testCog"
+    "cogs.TenManCog"
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)
@@ -52,12 +51,6 @@ if __name__ == '__main__':
 #         message = error.args[0]
 #
 #     # await ctx.channel.send(content=message)
-
-# @bot.event
-# async def on_message(message):
-#     if message.content == ":LOLweedLOL:":
-#         await message.channel.send(content="lol")
-
 
 @bot.event
 async def on_ready():

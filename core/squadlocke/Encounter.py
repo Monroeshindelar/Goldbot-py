@@ -1,6 +1,3 @@
-from pandas import isna
-
-
 class Encounter:
     def __init__(self, name_v1, name_v2, rate, n_rate, area, section, weather, sprite_v1, sprite_v2):
         self.__name_v1 = name_v1
@@ -10,12 +7,13 @@ class Encounter:
         self.__section = section
         self.__weather = weather
         self.__sprite_v1 = sprite_v1
-        if isna(name_v2):
-            self.__name_v2 = None
-            self.__sprite_v2 = None
-        else:
+
+        if isinstance(name_v2, str) and name_v1 != name_v2:
             self.__name_v2 = name_v2
             self.__sprite_v2 = sprite_v2
+        else:
+            self.__name_v2 = None
+            self.__sprite_v2 = None
 
     def get(self):
         v1 = {'name': self.__name_v1, 'rate': self.__rate, 'n_rate': self.__n_rate, 'area': self.__area,

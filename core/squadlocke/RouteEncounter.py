@@ -3,7 +3,6 @@ import logging
 import string
 from tabulate import tabulate
 from numpy.random import choice
-
 from core.squadlocke.Encounter import Encounter
 from core.squadlocke.SquadlockeConstants import ROUTE_CACHE, COLUMNS, WEATHER_DICT, ENCOUNTER_AREA_DICT
 
