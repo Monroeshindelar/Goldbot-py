@@ -247,7 +247,7 @@ class SquadlockeCog(commands.Cog):
             await ctx.channel.send(embed=v2embed)
 
     @commands.command(name="fetch")
-    async def fetch(self):
+    async def fetch(self, ctx):
         SerebiiParser.fetch_all_data()
 
 
