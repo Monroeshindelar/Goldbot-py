@@ -9,6 +9,7 @@ from core.squadlocke.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DIC
 from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
 from utilities.DiscordServices import build_embed
 from core.squadlocke.RouteEncounter import RouteEncounter
+from cogs.helper.squadlocke.Parsers.SerebiiParser import SerebiiParser
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -190,7 +191,7 @@ class SquadlockeCog(commands.Cog):
         return SQUADLOCKE_NAME + "_" + str(CHECKPOINT)
 
     @commands.command(name="slencounter")
-    async def t(self, ctx, *args):
+    async def slencounter(self, ctx, *args):
         a, ua = SquadlockeArgParsers.SLENCOUNTER_ARG_PARSER.parse_known_args(args)
         re = RouteEncounter(ua[0])
         if a.get_info:
@@ -244,6 +245,10 @@ class SquadlockeCog(commands.Cog):
 
         if v2embed is not None:
             await ctx.channel.send(embed=v2embed)
+
+    @commands.command(name="fetch")
+    async def fetch(self):
+        SerebiiParser.fetch_all_data()
 
 
 def setup(bot):
