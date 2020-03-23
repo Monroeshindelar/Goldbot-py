@@ -39,6 +39,7 @@ Multivalued config properties can be provided using a comma delimited list such 
 `property_name=value1,value2,value3`
 
 ###Properties
+
 ####General
 * `discord_api_key` - API key responsible for authenticating with discord. You can receive yours from the 
 [discord developer portal](https://discordapp.com/developers/applications/)
