@@ -34,7 +34,7 @@ class LeaderboardHandler:
         if emote in EMOJI_TIME_DICT.keys():
             r_time = datetime.strptime(EMOJI_TIME_DICT[emote], "%H:%M").time()
             m_time = r_time.replace(hour=r_time.hour + 12)
-            timestamp = timestamp.astimezone(TZ).replace(second=0, microsecond=0).time()
+            timestamp = TZ.localize(timestamp.replace(second=0, microsecond=0)).time()
             if timestamp == r_time or timestamp == m_time:
                 self.__unprocessed_entries.append({"author": author, "timestamp": timestamp, "emote": emote})
                 LOGGER.info("LeaderboardHandler::add_entry - Adding message from " + author.name +

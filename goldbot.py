@@ -96,6 +96,7 @@ async def __leaderboard_job():
         await asyncio.sleep(delay)
         LeaderboardHandler.get_leaderboard_handler().process_entries()
 
+
 @bot.event
 async def on_message(message):
     emoji = find(lambda e: str(e) == message.content, message.guild.emojis)
