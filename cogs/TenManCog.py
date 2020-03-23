@@ -7,7 +7,7 @@ from _global.Config import Config
 from utilities.Misc import read_config
 from utilities.DiscordServices import build_embed
 
-logging.getLogger("goldlog")
+LOGGER = logging.getLogger("goldlog")
 
 MASTER_ROLE = Config.get_config_property("tenman_master_role_name")
 MASTER_VOICE_CHANNEL = Config.get_config_property("tenman_master_voice_channel_name")
@@ -29,6 +29,7 @@ FLAGS = {}
 class TenManCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        LOGGER.info("Initialized ten man command cog.")
 
     @commands.command(name="tm_init")
     @commands.has_role(MASTER_ROLE)
