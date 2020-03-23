@@ -38,19 +38,20 @@ Multivalued config properties can be provided using a comma delimited list such 
 
 `property_name=value1,value2,value3`
 
-###Properties
 
-####General
+### Properties
+
+#### General
 * `discord_api_key` - API key responsible for authenticating with discord. You can receive yours from the 
 [discord developer portal](https://discordapp.com/developers/applications/)
 * `save_file_directory` - Location to save module data to disk
-####Server
+#### Server
 * `optional_role_name` - A list of roles that non-administrator users are allowed to manage
 * `leaderboard_tracking` - A list of `custom_emoji_name~time` pairs, delimited by the character `~`. Points will be awarded
  to users when they send messages in the server with that emoji at the provided time
 * `timezone` - used to contextualize the time provided in the `leaderboard_tracking` property. Internally, the pytz
 library is used, so use a timezone value from a list like [this](https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones).
-####Ten Man
+#### Ten Man
 * `tenman_master_role_name` - Users with this role will be able to orchestrate a tenman
 * `tenman_captain_team_A_role_name` - Role to assign to the captain of Team A
 * `tenman_captain_team_B_role_name` - Role to assign to the captain of Team B
@@ -60,28 +61,28 @@ library is used, so use a timezone value from a list like [this](https://stackov
 * `tenman_team_B_voice_channel_name` - Voice channel for Team B players
 * `tenman_master_voice_channel` - Voice channel tenman participants start in
 * `tenman_default_map_pool` - Current counterstrike competitive map pool. Should be 7 maps
-####Tournament
+#### Tournament
 * `challonge_api` - API key used for authenticating with the challonge api.
 * `challonge_username` - Username associated with the API key
-####Squadlocke
+#### Squadlocke
 * `squadlocke_guild_role` - Role assigned to participants of the squadlocke
 * `squadlocke_default_checkpoint_name` (Depreciated) - just fill any random value in here for now
 
-##Commands
+## Commands
 Commands users can issue to the bot in the discord server
 
-###User Account
+### User Account
 
 * `get_friend_code` - Returns Nintendo Online friend code of mentioned user if one exists
 * `set_friend_code` - Sets the calling users friend code to the provided string
 * `add_role` - adds the mentioned role to the calling user if the role is optional
 * `remove_role` - removes the mentioned role from the calling user if the role is optional and the user has the role
 
-###Server
+### Server
 
 * `leaderboard` - Gets leaderboard for the provided emoji
 
-###Ten Man
+### Ten Man
 
 * `tm_init` - Initializes the ten man for the 10 mentioned users. Requires ten man master role.
 * `tm_pick_captains` - Randomly assigns two captains if none are provided or assigns the two mentioned participants as
@@ -91,7 +92,7 @@ captains. Requires ten man master role.
 * `tm_ban_map` - Bans map for calling captain. Requires Team A/B captain role.
 * `tm_free` - Removes all roles from participating players. Requires master role.
 
-###Tournament
+### Tournament
 * `create_tournament` - Creates tournament with mentioned users and other specified optional parameters
 * `destroy_tournament` - Deletes the tournament with the provided name
 * `start_tournament` - Lock in the tournament bracket for the provided tournament and begin matches
@@ -100,7 +101,7 @@ captains. Requires ten man master role.
 * `destroy_participant` - Delete a participant from the provided tournament
 * `update_match` - Update the score of an ongoing match
 
-###Squadlocke (This section  probably gets an overhaul)
+### Squadlocke (This section  probably gets an overhaul)
 * `sl_init` - Initialized the squadlocke and applies appropriate roles to the mentioned participants
 * `sl_ready_up` - Participants call this to set the ready flag. Once all are ready, a tournament is started
 * `sl_update_match` - Updates a match in the current checkpoint
