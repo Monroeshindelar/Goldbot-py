@@ -70,7 +70,7 @@ async def __leaderboard_job():
     timers.sort()
     # This part only runs once, I want to find the time it started up so I can find the next available time to
     # schedule the job
-    startup_time = datetime.now().astimezone(TZ)
+    startup_time = TZ.localize(datetime.now())
     # shift to the next closest time in the list
     i = 0
     while timers[0] < startup_time.time() and i < len(timers):
@@ -84,10 +84,10 @@ async def __leaderboard_job():
     while not bot.is_closed():
         # At startup or after the job is done sleeping, get the current time so we can calculate how many seconds we
         # need to wait until the next job
-        current_time = datetime.now().astimezone(TZ)
+        current_time = TZ.localize(datetime.now())
         # Get the next available time in the timer list
         next_timer = next(timers)
-        timer = (datetime.today().astimezone(TZ)).replace(hour=next_timer.hour, minute=next_timer.minute + 2, second=0)
+        timer = current_time.replace(hour=next_timer.hour, minute=next_timer.minute + 2, second=0)
         if timer.time() < current_time.time():
             timer = timer + timedelta(days=1)
         LOGGER.info("LeaderboardHandler scheduled to process more entries on " + timer.strftime("%d-%b-%Y (%H:%M)"))
@@ -95,7 +95,6 @@ async def __leaderboard_job():
         delay = (timer - current_time).total_seconds()
         await asyncio.sleep(delay)
         LeaderboardHandler.get_leaderboard_handler().process_entries()
-
 
 @bot.event
 async def on_message(message):
