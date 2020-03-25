@@ -13,9 +13,9 @@ from cogs.helper.squadlocke.Parsers.SerebiiParser import SerebiiParser
 
 LOGGER = logging.getLogger("goldlog")
 
-SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("save_file_directory") + "sldata.pkl"
-SQUADLOCKE_ROLE = Config.get_config_property("squadlocke_guild_role")
-SQUADLOCKE_NAME = Config.get_config_property("squadlocke_default_checkpoint_name")
+SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("saveDir") + "sldata.pkl"
+SQUADLOCKE_ROLE = Config.get_config_property("squadlocke", "role")
+SQUADLOCKE_NAME = Config.get_config_property("squadlocke", "defaultCheckpointName")
 SL_SERIALIZE = read_or_create_file_pkl(SQUADLOCKE_DATA_FILE_PATH)
 PARTICIPANTS = {} if len(SL_SERIALIZE) < 1 else SL_SERIALIZE[0]
 CHECKPOINT = 1 if len(SL_SERIALIZE) < 2 else SL_SERIALIZE[1]

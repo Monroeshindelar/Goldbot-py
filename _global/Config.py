@@ -1,22 +1,29 @@
-from utilities.Misc import read_config
+import yaml
 
 
 class Config:
     __instance = None
 
     @staticmethod
-    def get_config_property(config_property):
+    def get_config_property(*props):
         if Config.__instance is None:
             Config()
+        return Config.__get_config_property_helper(Config.__instance.CONF, list(props))
 
-        if config_property in Config.__instance.CONF:
-            return Config.__instance.CONF[config_property]
-        else:
+    @staticmethod
+    def __get_config_property_helper(conf, props):
+        if len(props) == 0:
+            return conf
+        elif props[0] not in conf.keys():
             return None
+
+        return Config.__get_config_property_helper(conf[props[0]], props[1:])
 
     def __init__(self):
         if Config.__instance is not None:
             raise Exception("Error: Cannot create another instance of Config, one already exists.")
         else:
             Config.__instance = self
-            self.CONF = read_config("bin/config.txt")
+            with open('bin/config.yml') as f:
+                self.CONF = yaml.load(f, Loader=yaml.FullLoader)
+                k = Config.get_config_property("tournament", "challongeApiKey")

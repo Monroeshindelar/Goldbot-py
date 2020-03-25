@@ -9,14 +9,14 @@ from utilities.DiscordServices import build_embed
 
 LOGGER = logging.getLogger("goldlog")
 
-MASTER_ROLE = Config.get_config_property("tenman_master_role_name")
-MASTER_VOICE_CHANNEL = Config.get_config_property("tenman_master_voice_channel_name")
-CAP_A_ROLE = Config.get_config_property("tenman_captain_A_role_name")
-CAP_B_ROLE = Config.get_config_property("tenman_captain_B_role_name")
-TEAM_A_ROLE = Config.get_config_property("tenman_team_A_role_name")
-TEAM_B_ROLE = Config.get_config_property("tenman_team_B_role_name")
-TEAM_A_CHANNEL_NAME = Config.get_config_property("tenman_team_A_voice_channel_name")
-TEAM_B_CHANNEL_NAME = Config.get_config_property("tenman_team_B_voice_channel_name")
+MASTER_ROLE = Config.get_config_property("tenman", "masterRole")
+MASTER_VOICE_CHANNEL = Config.get_config_property("tenman", "masterVoice")
+CAP_A_ROLE = Config.get_config_property("tenman", "captainARole")
+CAP_B_ROLE = Config.get_config_property("tenman", "captainBRole")
+TEAM_A_ROLE = Config.get_config_property("tenman", "teamARole")
+TEAM_B_ROLE = Config.get_config_property("tenman", "teamBRole")
+TEAM_A_CHANNEL_NAME = Config.get_config_property("tenman", "teamAVoice")
+TEAM_B_CHANNEL_NAME = Config.get_config_property("tenman", "teamBVoice")
 
 PARTICIPANTS = {}
 MAPS_REMAINING = {}
