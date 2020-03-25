@@ -3,8 +3,8 @@ import logging
 from _global.Config import Config
 
 LOGGER = logging.getLogger("goldlog")
-API_KEY = Config.get_config_property("challonge_api_key")
-CHALLONGE_USERNAME = Config.get_config_property("challonge_username")
+API_KEY = Config.get_config_property("tournament", "challongeApiKey")
+CHALLONGE_USERNAME = Config.get_config_property("tournament", "challongeUsername")
 BASE_URL = "https://" + CHALLONGE_USERNAME + ":" + API_KEY + "@api.challonge.com/v1/"
 
 

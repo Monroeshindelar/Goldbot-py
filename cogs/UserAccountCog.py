@@ -5,8 +5,8 @@ from _global.Config import Config
 
 LOGGER = logging.getLogger("goldlog")
 
-SERVER_SAVE_FILE = Config.get_config_property("save_file_directory") + "server.pkl"
-OPTIONAL_ROLES = Config.get_config_property("optional_role_names").split(',')
+SERVER_SAVE_FILE = Config.get_config_property("saveDir") + "server.pkl"
+OPTIONAL_ROLES = Config.get_config_property("server", "optionalRoles")
 
 
 class UserAccountCog(commands.Cog):

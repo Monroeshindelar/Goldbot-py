@@ -5,9 +5,8 @@ from core import UserAccounts
 from _global.Config import Config
 
 LOGGER = logging.getLogger("goldlog")
-EMOJI_TIME_DICT = {}
-[EMOJI_TIME_DICT.update({entry.split("~")[0]: entry.split("~")[1]}) for entry in Config.get_config_property("leaderboard_tracking").split(",")]
-TZ = pytz.timezone(Config.get_config_property("timezone"))
+EMOJI_TIME_DICT = Config.get_config_property("server", "leaderboardTracking")
+TZ = pytz.timezone(Config.get_config_property("server", "timezone"))
 
 
 class LeaderboardHandler:

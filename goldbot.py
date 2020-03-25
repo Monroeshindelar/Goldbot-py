@@ -25,10 +25,10 @@ fh.setFormatter(formatter)
 LOGGER.addHandler(ch)
 LOGGER.addHandler(fh)
 
-TOKEN = Config.get_config_property(config_property="discord_api_key")
-BOT_PREFIX = "."
+TOKEN = Config.get_config_property("discordApiKey")
+BOT_PREFIX = Config.get_config_property("prefix")
 
-TZ = pytz.timezone(Config.get_config_property("timezone"))
+TZ = pytz.timezone(Config.get_config_property("server", "timezone"))
 LEADERBOARD_HANDLER = LeaderboardHandler.get_leaderboard_handler()
 
 cogs = [
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 async def __leaderboard_job():
     await bot.wait_until_ready()
     # List of timers as specified in the config
-    timers = [(datetime.strptime(entry.split("~")[1], "%H:%M")).time() for entry in Config.get_config_property("leaderboard_tracking").split(",")]
+    timers = [(datetime.strptime(entry, "%H:%M")).time() for entry in Config.get_config_property("server", "leaderboardTracking").values()]
     # Add the military time equivalents to the list
     timers.extend([timer.replace(hour=timer.hour + 12) for timer in timers if timer.hour != 12])
     timers.sort()

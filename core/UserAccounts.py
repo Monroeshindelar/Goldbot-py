@@ -2,7 +2,8 @@ from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
 from core.UserAccount import UserAccount
 from _global.Config import Config
 
-ACCOUNTS_FILE_PATH = Config.get_config_property("save_file_directory") + "accounts.pkl"
+# ACCOUNTS_FILE_PATH = Config.get_config_property("save_file_directory") + "accounts.pkl"
+ACCOUNTS_FILE_PATH = Config.get_config_property("saveDir") + "accounts.pkl"
 ACCOUNTS = read_or_create_file_pkl(ACCOUNTS_FILE_PATH)
 
 
