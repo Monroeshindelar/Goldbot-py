@@ -28,45 +28,60 @@ The tournament module allows users to automatically generate and interact with t
 These functions are used by the squadlocke module as well .
 
 ## Config
-The config file should exist at `bin/config.txt` under the root project directory. One is not provided with Goldbot by
-default because it contains sensitive data (API keys)
-Each line of the config file should be a different property, with the format being
+The config file should exist at `bin/config.yml` under the room project directory. The config follows the yaml file 
+format, which is similar to a dictionary. It is full of key value pairs. The Goldbot config is set up so that each 
+module has its own dictionary, where all its config values would be under the module name such as
+```
+module:
+    value: property
+    other_value: other_property
+    third_value:
+        - list
+        - of
+        - values
+```
 
-`property_name=property_value`
-
-Multivalued config properties can be provided using a comma delimited list such as
-
-`property_name=value1,value2,value3`
+More information on yaml can be found [here](https://learn.getgrav.org/16/advanced/yaml)
 
 
 ### Properties
 
-#### General
-* `discord_api_key` - API key responsible for authenticating with discord. You can receive yours from the 
+### General
+These are top level yaml properties. They are not tied to any particular modules.
+
+* `discordApiKey` - API key responsible for authenticating with discord. You can receive yours from the 
 [discord developer portal](https://discordapp.com/developers/applications/)
-* `save_file_directory` - Location to save module data to disk
+* `saveDir` - Location to save module data to disk
 #### Server
-* `optional_role_name` - A list of roles that non-administrator users are allowed to manage
-* `leaderboard_tracking` - A list of `custom_emoji_name~time` pairs, delimited by the character `~`. Points will be awarded
+Under the `server` yaml property. Configuration for the server module
+
+* `optionalRoles` - A list of roles that non-administrator users are allowed to manage
+* `leaderboardTracking` - A dictionary of `emoji_name: scheduled_time` key value pairs. Points will be awarded
  to users when they send messages in the server with that emoji at the provided time
 * `timezone` - used to contextualize the time provided in the `leaderboard_tracking` property. Internally, the pytz
 library is used, so use a timezone value from a list like [this](https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones).
 #### Ten Man
-* `tenman_master_role_name` - Users with this role will be able to orchestrate a tenman
-* `tenman_captain_team_A_role_name` - Role to assign to the captain of Team A
-* `tenman_captain_team_B_role_name` - Role to assign to the captain of Team B
-* `tenman_team_A_role` - Role to assign to players picked by the Team A captain
-* `tenman_team_B_role` - Role to assign to players picked by the Team B captain
-* `tenman_team_A_voice_channel_name` - Voice channel for Team A players
-* `tenman_team_B_voice_channel_name` - Voice channel for Team B players
-* `tenman_master_voice_channel` - Voice channel tenman participants start in
-* `tenman_default_map_pool` - Current counterstrike competitive map pool. Should be 7 maps
+Under the `tenman` yaml property. Configuration for the ten man module.
+
+* `masterRole` - Users with this role will be able to orchestrate a tenman
+* `captainARole` - Role to assign to the captain of Team A
+* `captainBRole` - Role to assign to the captain of Team B
+* `teamARole` - Role to assign to players picked by the Team A captain
+* `teamBRole` - Role to assign to players picked by the Team B captain
+* `teamAVoiceChannel` - Voice channel for Team A players
+* `teamBVoiceChannel` - Voice channel for Team B players
+* `masterVoice` - Voice channel tenman participants start in
+* `maps` - Current counterstrike competitive map pool. Should be 7 maps
 #### Tournament
-* `challonge_api` - API key used for authenticating with the challonge api.
-* `challonge_username` - Username associated with the API key
+Under the `tournament` yaml property. Configuration for the tournament module
+
+* `challongeApiKey` - API key used for authenticating with the challonge api.
+* `challongeUsername` - Username associated with the API key
 #### Squadlocke
-* `squadlocke_guild_role` - Role assigned to participants of the squadlocke
-* `squadlocke_default_checkpoint_name` (Depreciated) - just fill any random value in here for now
+Under the `squadlocke` yaml property. Configuration for the the squadlocke module
+
+* `role` - Role assigned to participants of the squadlocke
+* `defaultCheckpointName` (Depreciated) - just fill any random value in here for now
 
 ## Commands
 Commands users can issue to the bot in the discord server
