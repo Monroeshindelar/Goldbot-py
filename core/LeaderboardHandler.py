@@ -33,8 +33,9 @@ class LeaderboardHandler:
         if emote in EMOJI_TIME_DICT.keys():
             r_time = datetime.strptime(EMOJI_TIME_DICT[emote], "%H:%M").time()
             m_time = r_time.replace(hour=r_time.hour + 12)
-            timestamp = TZ.localize(timestamp.replace(second=0, microsecond=0)).time()
-            if timestamp == r_time or timestamp == m_time:
+            timestamp = TZ.localize(timestamp.replace(second=0, microsecond=0))
+            if timestamp.time() == r_time or timestamp.time() == m_time or timestamp.time() == \
+                    r_time.replace(minute=r_time.minute + 1) or timestamp.time() == m_time.replace(minute=m_time.minute + 1):
                 self.__unprocessed_entries.append({"author": author, "timestamp": timestamp, "emote": emote})
                 LOGGER.info("LeaderboardHandler::add_entry - Adding message from " + author.name +
                             " to the message queue for the emote " + emote)
@@ -52,7 +53,8 @@ class LeaderboardHandler:
                         score = 1
                 else:
                     score = -1
+                    entry["timestamp"] = None
 
-                account = UserAccounts.get_account(entry["author"].id)
-                account.set_score(entry["emote"], score)
+                account = UserAccounts.get_account(entry["author"])
+                account.set_leaderboard_info(entry["emote"], score, entry["timestamp"])
                 self.__unprocessed_entries.remove(entry)

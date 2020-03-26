@@ -16,13 +16,13 @@ class UserAccountCog(commands.Cog):
 
     @commands.command(name="set_friend_code")
     async def set_friend_code(self, ctx, friend_code: str):
-        account = get_account(ctx.message.author.id)
+        account = get_account(ctx.message.author)
         if account.set_friend_code(friend_code):
             await ctx.channel.send(content="Your friend code has been set!")
             LOGGER.info("UserCommand::get_friend_code called for " + ctx.message.author.name)
         else:
-            # message = "Incorrect friend code formatting. Please try again."
-            LOGGER.warning("UserCommand::set_friend_code call failed for " + ctx.message.author.id + ". Invalid formatting")
+            LOGGER.warning("UserCommand::set_friend_code call failed for " + str(ctx.message.author.id) +
+                           ". Invalid formatting")
             raise commands.BadArgument("Incorrect Friend Code formatting. Expecting formats:\n"
                                        "`1234-1234-1234`\n`SW-1234-1234-1234`\n`DS-1234-1234-1234`", friend_code)
 
@@ -31,10 +31,15 @@ class UserAccountCog(commands.Cog):
         if len(ctx.message.mentions) < 1:
             LOGGER.warning("UserCommand::get_friend_code called with not enough arguments.")
             raise commands.BadArgument("You are missing required arguments for this command:\n`user (@mention)`")
-        account = get_account(ctx.message.mentions[0].id)
+        account = get_account(ctx.message.mentions[0])
         if account is not None:
             LOGGER.info("UserCommand::get_friend_code successfully called by " + ctx.message.author.name)
-            await ctx.channel.send(content=account.get_friend_code())
+            if account.get_friend_code() is not None:
+                await ctx.channel.send(content=account.get_friend_code())
+                message = account.get_friend_code()
+            else:
+                message = ctx.message.mentions[0].name + " has not set their friend code."
+            await ctx.channel.send(content=message)
         else:
             LOGGER.warning("UserCommand::get_friend_code called for invalid user.")
             raise commands.BadArgument("You requested the friend code for a user that does not exist")
@@ -69,7 +74,7 @@ class UserAccountCog(commands.Cog):
         if role in account.roles:
             if UserAccountCog.__role_is_optional(role):
                 await account.remove_roles(role)
-                ctx.channel.send(content="Role has been successfully removed.")
+                await ctx.channel.send(content="Role has been successfully removed.")
                 LOGGER.info("UserCommands::remove_role successfully called for " + account.name + ":" + role.name)
             else:
                 LOGGER.warning("UserCommands::remove_role call failed for " + account.name + ".  Bad arguments")

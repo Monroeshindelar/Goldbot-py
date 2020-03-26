@@ -46,20 +46,23 @@ if __name__ == '__main__':
         bot.load_extension(cog)
 
 
-# @bot.event
-# async def on_command_error(ctx, error):
-#     message = ""
-#     if isinstance(error, commands.MissingAnyRole):
-#         message = "You do not have the required role to execute this command.\n" \
-#                   "Required roles are:\n"
-#         for role in error.missing_roles:
-#             message += "`" + role + "`\n"
-#     elif isinstance(error, commands.MissingRequiredArgument):
-#         message = "You are missing required arguments for this command:\n`" + error.param.name + "`"
-#     elif isinstance(error, commands.BadArgument):
-#         message = error.args[0]
-#
-#     # await ctx.channel.send(content=message)
+@bot.event
+async def on_command_error(ctx, error):
+    message = ""
+    if isinstance(error, commands.MissingAnyRole):
+        message = "You do not have the required role to execute this command.\n" \
+                  "Required roles are:\n"
+        for role in error.missing_roles:
+            message += "`" + role + "`\n"
+    elif isinstance(error, commands.MissingRequiredArgument):
+        message = "You are missing required arguments for this command:\n`" + error.param.name + "`"
+    elif isinstance(error, commands.BadArgument):
+        message = error.args[0]
+    else:
+        print(error)
+        return
+
+    await ctx.channel.send(content=message)
 
 async def __leaderboard_job():
     await bot.wait_until_ready()
@@ -73,7 +76,7 @@ async def __leaderboard_job():
     startup_time = TZ.localize(datetime.now())
     # shift to the next closest time in the list
     i = 0
-    while timers[0] < startup_time.time() and i < len(timers):
+    while timers[0] <= startup_time.time() and i < len(timers):
         t = timers[0]
         timers.remove(t)
         timers.append(t)

@@ -1,16 +1,16 @@
 import re
 import logging
 import core.UserAccounts
+from datetime import timedelta
 
 LOGGER = logging.getLogger("goldlog")
 
 
 class UserAccount:
-    def __init__(self, _id, friend_code=None):
+    def __init__(self, _id):
         self.__id = _id
         self.__friend_code = None
-        self.__scores = {}
-        self.set_friend_code(friend_code)
+        self.__leaderboard_tracking = {}
 
     def get_id(self):
         return self.__id
@@ -31,22 +31,44 @@ class UserAccount:
         core.UserAccounts.save_accounts()
         return success
 
-    def get_score(self, emote):
-        if emote in self.__scores:
-            return self.__scores[emote]
+    def get_leaderboard_info(self, emote):
+        if emote in self.__leaderboard_tracking:
+            return self.__leaderboard_tracking[emote]
         else:
             LOGGER.error("UserAccount::get_score - " + emote + " does not have its score tracked for user " + str(self.__id))
             return None
 
-    def set_score(self, emote, score):
-        if emote not in self.__scores:
+    def set_leaderboard_info(self, emote, score, timestamp):
+        if emote not in self.__leaderboard_tracking:
             LOGGER.warning("UserAccount::set_score - " + emote + " wasn't previously tracked for " + str(self.__id) +
                                                                  ". Adding score tracking.")
-            self.__scores.update({emote: 0})
-        current_score = self.get_score(emote)
-        if current_score + score < 0:
-            self.__scores[emote] = 0
+            self.__leaderboard_tracking.update({emote: {
+                "score": 0,
+                "last_received": None,
+                "current_streak": 0,
+                "longest_streak": 0
+            }})
+        timestamp = timestamp.replace(microsecond=0)
+        current_info = self.get_leaderboard_info(emote)
+        if current_info["score"] + score < 0:
+            current_info["score"] = 0
         else:
-            self.__scores[emote] = current_score + score
+            current_info["score"] = current_info["score"] + score
+
+        last_ts = current_info["last_received"]
+        current_info["last_received"] = timestamp
+
+        if last_ts is not None and timestamp is not None:
+            if (timestamp - last_ts).days == 1:
+                current_info["current_streak"] = current_info["current_streak"] + 1
+            elif timestamp is None:
+                current_info["current_streak"] = 0
+            else:
+                current_info["current_streak"] = 1
+
+        if current_info["current_streak"] > current_info["longest_streak"]:
+            current_info["longest_streak"] = current_info["current_streak"]
+
+        self.__leaderboard_tracking[emote] = current_info
         core.UserAccounts.save_accounts()
         LOGGER.info("UserAccount::set_score - " + emote + " score adjusted for " + str(self.__id))

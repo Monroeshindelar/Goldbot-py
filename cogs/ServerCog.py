@@ -17,9 +17,9 @@ class ServerCog(commands.Cog):
         emote = find(lambda e: str(e) == emote, ctx.guild.emojis)
         accounts = None
         if emote is not None:
-            accounts = [(account.name, UserAccounts.get_account(account.id).get_score(emote.name)) for account in
-                        ctx.guild.members if UserAccounts.get_account(account.id).get_score(emote.name) is not None and
-                        UserAccounts.get_account(account.id).get_score(emote.name) != 0]
+            accounts = [(account.name, UserAccounts.get_account(account).get_leaderboard_info(emote.name)) for account in
+                        ctx.guild.members if UserAccounts.get_account(account).get_leaderboard_info(emote.name) is not None and
+                        UserAccounts.get_account(account).get_leaderboard_info(emote.name) != 0]
         if accounts is not None and len(accounts) > 0:
             accounts.sort(key=lambda a: a[1], reverse=True)
             await ctx.channel.send(str(emote) + "***  Leaderboard  ***" + str(emote) + "\n```" +
