@@ -1,0 +1,34 @@
+discordApiKey:
+prefix: .
+saveDir: bin/
+server:
+  optionalRoles:
+    - role1
+    - role2
+    - role3
+  leaderboardTracking:
+    LOLweedLOL: "4:20"
+  timezone: US/Pacific
+tenman:
+  masterRole: Ten Man Master
+  captainARole: Team A Captain
+  captainBRole: Team B Captain
+  teamARole: Team A
+  teamBRole: Team B
+  masterVoice: TM General
+  teamAVoice: Team A
+  teamBVoice: Team B
+  maps:
+    - Dust2
+    - Inferno
+    - Mirage
+    - Nuke
+    - Overpass
+    - Train
+    - Vertigo
+tournament:
+  challongeApiKey:
+  challongeUsername:
+squadlocke:
+  role: Squadlocke2Participant
+  defaultCheckpointName: Squadlocke Checkpoint

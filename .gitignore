@@ -1,7 +1,9 @@
 .gitignore
-bin
-bin/config.txt
+bin/config.yml
 bin/accounts.pkl
-.idea
-.idea/*
-.DS_STORE
+bin/sldata.pkl
+bin/log/*
+bin/cache/squadlocke/route_encounters/*
+.idea/
+**/.DS_STORE
+**/__pycache__
