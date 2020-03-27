@@ -45,8 +45,8 @@ class UserAccount:
             self.__scores.update({emote: {
                 "score": 0,
                 "last_received": None,
-                "current_streak": 0,
-                "longest_streak": 0
+                "current_streak": 1,
+                "longest_streak": 1
             }})
         timestamp = timestamp.replace(microsecond=0)
         current_info = self.get_leaderboard_info(emote)
