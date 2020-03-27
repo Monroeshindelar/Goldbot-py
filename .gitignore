@@ -2,7 +2,7 @@
 bin/config.yml
 bin/accounts.pkl
 bin/sldata.pkl
-bin/log/*
+bin/log/
 bin/cache/squadlocke/route_encounters/*
 .idea/
 **/.DS_STORE

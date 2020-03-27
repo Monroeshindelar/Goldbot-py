@@ -1,10 +1,11 @@
 import logging
 import pytz
 import asyncio
+import os
 from itertools import cycle
 from datetime import date, datetime, timedelta
 from discord.ext import commands
-from discord.utils import find, get
+from discord.utils import find
 from _global.Config import Config
 from core.LeaderboardHandler import LeaderboardHandler
 
@@ -13,6 +14,8 @@ LOGGER = logging.getLogger("goldlog")
 LOGGER.setLevel(logging.DEBUG)
 
 today = date.today()
+if not os.path.exists("bin/log"):
+    os.makedirs("bin/log")
 fh = logging.FileHandler("bin/log/" + str(today) + "_goldbot.log")
 fh.setLevel(logging.DEBUG)
 
