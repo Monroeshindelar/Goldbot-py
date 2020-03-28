@@ -5,11 +5,11 @@ from discord.ext.commands import UserConverter
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
 from utilities.Misc import read_save_file, save_file
-from core.squadlocke.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
+from _global.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
 from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
 from utilities.DiscordServices import build_embed
-from core.squadlocke.RouteEncounter import RouteEncounter
-from cogs.helper.squadlocke.Parsers.SerebiiParser import SerebiiParser
+from core.model.squadlocke.RouteEncounter import RouteEncounter
+from utilities.Parsers.SerebiiParser import SerebiiParser
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -199,8 +199,13 @@ class SquadlockeCog(commands.Cog):
             i = 0
             for section in encounter_info:
                 for weather in encounter_info[section]:
-                    message = "```Section: " + section + " (id: " + str(i) + ")\n" + "Weather: " + weather + " (id: " \
-                              + str(WEATHER_DICT[weather]) + ")\n\n" + encounter_info[section][weather] + "```"
+                    message = "```"
+                    if len(encounter_info) > 1:
+                        message += "Section: " + section + " (id: " + str(i) + ")\n"
+                    if len(encounter_info[section]) > 1:
+                        message += "Weather: " + weather + " (id: " + str(WEATHER_DICT[weather]) + ")\n"
+
+                    message += "\n" + encounter_info[section][weather] + "```"
                     await ctx.channel.send(message)
                 i = i + 1
             return
@@ -241,10 +246,16 @@ class SquadlockeCog(commands.Cog):
         v1embed = build_embed(title=v1.get('name'), thumbnail='https://serebii.net' + v1.get('sprite'),
                               description=generic_embed_descr, color=embed_color)
 
-        await ctx.channel.send(embed=v1embed)
+        await ctx.message.author.send(embed=v1embed)
 
         if v2embed is not None:
-            await ctx.channel.send(embed=v2embed)
+            await ctx.message.author.send(embed=v2embed)
+
+        pub_embed = build_embed(title=ctx.message.author.name + " encountered something!", thumbnail="https://stickermaster.nl/32933-large_default/symbool-vraagteken-sticker-big-john-symbolen-stickers.jpg",
+                                description=ctx.message.author.name + " encountered a Pokemon.\n The details of the encounter are hidden to\neveryone else.\nNo peeking!",
+                                color=discord.Color.dark_grey())
+
+        await ctx.channel.send(embed=pub_embed)
 
     @commands.command(name="fetch")
     async def fetch(self, ctx):
