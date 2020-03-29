@@ -1,6 +1,6 @@
 import logging
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime
 from core import UserAccounts
 from _global.Config import Config
 

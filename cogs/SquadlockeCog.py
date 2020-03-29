@@ -1,15 +1,17 @@
 import discord
 import logging
+import yaml
 from discord.ext import commands
 from discord.ext.commands import UserConverter
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
 from utilities.Misc import read_save_file, save_file
-from core.squadlocke.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
+from _global.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
 from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
 from utilities.DiscordServices import build_embed
-from core.squadlocke.RouteEncounter import RouteEncounter
-from cogs.helper.squadlocke.Parsers.SerebiiParser import SerebiiParser
+from core.model.squadlocke.RouteEncounter import RouteEncounter
+from utilities.Parsers.SerebiiParser import SerebiiParser
+from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -19,6 +21,10 @@ SQUADLOCKE_NAME = Config.get_config_property("squadlocke", "defaultCheckpointNam
 SL_SERIALIZE = read_save_file(SQUADLOCKE_DATA_FILE_PATH)
 PARTICIPANTS = {} if len(SL_SERIALIZE) < 1 else SL_SERIALIZE[0]
 CHECKPOINT = 1 if len(SL_SERIALIZE) < 2 else SL_SERIALIZE[1]
+
+
+with open("bin/resources/squadlocke/resources.yml") as f:
+    RESOURCES = yaml.load(f, Loader=yaml.FullLoader)
 
 save_file([PARTICIPANTS, CHECKPOINT], SQUADLOCKE_DATA_FILE_PATH)
 
@@ -192,41 +198,53 @@ class SquadlockeCog(commands.Cog):
 
     @commands.command(name="slencounter")
     async def slencounter(self, ctx, *args):
-        a, ua = SquadlockeArgParsers.SLENCOUNTER_ARG_PARSER.parse_known_args(args)
-        re = RouteEncounter(ua[0])
-        if a.get_info:
+        try:
+            parsed_args = SquadlockeArgParsers.SLENCOUNTER_ARG_PARSER.parse_known_args(args)[0]
+        except ArgumentParserError as e:
+            raise commands.ArgumentParsingError(message=e.args[0])
+
+        re = RouteEncounter(parsed_args.route)
+        if parsed_args.get_info:
             encounter_info = re.get_info()
             i = 0
             for section in encounter_info:
                 for weather in encounter_info[section]:
-                    message = "```Section: " + section + " (id: " + str(i) + ")\n" + "Weather: " + weather + " (id: " \
-                              + str(WEATHER_DICT[weather]) + ")\n\n" + encounter_info[section][weather] + "```"
+                    message = "```"
+                    if len(encounter_info) > 1:
+                        message += "Section: " + section + " (id: " + str(i) + ")\n"
+                    if len(encounter_info[section]) > 1:
+                        message += "Weather: " + weather + " (id: " + str(WEATHER_DICT[weather]) + ")\n"
+
+                    message += "\n" + encounter_info[section][weather] + "```"
                     await ctx.channel.send(message)
                 i = i + 1
             return
-        if not a.all:
+        if not parsed_args.all:
             re.add_area_filter([2, 3, 6, 7], -1)
-        if a.f:
+        if parsed_args.fishing:
             re.add_area_filter([2], False)
-        if a.w is not None:
-            re.add_weather_filter(a.w.split(","), 0)
-        if a.s is not None:
-            re.add_section_filter(a.s.split(","), 0)
-        if a.a is not None:
-            re.add_area_filter(a.a.split(","), 0)
+        if parsed_args.weather is not None:
+            re.add_weather_filter(parsed_args.weather.split(","), 0)
+        if parsed_args.section is not None:
+            re.add_section_filter(parsed_args.section.split(","), 0)
+        if parsed_args.area is not None:
+            re.add_area_filter(parsed_args.area.split(","), 0)
 
         enc = re.get_encounter()
-        if enc is None:
-            await ctx.channel.send("There are no encounters available on this route with the specified filters.")
-            return
-        v1, v2 = enc.get()
 
-        generic_embed_descr = 'Encounter rate: ' + str(v1.get('rate')) + '%\n Normalized encounter rate: ' + \
-                              str(v1.get('n_rate')) + '%\n Area: ' + ENCOUNTER_AREA_DICT.inverse[v1.get('area')][0] \
-                              + "\n Section: " + v1.get('section')
+        try:
+            v1, v2 = enc.get()
+        except AttributeError:
+            LOGGER.warning("SquadlockeCog::slencounter - No encounters for specified arguments: " + str(parsed_args))
+            raise commands.UserInputError(message="There are no encounters available on this route with the specified "
+                                                  "filters.")
 
-        if v1.get('weather') != 'None':
-            generic_embed_descr += '\n Weather: ' + v1.get('weather')
+        generic_embed_descr = "Encounter rate: " + str(v1.get("rate")) + "%\n Normalized encounter rate: " + \
+                              str(v1.get("n_rate")) + "%\n Area: " + ENCOUNTER_AREA_DICT.inverse[v1.get("area")][0] \
+                              + "\n Section: " + v1.get("section")
+
+        if v1.get("weather") != "None":
+            generic_embed_descr += "\n Weather: " + v1.get("weather")
 
         embed_color = discord.Color.purple()
         v2embed = None
@@ -234,17 +252,30 @@ class SquadlockeCog(commands.Cog):
         if v2 is not None:
             v2_embed_descr = "Exclusive to Pokémon Shield!\n" + generic_embed_descr
             generic_embed_descr = "Exclusive to Pokémon Sword!\n" + generic_embed_descr
-            v2embed = build_embed(title=v2.get('name'), thumbnail='https://serebii.net' + v2.get('sprite'),
+            v2embed = build_embed(title=v2.get("name"), thumbnail="https://serebii.net" + v2.get("sprite"),
                                   description=v2_embed_descr, color=discord.Color.red())
             embed_color = discord.Color.blue()
 
-        v1embed = build_embed(title=v1.get('name'), thumbnail='https://serebii.net' + v1.get('sprite'),
+        v1embed = build_embed(title=v1.get("name"), thumbnail="https://serebii.net" + v1.get("sprite"),
                               description=generic_embed_descr, color=embed_color)
 
-        await ctx.channel.send(embed=v1embed)
+        pub_embed = build_embed(title=ctx.message.author.name + " encountered something!",
+                                thumbnail=RESOURCES["questionMark"],
+                                description=ctx.message.author.name + " encountered a Pokemon.\n The details of the "
+                                                                      "encounter are hidden to\neveryone else.\nNo "
+                                                                      "peeking!",
+                                color=discord.Color.dark_grey())
+
+        if not parsed_args.public:
+            output_channel = ctx.message.author
+            await ctx.channel.send(embed=pub_embed)
+        else:
+            output_channel = ctx.channel
+
+        await output_channel.send(embed=v1embed)
 
         if v2embed is not None:
-            await ctx.channel.send(embed=v2embed)
+            await ctx.message.author.send(embed=v2embed)
 
     @commands.command(name="fetch")
     async def fetch(self, ctx):

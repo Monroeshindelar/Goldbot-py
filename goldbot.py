@@ -6,6 +6,7 @@ from itertools import cycle
 from datetime import date, datetime, timedelta
 from discord.ext import commands
 from discord.utils import find
+from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
 from _global.Config import Config
 from core.LeaderboardHandler import LeaderboardHandler
 
@@ -59,13 +60,11 @@ async def on_command_error(ctx, error):
             message += "`" + role + "`\n"
     elif isinstance(error, commands.MissingRequiredArgument):
         message = "You are missing required arguments for this command:\n`" + error.param.name + "`"
-    elif isinstance(error, commands.BadArgument):
+    elif isinstance(error, (commands.BadArgument, commands.UserInputError, commands.ArgumentParsingError)):
         message = error.args[0]
-    else:
-        print(error)
-        return
 
     await ctx.channel.send(content=message)
+
 
 async def __leaderboard_job():
     await bot.wait_until_ready()
@@ -79,7 +78,7 @@ async def __leaderboard_job():
     startup_time = TZ.localize(datetime.now())
     # shift to the next closest time in the list
     i = 0
-    while timers[0] <= startup_time.time() and i < len(timers):
+    while timers[0] < startup_time.time() and i < len(timers):
         t = timers[0]
         timers.remove(t)
         timers.append(t)
