@@ -1,5 +1,6 @@
 import discord
 import logging
+import yaml
 from discord.ext import commands
 from discord.ext.commands import UserConverter
 from cogs.helper.challonge import TournamentCommands
@@ -19,6 +20,10 @@ SQUADLOCKE_NAME = Config.get_config_property("squadlocke", "defaultCheckpointNam
 SL_SERIALIZE = read_save_file(SQUADLOCKE_DATA_FILE_PATH)
 PARTICIPANTS = {} if len(SL_SERIALIZE) < 1 else SL_SERIALIZE[0]
 CHECKPOINT = 1 if len(SL_SERIALIZE) < 2 else SL_SERIALIZE[1]
+
+
+with open("bin/resources/squadlocke/resources.yml") as f:
+    RESOURCES = yaml.load(f, Loader=yaml.FullLoader)
 
 save_file([PARTICIPANTS, CHECKPOINT], SQUADLOCKE_DATA_FILE_PATH)
 
@@ -211,14 +216,14 @@ class SquadlockeCog(commands.Cog):
             return
         if not a.all:
             re.add_area_filter([2, 3, 6, 7], -1)
-        if a.f:
+        if a.fishing:
             re.add_area_filter([2], False)
-        if a.w is not None:
-            re.add_weather_filter(a.w.split(","), 0)
-        if a.s is not None:
-            re.add_section_filter(a.s.split(","), 0)
-        if a.a is not None:
-            re.add_area_filter(a.a.split(","), 0)
+        if a.weather is not None:
+            re.add_weather_filter(a.weather.split(","), 0)
+        if a.section is not None:
+            re.add_section_filter(a.section.split(","), 0)
+        if a.area is not None:
+            re.add_area_filter(a.area.split(","), 0)
 
         enc = re.get_encounter()
         if enc is None:
@@ -226,12 +231,12 @@ class SquadlockeCog(commands.Cog):
             return
         v1, v2 = enc.get()
 
-        generic_embed_descr = 'Encounter rate: ' + str(v1.get('rate')) + '%\n Normalized encounter rate: ' + \
-                              str(v1.get('n_rate')) + '%\n Area: ' + ENCOUNTER_AREA_DICT.inverse[v1.get('area')][0] \
-                              + "\n Section: " + v1.get('section')
+        generic_embed_descr = "Encounter rate: " + str(v1.get("rate")) + "%\n Normalized encounter rate: " + \
+                              str(v1.get("n_rate")) + "%\n Area: " + ENCOUNTER_AREA_DICT.inverse[v1.get("area")][0] \
+                              + "\n Section: " + v1.get("section")
 
-        if v1.get('weather') != 'None':
-            generic_embed_descr += '\n Weather: ' + v1.get('weather')
+        if v1.get("weather") != "None":
+            generic_embed_descr += "\n Weather: " + v1.get("weather")
 
         embed_color = discord.Color.purple()
         v2embed = None
@@ -239,23 +244,30 @@ class SquadlockeCog(commands.Cog):
         if v2 is not None:
             v2_embed_descr = "Exclusive to Pokémon Shield!\n" + generic_embed_descr
             generic_embed_descr = "Exclusive to Pokémon Sword!\n" + generic_embed_descr
-            v2embed = build_embed(title=v2.get('name'), thumbnail='https://serebii.net' + v2.get('sprite'),
+            v2embed = build_embed(title=v2.get("name"), thumbnail="https://serebii.net" + v2.get("sprite"),
                                   description=v2_embed_descr, color=discord.Color.red())
             embed_color = discord.Color.blue()
 
-        v1embed = build_embed(title=v1.get('name'), thumbnail='https://serebii.net' + v1.get('sprite'),
+        v1embed = build_embed(title=v1.get("name"), thumbnail="https://serebii.net" + v1.get("sprite"),
                               description=generic_embed_descr, color=embed_color)
 
-        await ctx.message.author.send(embed=v1embed)
+        pub_embed = build_embed(title=ctx.message.author.name + " encountered something!",
+                                thumbnail=RESOURCES["questionMark"],
+                                description=ctx.message.author.name + " encountered a Pokemon.\n The details of the "
+                                                                      "encounter are hidden to\neveryone else.\nNo "
+                                                                      "peeking!",
+                                color=discord.Color.dark_grey())
+
+        if not a.public:
+            output_channel = ctx.message.author
+            await ctx.channel.send(embed=pub_embed)
+        else:
+            output_channel = ctx.channel
+
+        await output_channel.send(embed=v1embed)
 
         if v2embed is not None:
             await ctx.message.author.send(embed=v2embed)
-
-        pub_embed = build_embed(title=ctx.message.author.name + " encountered something!", thumbnail="https://stickermaster.nl/32933-large_default/symbool-vraagteken-sticker-big-john-symbolen-stickers.jpg",
-                                description=ctx.message.author.name + " encountered a Pokemon.\n The details of the encounter are hidden to\neveryone else.\nNo peeking!",
-                                color=discord.Color.dark_grey())
-
-        await ctx.channel.send(embed=pub_embed)
 
     @commands.command(name="fetch")
     async def fetch(self, ctx):
