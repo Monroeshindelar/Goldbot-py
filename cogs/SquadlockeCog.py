@@ -11,6 +11,7 @@ from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
 from utilities.DiscordServices import build_embed
 from core.model.squadlocke.RouteEncounter import RouteEncounter
 from utilities.Parsers.SerebiiParser import SerebiiParser
+from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -197,9 +198,13 @@ class SquadlockeCog(commands.Cog):
 
     @commands.command(name="slencounter")
     async def slencounter(self, ctx, *args):
-        a, ua = SquadlockeArgParsers.SLENCOUNTER_ARG_PARSER.parse_known_args(args)
-        re = RouteEncounter(ua[0])
-        if a.get_info:
+        try:
+            parsed_args = SquadlockeArgParsers.SLENCOUNTER_ARG_PARSER.parse_known_args(args)[0]
+        except ArgumentParserError as e:
+            raise commands.ArgumentParsingError(message=e.args[0])
+
+        re = RouteEncounter(parsed_args.route)
+        if parsed_args.get_info:
             encounter_info = re.get_info()
             i = 0
             for section in encounter_info:
@@ -214,22 +219,25 @@ class SquadlockeCog(commands.Cog):
                     await ctx.channel.send(message)
                 i = i + 1
             return
-        if not a.all:
+        if not parsed_args.all:
             re.add_area_filter([2, 3, 6, 7], -1)
-        if a.fishing:
+        if parsed_args.fishing:
             re.add_area_filter([2], False)
-        if a.weather is not None:
-            re.add_weather_filter(a.weather.split(","), 0)
-        if a.section is not None:
-            re.add_section_filter(a.section.split(","), 0)
-        if a.area is not None:
-            re.add_area_filter(a.area.split(","), 0)
+        if parsed_args.weather is not None:
+            re.add_weather_filter(parsed_args.weather.split(","), 0)
+        if parsed_args.section is not None:
+            re.add_section_filter(parsed_args.section.split(","), 0)
+        if parsed_args.area is not None:
+            re.add_area_filter(parsed_args.area.split(","), 0)
 
         enc = re.get_encounter()
-        if enc is None:
-            await ctx.channel.send("There are no encounters available on this route with the specified filters.")
-            return
-        v1, v2 = enc.get()
+
+        try:
+            v1, v2 = enc.get()
+        except AttributeError:
+            LOGGER.warning("SquadlockeCog::slencounter - No encounters for specified arguments: " + str(parsed_args))
+            raise commands.UserInputError(message="There are no encounters available on this route with the specified "
+                                                  "filters.")
 
         generic_embed_descr = "Encounter rate: " + str(v1.get("rate")) + "%\n Normalized encounter rate: " + \
                               str(v1.get("n_rate")) + "%\n Area: " + ENCOUNTER_AREA_DICT.inverse[v1.get("area")][0] \
@@ -258,7 +266,7 @@ class SquadlockeCog(commands.Cog):
                                                                       "peeking!",
                                 color=discord.Color.dark_grey())
 
-        if not a.public:
+        if not parsed_args.public:
             output_channel = ctx.message.author
             await ctx.channel.send(embed=pub_embed)
         else:
