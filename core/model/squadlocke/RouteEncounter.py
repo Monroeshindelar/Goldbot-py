@@ -3,8 +3,8 @@ import logging
 import string
 from tabulate import tabulate
 from numpy.random import choice
-from core.squadlocke.Encounter import Encounter
-from core.squadlocke.SquadlockeConstants import ROUTE_CACHE, COLUMNS, WEATHER_DICT, ENCOUNTER_AREA_DICT
+from core.model.squadlocke.Encounter import Encounter
+from _global.SquadlockeConstants import ROUTE_CACHE, COLUMNS, WEATHER_DICT, ENCOUNTER_AREA_DICT
 
 LOGGER = logging.getLogger("goldlog")
 PRETTY_TABLE_HEADERS = ["Name(Sword)", "Name(Shield)", "Encounter Rate", "Encounter Area"]
@@ -49,7 +49,7 @@ class RouteEncounter:
                 weather_table = section_table[section_table[COLUMNS[5]] == weather]
                 w = []
                 for idx, row in weather_table.iterrows():
-                    if pandas.isna(row[COLUMNS[1]]):
+                    if not isinstance(row[COLUMNS[1]], str):
                         vx_name = ''
                     else:
                         vx_name = row[COLUMNS[1]]
