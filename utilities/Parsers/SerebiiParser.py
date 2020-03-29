@@ -92,7 +92,6 @@ class SerebiiParser:
                     current_rates_sw = [int(rate.get_text().replace("%", "")) for rate in
                                         table_sw.findAll("td", {"class": "rate"})]
                 except ValueError:
-                    LOGGER.warning("Skipping table because the encounter rate was an unexpected value")
                     continue
                 current_rates_sh = [int(rate.get_text().replace("%", "")) for rate in
                                     table_sh.findAll("td", {"class": "rate"})]
