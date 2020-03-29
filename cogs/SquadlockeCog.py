@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import UserConverter
 from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
-from utilities.Misc import read_or_create_file_pkl, save_to_file_pkl
+from utilities.Misc import read_save_file, save_file
 from core.squadlocke.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
 from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
 from utilities.DiscordServices import build_embed
@@ -16,11 +16,11 @@ LOGGER = logging.getLogger("goldlog")
 SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("saveDir") + "sldata.pkl"
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke", "role")
 SQUADLOCKE_NAME = Config.get_config_property("squadlocke", "defaultCheckpointName")
-SL_SERIALIZE = read_or_create_file_pkl(SQUADLOCKE_DATA_FILE_PATH)
+SL_SERIALIZE = read_save_file(SQUADLOCKE_DATA_FILE_PATH)
 PARTICIPANTS = {} if len(SL_SERIALIZE) < 1 else SL_SERIALIZE[0]
 CHECKPOINT = 1 if len(SL_SERIALIZE) < 2 else SL_SERIALIZE[1]
 
-save_to_file_pkl([PARTICIPANTS, CHECKPOINT], SQUADLOCKE_DATA_FILE_PATH)
+save_file([PARTICIPANTS, CHECKPOINT], SQUADLOCKE_DATA_FILE_PATH)
 
 
 class SquadlockeCog(commands.Cog):
@@ -184,7 +184,7 @@ class SquadlockeCog(commands.Cog):
     async def __save_squadlocke():
         LOGGER.info("SquadlockeCommand::save_squadlocke - Saving current squadlocke state.")
         squadlocke_object = [PARTICIPANTS, CHECKPOINT]
-        save_to_file_pkl(squadlocke_object, SQUADLOCKE_DATA_FILE_PATH)
+        save_file(squadlocke_object, SQUADLOCKE_DATA_FILE_PATH)
 
     @staticmethod
     def get_squadlocke_tournament_name():

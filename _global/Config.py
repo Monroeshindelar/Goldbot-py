@@ -26,4 +26,3 @@ class Config:
             Config.__instance = self
             with open('bin/config.yml') as f:
                 self.CONF = yaml.load(f, Loader=yaml.FullLoader)
-                k = Config.get_config_property("tournament", "challongeApiKey")

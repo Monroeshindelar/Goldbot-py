@@ -1,10 +1,10 @@
 import discord
 import random
 import logging
+import yaml
 from discord.ext import commands
-from discord.ext.commands import UserConverter, RoleConverter, TextChannelConverter, VoiceChannelConverter
+from discord.ext.commands import UserConverter, RoleConverter, VoiceChannelConverter
 from _global.Config import Config
-from utilities.Misc import read_config
 from utilities.DiscordServices import build_embed
 
 LOGGER = logging.getLogger("goldlog")
@@ -42,15 +42,16 @@ class TenManCog(commands.Cog):
             .tm_init [@mentioned...]
 
         """
-        maps = Config.get_config_property("tenman_default_map_pool")
-        maps = maps.split(",")
-        map_thumbnails = read_config("bin/resources/map_thumbnails.txt", " ")
+        maps = [m.lower() for m in Config.get_config_property("tenman", "maps")]
+
+        with open("bin/resources/map_thumbnails.yml") as f:
+            map_thumbnails = yaml.load(f, Loader=yaml.FullLoader)
 
         remaining_maps = ""
         for stage in maps:
             MAPS_REMAINING.update({
                 stage: {
-                    "thumbnail": map_thumbnails[stage],
+                    "thumbnail": map_thumbnails[stage.lower()],
                     "selected": False
                 }
             })
