@@ -98,11 +98,11 @@ class SerebiiParser:
                                     table_sh.findAll("td", {"class": "rate"})]
                 current_sprites_sw = [sprite["src"] for sprite in table_sw.findAll("img", {"class": "wildsprite"})]
                 current_sprites_sh = [sprite["src"] for sprite in table_sh.findAll("img", {"class": "wildsprite"})]
+                if encounter_area in SEREBII_NAME_REPLACEMENT_DICT.keys():
+                    encounter_area = SEREBII_NAME_REPLACEMENT_DICT[encounter_area]
                 SerebiiParser.normalize(current_names_sw, current_names_sh, current_rates_sw, current_rates_sh,
                                         current_sprites_sw, current_sprites_sh, ENCOUNTER_AREA_DICT[encounter_area],
                                         section, weather)
-                if encounter_area in SEREBII_NAME_REPLACEMENT_DICT.keys():
-                    encounter_area = SEREBII_NAME_REPLACEMENT_DICT[encounter_area]
                 df = df.append(SerebiiParser.normalize(current_names_sw, current_names_sh, current_rates_sw,
                                                        current_rates_sh, current_sprites_sw, current_sprites_sh,
                                                        ENCOUNTER_AREA_DICT[encounter_area], section,
