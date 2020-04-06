@@ -44,9 +44,10 @@ class ServerCog(commands.Cog):
             raise commands.BadArgument("Leaderboards don't exist for default emojis.")
 
         try:
-            accounts.sort(key=lambda a: a[1][parsed_args.sort.lower().replace(" ", "_")], reverse=True)
+            sorted(accounts, key=lambda a: a[1][parsed_args.sort.lower().replace(" ", "_")], reverse=True)
         except AttributeError:
-            accounts.sort(key=lambda a: a[1]["score"], reverse=True)
+            sorted(accounts, key=lambda a: (a[1]["score"], a[1]["current_streak"], a[1]["longest_streak"]),
+                   reverse=True)
         except KeyError:
             LOGGER.error("ServerCog::leaderboard - " + parsed_args.sort + " is not a valid key.")
             raise commands.BadArgument(parsed_args.sort + " is not a valid sort field.\nvalid fields are:" +
