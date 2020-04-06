@@ -43,15 +43,8 @@ class ServerCog(commands.Cog):
             LOGGER.error("ServerCog::leaderboard - Called with default emoji.")
             raise commands.BadArgument("Leaderboards don't exist for default emojis.")
 
-        try:
-            sorted(accounts, key=lambda a: a[1][parsed_args.sort.lower().replace(" ", "_")], reverse=True)
-        except AttributeError:
-            sorted(accounts, key=lambda a: (a[1]["score"], a[1]["current_streak"], a[1]["longest_streak"]),
-                   reverse=True)
-        except KeyError:
-            LOGGER.error("ServerCog::leaderboard - " + parsed_args.sort + " is not a valid key.")
-            raise commands.BadArgument(parsed_args.sort + " is not a valid sort field.\nvalid fields are:" +
-                                                          " `Score (Default), Current Streak, Longest Streak`")
+        accounts = sorted(accounts, key=lambda a: (a[1]["score"], a[1]["current_streak"], a[1]["longest_streak"]),
+                          reverse=True)
         try:
             accounts = accounts[0:int(parsed_args.top)]
         except TypeError:
