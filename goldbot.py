@@ -69,7 +69,8 @@ async def on_command_error(ctx, error):
 async def __leaderboard_job():
     await bot.wait_until_ready()
     # List of timers as specified in the config
-    timers = [(datetime.strptime(entry, "%H:%M")).time() for entry in Config.get_config_property("server", "leaderboardTracking").values()]
+    timers = [(datetime.strptime(entry, "%H:%M")).time() for entry in Config.get_config_property("server",
+              "leaderboard", "emojiMap").values()]
     # Add the military time equivalents to the list
     timers.extend([timer.replace(hour=timer.hour + 12) for timer in timers if timer.hour != 12])
     timers.sort()
@@ -106,7 +107,8 @@ async def __leaderboard_job():
 async def on_message(message):
     emoji = find(lambda e: str(e) == message.content, message.guild.emojis)
     if emoji is not None:
-        LEADERBOARD_HANDLER.add_entry(message.author, datetime.now(), emoji.name)
+        LEADERBOARD_HANDLER.add_entry(message.author.id, message.created_at.replace(tzinfo=pytz.utc).astimezone(TZ),
+                                      emoji.name)
 
     await bot.process_commands(message)
 

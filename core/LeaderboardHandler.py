@@ -1,11 +1,11 @@
 import logging
 import pytz
+import json
 from datetime import datetime
-from core import UserAccounts
 from _global.Config import Config
 
 LOGGER = logging.getLogger("goldlog")
-EMOJI_TIME_DICT = Config.get_config_property("server", "leaderboardTracking")
+EMOJI_TIME_DICT = Config.get_config_property("server", "leaderboard", "emojiMap")
 TZ = pytz.timezone(Config.get_config_property("server", "timezone"))
 
 
@@ -26,22 +26,25 @@ class LeaderboardHandler:
             LeaderboardHandler.__instance = self
             self.__unprocessed_entries = []
 
-    def add_entry(self, author, timestamp, emote):
+    def add_entry(self, user_id, timestamp, emote):
         for entry in self.__unprocessed_entries:
-            if entry["author"].id == author.id and entry["emote"] == emote:
+            if entry["user_id"] == user_id and entry["emote"] == emote:
                 return
         if emote in EMOJI_TIME_DICT.keys():
+            fixed_timestamp = timestamp.time().replace(second=0, microsecond=0)
             r_time = datetime.strptime(EMOJI_TIME_DICT[emote], "%H:%M").time()
             m_time = r_time.replace(hour=r_time.hour + 12)
-            timestamp = TZ.localize(timestamp.replace(second=0, microsecond=0))
-            if timestamp.time() == r_time or timestamp.time() == m_time or timestamp.time() == \
-                    r_time.replace(minute=r_time.minute + 1) or timestamp.time() == m_time.replace(minute=m_time.minute + 1):
-                self.__unprocessed_entries.append({"author": author, "timestamp": timestamp, "emote": emote})
-                LOGGER.info("LeaderboardHandler::add_entry - Adding message from " + author.name +
+            if fixed_timestamp == r_time or fixed_timestamp == m_time or fixed_timestamp == \
+                    r_time.replace(minute=r_time.minute + 1) or fixed_timestamp == m_time.replace(minute=m_time.minute + 1):
+                self.__unprocessed_entries.append({"user_id": user_id, "timestamp": timestamp, "emote": emote})
+                LOGGER.info("LeaderboardHandler::add_entry - Adding message from " + str(user_id) +
                             " to the message queue for the emote " + emote)
 
     def process_entries(self):
         LOGGER.info("LeaderboardHandler::process_entries - Processing leaderboard entries")
+        with open(Config.get_config_property("saveDir") + "/leaderboards/307026836066533377.json") as f:
+            leaderboard_json = json.load(f)
+
         for emoji in EMOJI_TIME_DICT.keys():
             entries = [entry for entry in self.__unprocessed_entries if entry["emote"] == emoji]
             time = datetime.strptime(EMOJI_TIME_DICT[emoji], "%H:%M")
@@ -55,6 +58,50 @@ class LeaderboardHandler:
                     score = -1
                     entry["timestamp"] = None
 
-                account = UserAccounts.get_account(entry["author"])
-                account.set_leaderboard_info(entry["emote"], score, entry["timestamp"])
+                try:
+                    user_score = leaderboard_json[str(entry["user_id"])][emoji]
+                except KeyError:
+                    user_score = {
+                        "score": 0,
+                        "current_streak": 1,
+                        "longest_streak": 1,
+                        "last_timestamp": None
+                    }
+                if user_score["score"] + score < 0:
+                    user_score["score"] = 0
+                else:
+                    user_score["score"] = user_score["score"] + score
+
+                try:
+                    last_timestamp = datetime.strptime(user_score["timestamp"], "%m/%d/%Y")
+                except TypeError:
+                    last_timestamp = None
+                user_score["timestamp"] = datetime.strftime(entry["timestamp"], "%m/%d/%Y")
+
+                try:
+                    if entry["timestamp"] is None:
+                        user_score["current_streak"] = 0
+                    elif (entry["timestamp"].date() - last_timestamp.date()).days == 1:
+                        user_score["current_streak"] = user_score["current_streak"] + 1
+                    elif (entry["timestamp"].date() - last_timestamp.date()).days > 1:
+                        user_score["current_streak"] = 1
+                except AttributeError:
+                    pass
+
+                if user_score["current_streak"] > user_score["longest_streak"]:
+                    user_score["longest_streak"] = user_score["current_streak"]
+                leaderboard_json[str(entry["user_id"])][emoji] = user_score
                 self.__unprocessed_entries.remove(entry)
+
+            current_day = datetime.now().date()
+            for key in leaderboard_json:
+                try:
+                    score = leaderboard_json[key][emoji]
+                    if (current_day - datetime.strptime(score["timestamp"], "%m/%d/%Y").date()).days > 1:
+                        score["current_streak"] = 0
+                        leaderboard_json[key][emoji] = score
+                except KeyError:
+                    pass
+
+        with open(Config.get_config_property("saveDir") + "/leaderboards/307026836066533377.json", "w") as f:
+            json.dump(leaderboard_json, f, indent=4)
