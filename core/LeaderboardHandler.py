@@ -44,13 +44,13 @@ class LeaderboardHandler:
     def process_entries(self):
         LOGGER.info("LeaderboardHandler::process_entries - Processing leaderboard entries")
         for emoji in EMOJI_TIME_DICT.keys():
-            leaderboard_path = Config.get_config_property("saveDir") + "/leaderboards/479782559077892131/" + emoji \
+            leaderboard_path = Config.get_config_property("saveDir") + "/leaderboards/307026836066533377/" + emoji \
                                + ".json"
             if not os.path.isfile(leaderboard_path) or os.path.isfile(leaderboard_path) and not os.access(leaderboard_path, os.R_OK):
                 with open(leaderboard_path, "w") as f:
                     json.dump({}, f, indent=4)
 
-            with open(Config.get_config_property("saveDir") + "/leaderboards/479782559077892131/" + emoji + ".json") as f:
+            with open(leaderboard_path) as f:
                 leaderboard_json = json.load(f)
 
             entries = [entry for entry in self.__unprocessed_entries if entry["emote"] == emoji]
