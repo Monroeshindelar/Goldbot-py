@@ -15,7 +15,7 @@ from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
 
 LOGGER = logging.getLogger("goldlog")
 
-SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("saveDir") + "sldata.pkl"
+SQUADLOCKE_DATA_FILE_PATH = Config.get_config_property("saveDir") + "/squadlocke/sldata.pkl"
 SQUADLOCKE_ROLE = Config.get_config_property("squadlocke", "role")
 SQUADLOCKE_NAME = Config.get_config_property("squadlocke", "defaultCheckpointName")
 SL_SERIALIZE = read_save_file(SQUADLOCKE_DATA_FILE_PATH)

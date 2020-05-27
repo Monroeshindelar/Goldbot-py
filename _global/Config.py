@@ -8,6 +8,7 @@ class Config:
     def get_config_property(*props):
         if Config.__instance is None:
             Config()
+
         return Config.__get_config_property_helper(Config.__instance.CONF, list(props))
 
     @staticmethod

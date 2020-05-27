@@ -1,8 +1,8 @@
 import logging
+import json
 from tabulate import tabulate
 from discord.utils import find
 from discord.ext import commands
-from core import UserAccounts
 from _global.ArgParsers.ServerArgParsers import ServerArgParsers
 from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
 from _global.Config import Config
@@ -22,31 +22,34 @@ class ServerCog(commands.Cog):
         except ArgumentParserError as e:
             raise commands.ArgumentParsingError(message=e.args[0])
 
-        emoji = find(lambda em: str(em) == parsed_args.emoji, ctx.guild.emojis)
-
         if parsed_args.mobile:
             headers = ["N", "S", "CS", "LS"]
-            table_format = "plain"
         else:
             headers = ["Name", "Score", "Current Streak", "Longest Streak"]
-            table_format = "github"
+
+        emoji = find(lambda em: str(em) == parsed_args.emoji, ctx.guild.emojis)
 
         try:
-            if emoji.name not in Config.get_config_property("server", "leaderboardTracking").keys():
+            if emoji.name not in Config.get_config_property("server", "leaderboard", "emojiMap").keys():
                 raise commands.BadArgument("There is no leaderboard associated with the emoji.")
 
-            accounts = [(account.name, UserAccounts.get_account(account).get_leaderboard_info(emoji.name)) for account
-                        in ctx.guild.members if UserAccounts.get_account(account) is not None and
-                        UserAccounts.get_account(account).get_leaderboard_info(emoji.name) is not None and
-                        UserAccounts.get_account(account).get_leaderboard_info(emoji.name)["score"] != 0]
-        except AttributeError:
+            with open(Config.get_config_property("saveDir") + "/leaderboards/" + str(ctx.guild.id) + "/" + emoji.name +
+                      ".json") as f:
+                leaderboard_json = json.load(f)
+
+            entries = sorted(leaderboard_json, key=lambda e: (leaderboard_json[e]["score"],
+                             leaderboard_json[e]["current_streak"], leaderboard_json[e]["longest_streak"]),
+                             reverse=True)
+
+        except AttributeError as e:
             LOGGER.error("ServerCog::leaderboard - Called with default emoji.")
             raise commands.BadArgument("Leaderboards don't exist for default emojis.")
+        except FileNotFoundError as e:
+            LOGGER.error("ServerCog::leaderboard - No leaderboard data found for called emoji")
+            raise commands.BadArgument("No leaderboard data found for called emoji.")
 
-        accounts = sorted(accounts, key=lambda a: (a[1]["score"], a[1]["current_streak"], a[1]["longest_streak"]),
-                          reverse=True)
         try:
-            accounts = accounts[0:int(parsed_args.top)]
+            entries = entries[0:int(parsed_args.top)]
         except TypeError:
             pass
         except IndexError:
@@ -56,10 +59,11 @@ class ServerCog(commands.Cog):
             LOGGER.error("ServerCog::leaderboard - " + parsed_args.top + " is not an int")
             raise commands.BadArgument("Bad argument for top parameter. Expected integer.")
 
-        table = [[account[0], account[1]["score"], account[1]["current_streak"], account[1]["longest_streak"]]
-                 for account in accounts]
+        table = [[find(lambda u: str(u.id) == e, ctx.guild.members).name, leaderboard_json[e]["score"],
+                  leaderboard_json[e]["current_streak"], leaderboard_json[e]["longest_streak"]] for e in entries]
+
         await ctx.channel.send(str(emoji) + "***  Leaderboard  ***" + str(emoji) + "\n```" + tabulate(table,
-                               headers=headers, tablefmt=table_format) + "```")
+                               headers=headers) + "```")
 
 
 def setup(bot):

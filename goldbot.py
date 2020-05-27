@@ -50,20 +50,20 @@ if __name__ == '__main__':
         bot.load_extension(cog)
 
 
-@bot.event
-async def on_command_error(ctx, error):
-    message = ""
-    if isinstance(error, commands.MissingAnyRole):
-        message = "You do not have the required role to execute this command.\n" \
-                  "Required roles are:\n"
-        for role in error.missing_roles:
-            message += "`" + role + "`\n"
-    elif isinstance(error, commands.MissingRequiredArgument):
-        message = "You are missing required arguments for this command:\n`" + error.param.name + "`"
-    elif isinstance(error, (commands.BadArgument, commands.UserInputError, commands.ArgumentParsingError)):
-        message = error.args[0]
-
-    await ctx.channel.send(content=message)
+# @bot.event
+# async def on_command_error(ctx, error):
+#     message = ""
+#     if isinstance(error, commands.MissingAnyRole):
+#         message = "You do not have the required role to execute this command.\n" \
+#                   "Required roles are:\n"
+#         for role in error.missing_roles:
+#             message += "`" + role + "`\n"
+#     elif isinstance(error, commands.MissingRequiredArgument):
+#         message = "You are missing required arguments for this command:\n`" + error.param.name + "`"
+#     elif isinstance(error, (commands.BadArgument, commands.UserInputError, commands.ArgumentParsingError)):
+#         message = error.args[0]
+#
+#     await ctx.channel.send(content=message)
 
 
 async def __leaderboard_job():

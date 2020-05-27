@@ -1,7 +1,6 @@
 .gitignore
 bin/config.yml
-bin/save_data/accounts/accounts.pkl
-bin/save_data/squadlocke/sldata.pkl
+bin/save_data
 bin/cache
 bin/log
 .idea/

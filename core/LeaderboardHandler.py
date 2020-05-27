@@ -1,6 +1,7 @@
 import logging
 import pytz
 import json
+import os
 from datetime import datetime
 from _global.Config import Config
 
@@ -42,31 +43,38 @@ class LeaderboardHandler:
 
     def process_entries(self):
         LOGGER.info("LeaderboardHandler::process_entries - Processing leaderboard entries")
-        with open(Config.get_config_property("saveDir") + "/leaderboards/307026836066533377.json") as f:
-            leaderboard_json = json.load(f)
-
         for emoji in EMOJI_TIME_DICT.keys():
+            leaderboard_path = Config.get_config_property("saveDir") + "/leaderboards/479782559077892131/" + emoji \
+                               + ".json"
+            if not os.path.isfile(leaderboard_path) or os.path.isfile(leaderboard_path) and not os.access(leaderboard_path, os.R_OK):
+                with open(leaderboard_path, "w") as f:
+                    json.dump({}, f, indent=4)
+
+            with open(Config.get_config_property("saveDir") + "/leaderboards/479782559077892131/" + emoji + ".json") as f:
+                leaderboard_json = json.load(f)
+
             entries = [entry for entry in self.__unprocessed_entries if entry["emote"] == emoji]
             time = datetime.strptime(EMOJI_TIME_DICT[emoji], "%H:%M")
             for entry in entries:
                 if (entry["timestamp"].hour == time.hour or entry["timestamp"].hour == time.hour + 12) and entry["timestamp"].minute == time.minute:
                     if entries.index(entry) == 0:
-                        score = 3
+                        score = Config.get_config_property("server", "leaderboard", "scores", "max")
                     else:
-                        score = 1
+                        score = Config.get_config_property("server", "leaderboard", "scores", "default")
                 else:
-                    score = -1
+                    score = Config.get_config_property("server", "leaderboard", "scores", "min")
                     entry["timestamp"] = None
 
                 try:
-                    user_score = leaderboard_json[str(entry["user_id"])][emoji]
+                    user_score = leaderboard_json[str(entry["user_id"])]
                 except KeyError:
                     user_score = {
                         "score": 0,
                         "current_streak": 1,
                         "longest_streak": 1,
-                        "last_timestamp": None
+                        "timestamp": None
                     }
+
                 if user_score["score"] + score < 0:
                     user_score["score"] = 0
                 else:
@@ -90,18 +98,18 @@ class LeaderboardHandler:
 
                 if user_score["current_streak"] > user_score["longest_streak"]:
                     user_score["longest_streak"] = user_score["current_streak"]
-                leaderboard_json[str(entry["user_id"])][emoji] = user_score
+                leaderboard_json[str(entry["user_id"])] = user_score
                 self.__unprocessed_entries.remove(entry)
 
             current_day = datetime.now().date()
             for key in leaderboard_json:
                 try:
-                    score = leaderboard_json[key][emoji]
+                    score = leaderboard_json[key]
                     if (current_day - datetime.strptime(score["timestamp"], "%m/%d/%Y").date()).days > 1:
                         score["current_streak"] = 0
-                        leaderboard_json[key][emoji] = score
+                        leaderboard_json[key] = score
                 except KeyError:
                     pass
 
-        with open(Config.get_config_property("saveDir") + "/leaderboards/307026836066533377.json", "w") as f:
-            json.dump(leaderboard_json, f, indent=4)
+            with open(leaderboard_path, "w") as f:
+                json.dump(leaderboard_json, f, indent=4)
