@@ -71,7 +71,7 @@ class LeaderboardHandler:
                     user_score = {
                         "score": 0,
                         "current_streak": 1,
-                        "longest_streak": 1,
+                        "longest_streak": 0,
                         "timestamp": None
                     }
 
@@ -84,7 +84,10 @@ class LeaderboardHandler:
                     last_timestamp = datetime.strptime(user_score["timestamp"], "%m/%d/%Y")
                 except TypeError:
                     last_timestamp = None
-                user_score["timestamp"] = datetime.strftime(entry["timestamp"], "%m/%d/%Y")
+                try:
+                    user_score["timestamp"] = datetime.strftime(entry["timestamp"], "%m/%d/%Y")
+                except TypeError:
+                    user_score["timestamp"] = None
 
                 try:
                     if entry["timestamp"] is None:
@@ -108,7 +111,7 @@ class LeaderboardHandler:
                     if (current_day - datetime.strptime(score["timestamp"], "%m/%d/%Y").date()).days > 1:
                         score["current_streak"] = 0
                         leaderboard_json[key] = score
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
 
             with open(leaderboard_path, "w") as f:
