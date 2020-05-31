@@ -1,6 +1,7 @@
 import os
 import pickle
 import logging
+import json
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -21,3 +22,14 @@ def save_file(content, file_path):
     with open(file_path, 'wb+') as file:
         LOGGER.info("Misc::save_file - Saving data to disk at " + file_path)
         pickle.dump(content, file, pickle.HIGHEST_PROTOCOL)
+
+
+def read_json_safe(path):
+    if not os.path.isfile(path) or os.path.isfile(path) and not os.access(path, os.R_OK):
+        with open(path, "w") as f:
+            json.dump({}, f, indent=4)
+
+    with open(path) as f:
+        j = json.load(f)
+
+    return j

@@ -2,8 +2,11 @@ import logging
 import pytz
 import json
 import os
+import shutil
 from datetime import datetime
+from datetime import timedelta
 from _global.Config import Config
+from utilities.Misc import read_json_safe
 
 LOGGER = logging.getLogger("goldlog")
 EMOJI_TIME_DICT = Config.get_config_property("server", "leaderboard", "emojiMap")
@@ -43,15 +46,15 @@ class LeaderboardHandler:
 
     def process_entries(self):
         LOGGER.info("LeaderboardHandler::process_entries - Processing leaderboard entries")
+
+        today = datetime.now()
+        if today.day == 31:
+            self.__process_score_reset()
+
         for emoji in EMOJI_TIME_DICT.keys():
             leaderboard_path = Config.get_config_property("saveDir") + "/leaderboards/307026836066533377/" + emoji \
                                + ".json"
-            if not os.path.isfile(leaderboard_path) or os.path.isfile(leaderboard_path) and not os.access(leaderboard_path, os.R_OK):
-                with open(leaderboard_path, "w") as f:
-                    json.dump({}, f, indent=4)
-
-            with open(leaderboard_path) as f:
-                leaderboard_json = json.load(f)
+            leaderboard_json = read_json_safe(leaderboard_path)
 
             entries = [entry for entry in self.__unprocessed_entries if entry["emote"] == emoji]
             time = datetime.strptime(EMOJI_TIME_DICT[emoji], "%H:%M")
@@ -116,3 +119,49 @@ class LeaderboardHandler:
 
             with open(leaderboard_path, "w") as f:
                 json.dump(leaderboard_json, f, indent=4)
+
+    def __process_score_reset(self):
+        base_path = Config.get_config_property("saveDir") + "/leaderboards/307026836066533377/"
+        global_path = base_path + "global.json"
+        global_leaderboard = read_json_safe(global_path)
+        aggregate_scores_dict = {}
+        yesterday = datetime.now() - timedelta(days=1)
+
+        try:
+            os.makedirs(base_path + "old/" + str(yesterday.month) + "-" + str(yesterday.year))
+        except OSError:
+            pass
+
+
+
+        for emoji in EMOJI_TIME_DICT.keys():
+            leaderboard_path = base_path + emoji + ".json"
+            try:
+                leaderboard_json = read_json_safe(leaderboard_path)
+            except FileNotFoundError:
+                continue
+
+            score_sorted = sorted(leaderboard_json, key=lambda e: (leaderboard_json[e]["score"],
+                                  leaderboard_json[e]["current_streak"], leaderboard_json[e]["longest_streak"]),
+                                  reverse=True)
+            for i, k in zip(range(len(score_sorted), 0, -1), score_sorted):
+                try:
+                    user_global_score = aggregate_scores_dict[k]
+                except KeyError:
+                    user_global_score = 0
+                aggregate_scores_dict[k] = user_global_score + i
+
+            shutil.move(leaderboard_path, base_path + "old/" + str(yesterday.month) + "-" + str(yesterday.year) + "/" +
+                        emoji + ".json")
+
+        for k in aggregate_scores_dict.keys():
+            try:
+                user_score = global_leaderboard[k]
+            except KeyError:
+                user_score = 0
+
+            user_score = user_score + (aggregate_scores_dict[k] * 10)
+            global_leaderboard[k] = user_score
+
+        with open(global_path, "w") as f:
+            json.dump(global_leaderboard, f, indent=4)
