@@ -1,7 +1,6 @@
 .gitignore
 bin/config.yml
-bin/accounts.pkl
-bin/sldata.pkl
+bin/save_data
 bin/cache
 bin/log
 .idea/

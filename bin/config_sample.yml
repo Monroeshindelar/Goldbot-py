@@ -10,14 +10,17 @@ server:
     LOLweedLOL: "4:20"
   timezone: US/Pacific
 tenman:
-  masterRole: Ten Man Master
-  captainARole: Team A Captain
-  captainBRole: Team B Captain
-  teamARole: Team A
-  teamBRole: Team B
-  masterVoice: TM General
-  teamAVoice: Team A
-  teamBVoice: Team B
+  master:
+    role: TM Master
+    voice: TM General
+  teamA:
+    captainRole: Team A Captain
+    role: Team A
+    voice: Team A
+  teamB:
+    captainRole: Teab B Captain
+    role: Team B
+    voice: Team B
   maps:
     - Dust2
     - Inferno
