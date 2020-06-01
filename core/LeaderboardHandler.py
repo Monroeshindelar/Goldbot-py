@@ -48,7 +48,7 @@ class LeaderboardHandler:
         LOGGER.info("LeaderboardHandler::process_entries - Processing leaderboard entries")
 
         today = datetime.now()
-        if today.day == 31:
+        if today.day == 1:
             self.__process_score_reset()
 
         for emoji in EMOJI_TIME_DICT.keys():
@@ -131,8 +131,6 @@ class LeaderboardHandler:
             os.makedirs(base_path + "old/" + str(yesterday.month) + "-" + str(yesterday.year))
         except OSError:
             pass
-
-
 
         for emoji in EMOJI_TIME_DICT.keys():
             leaderboard_path = base_path + emoji + ".json"
