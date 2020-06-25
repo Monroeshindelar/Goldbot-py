@@ -40,7 +40,8 @@ cogs = [
     "cogs.UserAccountCog",
     "cogs.SquadlockeCog",
     "cogs.TenManCog",
-    "cogs.ServerCog"
+    "cogs.ServerCog",
+    "cogs.WedlockeCog"
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)
