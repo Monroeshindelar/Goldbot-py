@@ -44,7 +44,7 @@ class TenManCog(commands.Cog):
         """
         maps = [m.lower() for m in Config.get_config_property("tenman", "maps")]
 
-        with open("bin/resources/map_thumbnails.yml") as f:
+        with open("bin/resources/resources.yml") as f:
             map_thumbnails = yaml.load(f, Loader=yaml.FullLoader)
 
         remaining_maps = ""
