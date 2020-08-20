@@ -41,6 +41,9 @@ class TenMan:
     def get_remaining_maps(self) -> List[str]:
         return [m.capitalize() for m in self.__unselected_maps]
 
+    def get_teams(self) -> Tuple[List[str], List[str]]:
+        return self.__team_a, self.__team_b
+
     def set_or_pick_captains(self, captain_ids: List[str]) -> Tuple[str, str]:
         if len(self.__team_a) > 0 or len(self.__team_b) > 0:
             raise SyntaxError

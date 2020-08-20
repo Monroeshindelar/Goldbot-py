@@ -119,6 +119,11 @@ class TenManCogNew(commands.Cog):
 
         pick_info = self.__ongoing.pick_player(ctx.message.mentions[0].id, ctx.message.author.id)
 
+        role_config_property = Config.get_config_property("tenman", "teamA", "playerRole") if pick_info[1] == CaptainStatus.CAPTAIN_A else Config.get_config_property("tenman", "teamB", "playerRole")
+        role = find(lambda r: r.name == role_config_property, ctx.guild.roles)
+
+        await ctx.message.mentions[0].add_roles(role)
+
         embed = discord.Embed(
             title="Player Selected",
             color=discord.Color.red() if pick_info[1] == CaptainStatus.CAPTAIN_A else discord.Color.blue()
@@ -136,6 +141,12 @@ class TenManCogNew(commands.Cog):
 
         if pick_info[2] is not None and pick_info[3] is not None:
             last_pick_profile = find(lambda p: str(p.id) == pick_info[2], ctx.guild.members)
+
+            role_config_property_lp = Config.get_config_property("tenman", "teamA", "playerRole") if pick_info[3] == CaptainStatus.CAPTAIN_A else Config.get_config_property("tenman", "teamB", "playerRole")
+            role_lp = find(lambda r: r.name == role_config_property_lp, ctx.guild.roles)
+
+            await last_pick_profile.add_roles(role_lp)
+
             embed_lp = discord.Embed(
                 title="Last Pick",
                 color=discord.Color.red() if pick_info[3] == CaptainStatus.CAPTAIN_A else discord.Color.blue()
@@ -274,7 +285,22 @@ class TenManCogNew(commands.Cog):
     @commands.command(name="tm_f")
     @commands.has_role(Config.get_config_property("tenman", "organizerRole"))
     async def free(self, ctx):
-        pass
+        captain_a_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamA", "captainRole"),
+                              ctx.guild.roles)
+        captain_b_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamB", "captainRole"),
+                              ctx.guild.roles)
+        player_a_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamA", "playerRole"),
+                             ctx.guild.roles)
+        player_b_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamB", "playerRole"),
+                             ctx.guild.roles)
+
+        await ctx.channel.send(content="Beginning deconstruction.")
+        for a, b in zip(self.__ongoing.get_teams()[0], self.__ongoing.get_teams()[1]):
+            await find(lambda u: str(u.id) == a, ctx.guild.members).remove_roles(captain_a_role, player_a_role)
+            await find(lambda u: str(u.id) == b, ctx.guild.members).remove_roles(captain_b_role, player_b_role)
+        await ctx.channel.send(content="Players freed.")
+
+        self.__ongoing = None
 
 
 def setup(bot):
