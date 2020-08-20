@@ -27,6 +27,7 @@ class TenMan:
         self.__picked_maps = []
         self.__player_pick_sequence = Config.get_config_property("tenman", "playerPickSequence").split("-")
         self.__wait_for_side_pick = False
+        self.__side_pick_team = None
 
         if len(self.__player_pick_sequence) < 10 or len(self.__player_pick_sequence) > 10:
             raise SyntaxError
@@ -95,14 +96,14 @@ class TenMan:
         return captain_status
 
     def pick_side(self, captain_id: str, side: str) -> Tuple[Side, CaptainStatus, str]:
-        sequence = self.__map_pick_ban_sequence[0].split("~")
-
         status = self.__get_captain_status(captain_id)
 
-        if sequence[1] == "A" and not status == CaptainStatus.CAPTAIN_A or sequence[1] == "B" and not status == CaptainStatus.CAPTAIN_B:
+        if self.__side_pick_team is CaptainStatus.CAPTAIN_A and not status == CaptainStatus.CAPTAIN_A or \
+                self.__side_pick_team is CaptainStatus.CAPTAIN_B and not status == CaptainStatus.CAPTAIN_B:
             raise SyntaxError
 
         self.__wait_for_side_pick = False
+        self.__side_pick_team = None
 
         decider = None
 
@@ -150,6 +151,7 @@ class TenMan:
             raise SyntaxError
 
         status = self.__get_captain_status(captain_id)
+        self.__set_side_pick_team(status)
 
         try:
             sequence = self.__map_pick_ban_sequence[0]
@@ -184,3 +186,11 @@ class TenMan:
             self.__picked_maps.append(decider)
 
         return status, decider
+
+    def __set_side_pick_team(self, map_pick_team: CaptainStatus):
+        if map_pick_team is not CaptainStatus.CAPTAIN_A and map_pick_team is not CaptainStatus.CAPTAIN_B:
+            raise SyntaxError
+        elif map_pick_team is CaptainStatus.CAPTAIN_A:
+            self.__side_pick_team = CaptainStatus.CAPTAIN_B
+        elif map_pick_team is CaptainStatus.CAPTAIN_B:
+            self.__side_pick_team = CaptainStatus.CAPTAIN_A

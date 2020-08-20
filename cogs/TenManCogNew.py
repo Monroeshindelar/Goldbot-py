@@ -227,21 +227,6 @@ class TenManCogNew(commands.Cog):
         status_embed.add_field(name="Team " + ("A" if captain == CaptainStatus.CAPTAIN_A else "B") + "'s Pick",
                                value=map_name.capitalize())
 
-        # try:
-        #     decider = self.__ongoing.final_map_pick()
-        #     embed_decider = discord.Embed(
-        #         title=decider,
-        #         color=discord.Color.dark_grey(),
-        #         description="Decider map."
-        #     )
-        #     embed_decider.set_image(url=self.__resources[decider])
-        #     await ctx.channel.send(embed=embed_decider)
-        #     status_embed.add_field(name="Decider", value=decider.capitalize())
-        # except SyntaxError:
-        #     pass
-        # finally:
-        #     status_embed.set_field_at(index=5, name=status_embed.fields[5].name, value="\n".join(self.__ongoing.get_remaining_maps()))
-
         await self.__status_message.edit(embed=status_embed)
 
     @commands.command(name="tm_ps")
@@ -285,6 +270,11 @@ class TenManCogNew(commands.Cog):
             status_embed.add_field(name="Decider", value=decider.capitalize())
             status_embed.remove_field(index=5)
             await ctx.channel.send(embed=embed_decider)
+
+    @commands.command(name="tm_f")
+    @commands.has_role(Config.get_config_property("tenman", "organizerRole"))
+    async def free(self, ctx):
+        pass
 
 
 def setup(bot):
