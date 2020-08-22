@@ -39,7 +39,7 @@ cogs = [
     "cogs.TournamentCog",
     "cogs.UserAccountCog",
     "cogs.SquadlockeCog",
-    "cogs.TenManCogNew",
+    "cogs.TenManCog",
     "cogs.ServerCog"
 ]
 
