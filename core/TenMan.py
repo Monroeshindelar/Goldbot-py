@@ -7,6 +7,10 @@ from typing import Tuple, List
 from core.model.TenMan.TeamsManager import TeamsManager
 from core.model.TenMan.MapPickBanEntry import MapPickBanEntry
 from core.model.TenMan.PickBanMode import PickBanMode
+from ErrorHandling.Exceptions.TenMan.TurnError import TurnError
+from ErrorHandling.Exceptions.TenMan.PhaseError import PhaseError
+from ErrorHandling.Exceptions.TenMan.EntityError import EntityError
+from ErrorHandling.Exceptions.TenMan.InitializationError import InitializationError
 from random import randint
 
 
@@ -63,12 +67,18 @@ class TenMan:
         return [m.capitalize() for m in self.__unselected_maps]
 
     def get_captain_team_status(self, captain_id: int):
+        if self.__teams_manager is None:
+            raise InitializationError("There are no captains yet. Could not get captain team status")
+
         return self.__teams_manager.get_team_status_from_captain(captain_id)
 
     def get_side_pick_team(self) -> TeamStatus:
         return self.__side_pick_team
 
     def get_teams(self) -> Tuple[Team, Team]:
+        if self.__teams_manager is None:
+            raise InitializationError("No teams available. Captains have not been selected yet.")
+
         return self.__teams_manager.get_teams()
 
     def peek_next_player_pick(self) -> TeamStatus:
@@ -89,7 +99,7 @@ class TenMan:
         # if len(self.__team_a) > 0 or len(self.__team_b) > 0:
         #     raise SyntaxError
         if self.__teams_manager is not None:
-            raise SyntaxError
+            raise InitializationError("A ten man has already been initialized. Captains have been set.")
 
         # Set the captains if they are provided. Randomly select them if they are not
         try:
@@ -113,17 +123,17 @@ class TenMan:
         """
         # Bail if the caller wasn't the captain
         if not self.__captain_turn(captain_id):
-            raise SyntaxError
+            raise TurnError("Incorrect captain attempting to pick player.")
 
         # Bail if there are no more participants to select
         if len(self.__unselected_participants) == 0:
-            raise SyntaxError
+            raise PhaseError("It is no longer the player pick phase")
 
-        # Remove the participant from the list. Bail if they selected someone who isnt a participant
+        # Remove the participant from the list. Bail if they selected someone who isn't a participant
         try:
             self.__unselected_participants.remove(player_id)
         except ValueError:
-            raise SyntaxError
+            raise EntityError("Selected player is not an eligible unselected participant.")
 
         # Let the teams manager add the player to the correct team
         self.__teams_manager.add_player(player_id, self.__teams_manager.get_team_status_from_captain(captain_id))
@@ -170,12 +180,18 @@ class TenMan:
         :return: A tuple containing the picked side, the team of the captain who picked, and the decider map pick if
                  one exists (otherwise none)
         """
+        if not len(self.__unselected_participants) == 0:
+            raise PhaseError("Player pick phase is not over.")
+
+        if not self.__wait_for_side_pick:
+            raise PhaseError("It is not time to pick a starting side.")
+
         status = self.__teams_manager.get_team_status_from_captain(captain_id)
 
         # Bail if the wrong team is trying to pick side
         if self.__side_pick_team is TeamStatus.A and not status == TeamStatus.A or \
                 self.__side_pick_team is TeamStatus.B and not status == TeamStatus.B:
-            raise SyntaxError
+            raise TurnError("Incorrect captain attempting to issue side pick.")
 
         # Set wait for side pick flag to reflect a side has been picked
         self.__wait_for_side_pick = False
@@ -193,38 +209,37 @@ class TenMan:
         return Side.get(side), decider
 
     def __captain_turn(self, captain_id: int) -> bool:
+        if self.__teams_manager is None:
+            raise InitializationError("Cannot check captain turn. Teams have not been created.")
+
         return self.__player_pick_sequence[0] == self.__teams_manager.get_team_status_from_captain(captain_id)
 
     def __map_pick_ban_helper(self, game_map: str, captain_id: int, is_ban: bool):
         if len(self.__unselected_participants) > 0:
-            raise SyntaxError
-
-        if len(self.__map_pick_ban_sequence) == 0:
-            raise SyntaxError
-
-        status = self.__teams_manager.get_team_status_from_captain(captain_id)
-        self.__set_side_pick_team(status)
+            raise PhaseError("Player pick phase has not been completed.")
 
         try:
             sequence = self.__map_pick_ban_sequence[0]
         except IndexError:
-            raise SyntaxError
+            raise PhaseError("Map pick/ban phase is over.")
+
+        status = self.__teams_manager.get_team_status_from_captain(captain_id)
+        self.__set_side_pick_team(status)
 
         mode = sequence.get_mode()
         team = sequence.get_team_status()
 
         if status != team:
-            raise SyntaxError
+            raise TurnError("Incorrect captain attempting to issue map selection.")
 
         if (is_ban and mode == PickBanMode.PICK) or (not is_ban and mode == PickBanMode.BAN):
-            raise SyntaxError
+            raise PhaseError("Incorrect pick/ban mode.")
 
-        if self.__wait_for_side_pick and ((mode == PickBanMode.PICK and team == TeamStatus.B) or
-                                          (mode == PickBanMode.BAN and team == TeamStatus.A)):
-            raise SyntaxError
+        if self.__wait_for_side_pick:
+            raise PhaseError("Waiting for side pick. Cannot issue map pick/bans.")
 
         if game_map not in self.__unselected_maps:
-            raise SyntaxError
+            raise EntityError("Requested map is not an available unselected map.")
 
         self.__map_pick_ban_sequence.pop(0)
         self.__unselected_maps.remove(game_map)
@@ -239,7 +254,7 @@ class TenMan:
 
     def __get_decider_map(self) -> str:
         if len(self.__map_pick_ban_sequence) != 0:
-            raise SyntaxError
+            raise PhaseError("Tried to select decider map before the pick/ban sequence was over.")
 
         index = randint(0, len(self.__unselected_maps) - 1)
         return self.__unselected_maps.pop(index)

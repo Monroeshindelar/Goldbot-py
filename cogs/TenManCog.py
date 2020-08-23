@@ -57,8 +57,7 @@ class TenManCog(commands.Cog):
         general_voice = find(lambda v: v.name == Config.get_config_property("tenman", "generalVoice"),
                              ctx.guild.voice_channels)
         # member_list = [m.id for m in general_voice.members]
-        member_list = [148297442452963329, 727670795081351188, 727672213871919215, 727672966539771934,
-                       645696336469164107]
+        member_list = [148297442452963329, 645696336469164107, 727670795081351188, 727672213871919215, 727672966539771934]
         # If there are more than 10 or less than 10 members there is going to be a problem
         # if len(member_list) is not 10:
         #     raise SyntaxError
@@ -87,8 +86,8 @@ class TenManCog(commands.Cog):
         self.__status_message = await ctx.channel.send(embed=embed)
 
         if self.__display_help:
-            message = "***Help Message:***\nTen man has been initialized. Now it's time to pick captains. You can do so by either calling\n" \
-                      "`.pick_captains`\nor\n`.pick_captains @captainA @captainB`"
+            message = "***Help Message:***\nTen man has been initialized. Now it's time to pick captains. You can do " \
+                      "so by either calling\n`.pick_captains`\nor\n`.pick_captains @captainA @captainB`"
             await ctx.channel.send(message)
 
     @commands.command(name="tm_pick_captains", aliases=["pick_captains"])
@@ -223,7 +222,7 @@ class TenManCog(commands.Cog):
     async def ban_map(self, ctx, map_name):
         map_name = map_name.lower().replace(" ", "")
         captain_id = ctx.message.author.id
-        status = self.__ongoing.get_captain_team_status()
+        status = self.__ongoing.get_captain_team_status(captain_id)
         decider = self.__ongoing.ban_map(map_name, captain_id)
 
         embed = discord.Embed(
