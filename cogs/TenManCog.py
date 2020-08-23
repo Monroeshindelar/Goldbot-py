@@ -3,13 +3,14 @@ from discord.utils import find
 from _global.Config import Config
 from core.TenMan import TenMan
 from core.model.TenMan.Game import Game
-from core.model.TenMan.CaptainStatus import CaptainStatus
+from core.model.TenMan.TeamStatus import TeamStatus
 from core.model.TenMan.Side import Side
 from _global.ArgParsers.TenManArgParsers import TenManArgParsers
 from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
 import yaml
 import logging
 import discord
+from random import randint
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -55,11 +56,12 @@ class TenManCog(commands.Cog):
         # voice channel and creates a list of all their ids.
         general_voice = find(lambda v: v.name == Config.get_config_property("tenman", "generalVoice"),
                              ctx.guild.voice_channels)
-        member_list = [m.id for m in general_voice.members]
-
+        # member_list = [m.id for m in general_voice.members]
+        member_list = [148297442452963329, 727670795081351188, 727672213871919215, 727672966539771934,
+                       645696336469164107]
         # If there are more than 10 or less than 10 members there is going to be a problem
-        if len(member_list) is not 10:
-            raise SyntaxError
+        # if len(member_list) is not 10:
+        #     raise SyntaxError
 
         self.__ongoing = TenMan(member_list, game)
 
@@ -77,7 +79,7 @@ class TenManCog(commands.Cog):
         embed.add_field(name="Game", value=game.name)
         embed.add_field(name="Type", value="Best of 3")
         embed.add_field(name="Player Pick Sequence", value=Config.get_config_property("tenman", "playerPickSequence"))
-        embed.add_field(name="Available Participants", value="\n".join([find(lambda u: str(u.id) == p, ctx.guild.members).name
+        embed.add_field(name="Available Participants", value="\n".join([find(lambda u: u.id == p, ctx.guild.members).name
                         for p in member_list]))
         embed.add_field(name="Available Map Pool", value="\n".join(self.__ongoing.get_remaining_maps()), inline=False)
 
@@ -85,11 +87,11 @@ class TenManCog(commands.Cog):
         self.__status_message = await ctx.channel.send(embed=embed)
 
         if self.__display_help:
-            message = "Ten man has been initialized. Now it's time to pick captains. You can do so by either calling\n" \
-                      "`.tm_pick_captains`\nor\n.tm_pick_captains @captainA @captainB"
+            message = "***Help Message:***\nTen man has been initialized. Now it's time to pick captains. You can do so by either calling\n" \
+                      "`.pick_captains`\nor\n`.pick_captains @captainA @captainB`"
             await ctx.channel.send(message)
 
-    @commands.command(name="tm_pc")
+    @commands.command(name="tm_pick_captains", aliases=["pick_captains"])
     @commands.has_role(Config.get_config_property("tenman", "organizerRole"))
     async def pick_captains(self, ctx):
         # Caller tried to manually select too many captains
@@ -132,79 +134,97 @@ class TenManCog(commands.Cog):
 
         status_embed = self.__status_message.embeds[0]
         rp_field = status_embed.fields[3]
-        status_embed.set_field_at(index=3, name=rp_field.name, value="\n".join([find(lambda u: str(u.id) == rp, ctx.guild.members).name for rp in self.__ongoing.get_remaining_participant_ids()]))
+        status_embed.set_field_at(index=3, name=rp_field.name, value="\n".join([find(lambda u: u.id == rp, ctx.guild.members).name for rp in self.__ongoing.get_remaining_participant_ids()]))
         status_embed.insert_field_at(index=4, name="Team A", value=captain_a.name, inline=True)
         status_embed.insert_field_at(index=5, name="Team B", value=captain_b.name, inline=True)
         await self.__status_message.edit(embed=status_embed)
 
         if self.__display_help:
-            pass
+            message = "***Help Message***:\nNow that captains have been selected, it is time for the captain of Team" \
+                      "A to pick a player. They can do so by using the command\n`.pick_player @mention`"
+            await ctx.channel.send(message)
 
-    @commands.command(name="tm_pp")
+    @commands.command(name="tm_pick_player", aliases=["pick_player"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
     async def pick_player(self, ctx):
         if len(ctx.message.raw_mentions) > 1:
             raise SyntaxError
 
-        pick_info = self.__ongoing.pick_player(ctx.message.mentions[0].id, ctx.message.author.id)
+        captain_id = ctx.message.author.id
+        pick = ctx.message.mentions[0]
+        captain_team_status = self.__ongoing.get_captain_team_status(captain_id)
 
-        role_config_property = Config.get_config_property("tenman", "teamA", "playerRole") if pick_info[1] == CaptainStatus.CAPTAIN_A else Config.get_config_property("tenman", "teamB", "playerRole")
+        last_pick = self.__ongoing.pick_player(pick.id, captain_id)
+
+        role_config_property = Config.get_config_property("tenman", "team" + captain_team_status.name, "playerRole")
         role = find(lambda r: r.name == role_config_property, ctx.guild.roles)
 
         await ctx.message.mentions[0].add_roles(role)
 
         embed = discord.Embed(
             title="Player Selected",
-            color=discord.Color.red() if pick_info[1] == CaptainStatus.CAPTAIN_A else discord.Color.blue()
+            color=discord.Color.red() if captain_team_status == TeamStatus.A else discord.Color.blue()
         )
         embed.add_field(name="Name", value=ctx.message.mentions[0].name)
-        embed.add_field(name="Picked By", value="Team " + ("A" if pick_info[1] == CaptainStatus.CAPTAIN_A else "B"))
+        embed.add_field(name="Picked By", value="Team " + captain_team_status.name)
         embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
-        embed.set_thumbnail(url=ctx.message.mentions[0].avatar_url)
+        embed.set_thumbnail(url=pick.avatar_url)
         await ctx.channel.send(embed=embed)
 
         status_embed = self.__status_message.embeds[0]
-        team_field = status_embed.fields[4 if pick_info[1] == CaptainStatus.CAPTAIN_A else 5]
-        status_embed.set_field_at(index=(4 if pick_info[1] == CaptainStatus.CAPTAIN_A else 5), name=team_field.name,
-                                  value=(team_field.value + "\n" + ctx.message.mentions[0].name))
+        team_field = status_embed.fields[4 if captain_team_status == TeamStatus.A else 5]
+        status_embed.set_field_at(index=(4 if captain_team_status == TeamStatus.A else 5), name=team_field.name,
+                                  value=(team_field.value + "\n" + pick.name))
 
-        if pick_info[2] is not None and pick_info[3] is not None:
-            last_pick_profile = find(lambda p: str(p.id) == pick_info[2], ctx.guild.members)
-
-            role_config_property_lp = Config.get_config_property("tenman", "teamA", "playerRole") if pick_info[3] == CaptainStatus.CAPTAIN_A else Config.get_config_property("tenman", "teamB", "playerRole")
+        if last_pick[0] is not None and last_pick[1] is not None:
+            last_pick_profile = find(lambda p: p.id == last_pick[0], ctx.guild.members)
+            role_config_property_lp = Config.get_config_property("tenman", "team" + last_pick[1].name, "playerRole")
             role_lp = find(lambda r: r.name == role_config_property_lp, ctx.guild.roles)
 
             await last_pick_profile.add_roles(role_lp)
 
             embed_lp = discord.Embed(
                 title="Last Pick",
-                color=discord.Color.red() if pick_info[3] == CaptainStatus.CAPTAIN_A else discord.Color.blue()
+                color=discord.Color.red() if last_pick[1] == TeamStatus.A else discord.Color.blue()
             )
             embed_lp.set_thumbnail(url=last_pick_profile.avatar_url)
             embed_lp.add_field(name="Name", value=last_pick_profile.name)
-            embed_lp.add_field(name="Picked for", value="Team " + ("A" if pick_info[3] == CaptainStatus.CAPTAIN_A else "B"))
+            embed_lp.add_field(name="Picked for", value="Team " + last_pick[1].name)
             embed_lp.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
             await ctx.channel.send(embed=embed_lp)
             status_embed.remove_field(index=3)
-            status_embed.set_field_at(index=(3 if pick_info[2] == CaptainStatus.CAPTAIN_A else 4), name=team_field.name,
+            status_embed.set_field_at(index=(3 if last_pick[0] == TeamStatus.A else 4), name=team_field.name,
                                       value=(team_field.value + "\n" + last_pick_profile.name))
             status_embed.set_field_at(index=5, name=status_embed.fields[5].name, value=status_embed.fields[5].value, inline=True)
         else:
             rp_field = status_embed.fields[3]
             status_embed.set_field_at(index=3, name=rp_field.name, value="\n".join(
-                [find(lambda u: str(u.id) == rp, ctx.guild.members).name for rp in
-                 self.__ongoing.get_remaining_participant_ids()]))
+                [find(lambda u: u.id == rp, ctx.guild.members).name for rp in self.__ongoing.get_remaining_participant_ids()]))
             status_embed.set_field_at(index=5, name=status_embed.fields[5].name, value=status_embed.fields[5].value,
                                       inline=True)
         await self.__status_message.edit(embed=status_embed)
 
-    @commands.command(name="tm_bm")
+        if self.__display_help:
+            try:
+                message = "***Help Message:***\nIt is Team " + self.__ongoing.peek_next_player_pick().name + "'s " \
+                          "turn to pick the next player.\nThey can do so by using the command\n`.pick_player @player`"
+            except IndexError:
+                map_pick_ban_entry = self.__ongoing.peek_next_map_pick_ban()
+                message = "***Help Message:***\nIt is now time to move on to the map pick/ban phase. Team " \
+                          + map_pick_ban_entry.get_team_status().name + " can " + \
+                          map_pick_ban_entry.get_mode().name.lower() + " the first map.\nThey can do so by using the " \
+                          "command\n`." + map_pick_ban_entry.get_mode().name.lower() + "_map map`"
+            await ctx.channel.send(message)
+
+    @commands.command(name="tm_ban_map", aliases=["ban_map"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
     async def ban_map(self, ctx, map_name):
         map_name = map_name.lower().replace(" ", "")
-        captain, decider = self.__ongoing.ban_map(map_name, str(ctx.message.author.id))
+        captain_id = ctx.message.author.id
+        status = self.__ongoing.get_captain_team_status()
+        decider = self.__ongoing.ban_map(map_name, captain_id)
 
         embed = discord.Embed(
             title="Map Banned",
@@ -212,15 +232,14 @@ class TenManCog(commands.Cog):
         )
         embed.set_image(url=self.__resources[map_name])
         embed.add_field(name="Map Name", value=map_name.capitalize())
-        embed.add_field(name="Banned by", value="Team " + ("A" if captain == CaptainStatus.CAPTAIN_A else "B"))
+        embed.add_field(name="Banned by", value="Team " + status.name)
         embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
 
         await ctx.channel.send(embed=embed)
 
         status_embed = self.__status_message.embeds[0]
 
-        banned_text = map_name.capitalize() + " - Team " + (
-            "A" if captain == CaptainStatus.CAPTAIN_A else "B")
+        banned_text = map_name.capitalize() + " - Team " + status.name
         try:
             banned_field = status_embed.fields[6]
             status_embed.set_field_at(index=6, name=banned_field.name, value=banned_field.value + "\n" + banned_text)
@@ -245,12 +264,24 @@ class TenManCog(commands.Cog):
 
         await self.__status_message.edit(embed=status_embed)
 
-    @commands.command(name="tm_pm")
+        if self.__display_help:
+            map_pick_ban_entry = self.__ongoing.peek_next_map_pick_ban()
+            try:
+                message = "It is Team " + map_pick_ban_entry.get_team_status().name + "'s turn to " + \
+                          map_pick_ban_entry.get_mode().name.lower() + " a map.\nThey can do so by using the command" \
+                          "\n`." + map_pick_ban_entry.get_mode().name.lower() + "_map map`"
+            except IndexError:
+                message = "Map pick/ban phase is over. See you on the server!"
+            await ctx.channel.send(message)
+
+    @commands.command(name="tm_pick_map", aliases=["pick_map"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
     async def pick_map(self, ctx, map_name):
         map_name = map_name.lower().replace(" ", "")
-        captain = self.__ongoing.pick_map(map_name, str(ctx.message.author.id))
+        captain_id = ctx.message.author.id
+        status = self.__ongoing.get_captain_team_status(captain_id)
+        self.__ongoing.pick_map(map_name, captain_id)
 
         embed = discord.Embed(
             title="Map Picked",
@@ -258,32 +289,38 @@ class TenManCog(commands.Cog):
         )
         embed.set_image(url=self.__resources[map_name])
         embed.add_field(name="Map Name", value=map_name.capitalize())
-        embed.add_field(name="Picked by", value="Team " + ("A" if captain == CaptainStatus.CAPTAIN_A else "B"))
+        embed.add_field(name="Picked by", value="Team " + status.name)
         embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
 
         await ctx.channel.send(embed=embed)
 
         status_embed = self.__status_message.embeds[0]
 
-        status_embed.add_field(name="Team " + ("A" if captain == CaptainStatus.CAPTAIN_A else "B") + "'s Pick",
-                               value=map_name.capitalize())
+        status_embed.add_field(name="Team " + status.name + "'s Pick", value=map_name.capitalize())
 
         await self.__status_message.edit(embed=status_embed)
 
-    @commands.command(name="tm_ps")
+        if self.__display_help:
+            message = "It is Team " + self.__ongoing.get_side_pick_team().name + "'s turn to pick a side.\nThey can" \
+                      " do so by using the command\n`.pick_side side`"
+            await ctx.channel.send(message)
+
+    @commands.command(name="tm_pick_side", aliases=["pick_side"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
     async def pick_side(self, ctx, side):
-        side, status, decider = self.__ongoing.pick_side(str(ctx.message.author.id), side)
+        captain_id = ctx.message.author.id
+        side, decider = self.__ongoing.pick_side(captain_id, side)
+        status = self.__ongoing.get_captain_team_status(captain_id)
         status_embed = self.__status_message.embeds[0]
         pick_field = status_embed.fields[len(status_embed.fields) - 1]
         status_embed.set_field_at(index=len(status_embed.fields) - 1, name=pick_field.name, value=pick_field.value +
-                                  "\n" + ("A" if status == CaptainStatus.CAPTAIN_A else "B") + "'s Start Side: " + side.name)
+                                  "\n" + status.name + "'s Start Side: " + side.name)
         await self.__status_message.edit(embed=status_embed)
 
         embed = discord.Embed(
             title="Side Selected",
-            color=discord.Color.red() if status == CaptainStatus.CAPTAIN_A else discord.Color.blue()
+            color=discord.Color.red() if status == TeamStatus.A else discord.Color.blue()
         )
         if side == Side.CT:
             embed.set_thumbnail(url=self.__resources["csgoCTLogo"])
@@ -295,7 +332,7 @@ class TenManCog(commands.Cog):
             raise SyntaxError
 
         embed.add_field(name="Side", value=side.name)
-        embed.add_field(name="Team", value="A" if status == CaptainStatus.CAPTAIN_A else "B")
+        embed.add_field(name="Team", value=status.name)
         embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
         await ctx.channel.send(embed=embed)
 
@@ -308,11 +345,24 @@ class TenManCog(commands.Cog):
             embed_decider.add_field(name="Map Name", value=decider.capitalize())
             embed_decider.add_field(name="Type", value="Decider")
             embed_decider.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
-            status_embed.add_field(name="Decider", value=decider.capitalize())
-            status_embed.remove_field(index=5)
+            status_embed.add_field(name="Decider", value=decider.capitalize() + "\nB's Start Side: " + Side(randint(0, 1)).name)
+            status_embed.set_field_at(index=5, name="\u200b", value="\u200b")
+
             await ctx.channel.send(embed=embed_decider)
 
-    @commands.command(name="tm_f")
+        await self.__status_message.edit(embed=status_embed)
+
+        if self.__display_help:
+            try:
+                map_pick_ban_entry = self.__ongoing.peek_next_map_pick_ban()
+                message = "It is Team " + map_pick_ban_entry.get_team_status().name + "'s turn to " + \
+                          map_pick_ban_entry.get_mode().name.lower() + " a map.\nThey can do so by using the command" \
+                          "\n`." + map_pick_ban_entry.get_mode().name.lower() + "_map map`"
+            except IndexError:
+                message = "Map pick/ban phase is over. See you on the server!"
+            await ctx.channel.send(message)
+
+    @commands.command(name="tm_free", aliases=["free"])
     @commands.has_role(Config.get_config_property("tenman", "organizerRole"))
     async def free(self, ctx):
         captain_a_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamA", "captainRole"),
@@ -325,9 +375,11 @@ class TenManCog(commands.Cog):
                              ctx.guild.roles)
 
         await ctx.channel.send(content="Beginning deconstruction.")
-        for a, b in zip(self.__ongoing.get_teams()[0], self.__ongoing.get_teams()[1]):
-            await find(lambda u: str(u.id) == a, ctx.guild.members).remove_roles(captain_a_role, player_a_role)
-            await find(lambda u: str(u.id) == b, ctx.guild.members).remove_roles(captain_b_role, player_b_role)
+        teams = self.__ongoing.get_teams()
+
+        for a, b in zip(teams[0].get_players(), teams[1].get_players()):
+            await find(lambda u: u.id == a, ctx.guild.members).remove_roles(captain_a_role, player_a_role)
+            await find(lambda u: u.id == b, ctx.guild.members).remove_roles(captain_b_role, player_b_role)
         await ctx.channel.send(content="Players freed.")
 
         self.__ongoing = None

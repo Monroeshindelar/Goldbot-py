@@ -1,159 +1,208 @@
 from _global.Config import Config
+from core.model.TenMan.Team import Team
 from core.model.TenMan.Game import Game
-from core.model.TenMan.CaptainStatus import CaptainStatus
+from core.model.TenMan.TeamStatus import TeamStatus
 from core.model.TenMan.Side import Side
 from typing import Tuple, List
-import random
+from core.model.TenMan.TeamsManager import TeamsManager
+from core.model.TenMan.MapPickBanEntry import MapPickBanEntry
+from core.model.TenMan.PickBanMode import PickBanMode
+from random import randint
 
 
 class TenMan:
     def __init__(self, participant_id_list: list, game: Game):
+        # Initial list of participants
         self.__unselected_participants = participant_id_list
+        # Game being played
         self.__game = game
+        # Amount of games to be played
         self.__game_type = "bo3"
+
+        # Get the list of maps for the game being played.
         if self.__game == Game.CSGO:
             self.__unselected_maps = [m.lower() for m in Config.get_config_property("tenman", "maps", "csgo")]
-            self.__map_pick_ban_sequence = Config.get_config_property("tenman", "mapPickBanSequence", "csgo",
-                                                                      self.__game_type).split("-")
+            self.__map_pick_ban_sequence = [MapPickBanEntry(s) for s in Config.get_config_property("tenman", "mapPickBanSequence",
+                                      "csgo", self.__game_type).split("-")]
         elif self.__game == Game.VALORANT:
             self.__unselected_maps = [m.lower() for m in Config.get_config_property("tenman", "maps", "valorant")]
-            self.__map_pick_ban_sequence = Config.get_config_property("tenman", "mapPickBanSequence", "valorant",
-                                                                      self.__game_type).split("-")
+            self.__map_pick_ban_sequence = [MapPickBanEntry(s) for s in Config.get_config_property("tenman", "mapPickBanSequence", "valorant",
+                                      self.__game_type).split("-")]
         else:
             raise SyntaxError()
 
-        self.__team_a = []
-        self.__team_b = []
+        self.__teams_manager = None
+
+        # List of maps to pay
         self.__picked_maps = []
-        self.__player_pick_sequence = Config.get_config_property("tenman", "playerPickSequence").split("-")
+        # Order captains pick players
+        self.__player_pick_sequence = [TeamStatus.get(s) for s in Config.get_config_property("tenman", "playerPickSequence").split("-")]
+        # Flag set when waiting for other team to pick side
         self.__wait_for_side_pick = False
+        # Team that picks the side
         self.__side_pick_team = None
 
-        if len(self.__player_pick_sequence) < 10 or len(self.__player_pick_sequence) > 10:
-            raise SyntaxError
+        # Bail if there are not exactly 10 members
+        # if len(self.__player_pick_sequence) < 10 or len(self.__player_pick_sequence) > 10:
+        #     raise SyntaxError
+        #
+        # # Bail if the number of players on each team would not be equal
+        # if self.__player_pick_sequence.count(TeamStatus.A) != self.__player_pick_sequence.count(TeamStatus.B):
+        #     raise SyntaxError
 
-        if self.__player_pick_sequence.count("A") != 5 and self.__player_pick_sequence.count("B") != 5:
-            raise SyntaxError
-
-    def get_remaining_participant_ids(self) -> List[str]:
+    def get_remaining_participant_ids(self) -> List[int]:
+        """
+        :return: List of participants that have not been placed on a team
+        """
         return self.__unselected_participants
 
     def get_remaining_maps(self) -> List[str]:
+        """
+        :return: List of maps that have not been selected
+        """
         return [m.capitalize() for m in self.__unselected_maps]
 
-    def get_teams(self) -> Tuple[List[str], List[str]]:
-        return self.__team_a, self.__team_b
+    def get_captain_team_status(self, captain_id: int):
+        return self.__teams_manager.get_team_status_from_captain(captain_id)
 
-    def set_or_pick_captains(self, captain_ids: List[str]) -> Tuple[str, str]:
-        if len(self.__team_a) > 0 or len(self.__team_b) > 0:
+    def get_side_pick_team(self) -> TeamStatus:
+        return self.__side_pick_team
+
+    def get_teams(self) -> Tuple[Team, Team]:
+        return self.__teams_manager.get_teams()
+
+    def peek_next_player_pick(self) -> TeamStatus:
+        return self.__player_pick_sequence[0]
+
+    def peek_next_map_pick_ban(self) -> MapPickBanEntry:
+        return self.__map_pick_ban_sequence[0]
+
+    def set_or_pick_captains(self, captain_ids: List[int]) -> Tuple[int, int]:
+        """
+        Sets the captains if they are selected manually. If no captain ids are provided to the function they will be
+        randomly selected and set
+        :param captain_ids: A list that should either contain 0 ore two captain ids
+        :return: A tuple that contains the ids of the two captains for each team. Index 0 is captain A and
+                 index 1 is captain B
+        """
+        # Bail if there are already people on the team
+        # if len(self.__team_a) > 0 or len(self.__team_b) > 0:
+        #     raise SyntaxError
+        if self.__teams_manager is not None:
             raise SyntaxError
 
+        # Set the captains if they are provided. Randomly select them if they are not
         try:
-            self.__unselected_participants.remove(str(captain_ids[0]))
-            self.__unselected_participants.remove(str(captain_ids[1]))
+            self.__unselected_participants.remove(captain_ids[0])
+            self.__unselected_participants.remove(captain_ids[1])
         except (TypeError, IndexError):
             captain_ids = []
             for x in range(2):
-                index = random.randint(0, len(self.__unselected_participants) - 1)
-                captain_ids.append(str(self.__unselected_participants.pop(index)))
+                index = randint(0, len(self.__unselected_participants) - 1)
+                captain_ids.append(self.__unselected_participants.pop(index))
 
-        self.__team_a.append(str(captain_ids[0]))
-        self.__team_b.append(str(captain_ids[1]))
+        # # Add the captains to the team
+        self.__teams_manager = TeamsManager(captain_ids[0], captain_ids[1])
         return captain_ids[0], captain_ids[1]
 
-    def pick_player(self, player_id: str, captain_id: str) -> Tuple[str, CaptainStatus, str, CaptainStatus]:
+    def pick_player(self, player_id: int, captain_id: int) -> Tuple[int, TeamStatus]:
+        """
+        :param player_id: Id of player being picked
+        :param captain_id: Id of captain picking the player
+        :return: A tuple that contains the id and team of the last pick if one exits. None/None otherwise
+        """
+        # Bail if the caller wasn't the captain
         if not self.__captain_turn(captain_id):
             raise SyntaxError
 
+        # Bail if there are no more participants to select
         if len(self.__unselected_participants) == 0:
             raise SyntaxError
 
+        # Remove the participant from the list. Bail if they selected someone who isnt a participant
         try:
-            self.__unselected_participants.remove(str(player_id))
+            self.__unselected_participants.remove(player_id)
         except ValueError:
             raise SyntaxError
 
-        self.__get_captain_team(captain_id).append(str(player_id))
+        # Let the teams manager add the player to the correct team
+        self.__teams_manager.add_player(player_id, self.__teams_manager.get_team_status_from_captain(captain_id))
         self.__player_pick_sequence.pop(0)
 
         last_pick_id = None
         last_pick_captain_status = None
 
+        # If there is only one more player, automatically add them to the team
         if len(self.__unselected_participants) == 1:
-            last_pick_captain_status = CaptainStatus.CAPTAIN_A if self.__player_pick_sequence.pop(0) == "A" else CaptainStatus.CAPTAIN_B
-            team = self.__team_a if last_pick_captain_status == CaptainStatus.CAPTAIN_A else self.__team_b
-
             last_pick_id = self.__unselected_participants.pop(0)
-            team.append(last_pick_id)
+            last_pick_captain_status = self.__player_pick_sequence.pop(0)
+            self.__teams_manager.add_player(last_pick_id, last_pick_captain_status)
 
-        return player_id, self.__get_captain_status(str(captain_id)), last_pick_id, last_pick_captain_status
+        return last_pick_id,  last_pick_captain_status
 
-    def ban_map(self, map: str, captain_id: str) -> Tuple[CaptainStatus, str]:
-        captain_status, decider = self.__map_pick_ban_helper(map, captain_id, True)
-        return captain_status, decider
+    def ban_map(self, game_map: str, captain_id: int) -> str:
+        """
+        :param game_map: Map being banned
+        :param captain_id: Id of captain banning map
+        :return: A tuple containing the team of the captain that banned the map and the name of the map
+        """
+        self.__map_pick_ban_helper(game_map, captain_id, True)
+        decider = None
+        if len(self.__map_pick_ban_sequence) == 0:
+            decider = self.__get_decider_map()
 
-    def pick_map(self, map: str, captain_id: str) -> CaptainStatus:
-        captain_status, decider = self.__map_pick_ban_helper(map, captain_id, False)
-        self.__picked_maps.append(map)
+        return decider
+
+    def pick_map(self, game_map: str, captain_id: int):
+        """
+        :param game_map: Map being picked
+        :param captain_id: Id of captain banning map
+        :return: The team of the calling captain
+        """
+        self.__map_pick_ban_helper(game_map, captain_id, False)
+        self.__picked_maps.append(game_map)
         self.__wait_for_side_pick = True
-        return captain_status
 
-    def pick_side(self, captain_id: str, side: str) -> Tuple[Side, CaptainStatus, str]:
-        status = self.__get_captain_status(captain_id)
+    def pick_side(self, captain_id: int, side: str) -> Tuple[Side, str]:
+        """
+        :param captain_id: Id of calling captain
+        :param side: picked side
+        :return: A tuple containing the picked side, the team of the captain who picked, and the decider map pick if
+                 one exists (otherwise none)
+        """
+        status = self.__teams_manager.get_team_status_from_captain(captain_id)
 
-        if self.__side_pick_team is CaptainStatus.CAPTAIN_A and not status == CaptainStatus.CAPTAIN_A or \
-                self.__side_pick_team is CaptainStatus.CAPTAIN_B and not status == CaptainStatus.CAPTAIN_B:
+        # Bail if the wrong team is trying to pick side
+        if self.__side_pick_team is TeamStatus.A and not status == TeamStatus.A or \
+                self.__side_pick_team is TeamStatus.B and not status == TeamStatus.B:
             raise SyntaxError
 
+        # Set wait for side pick flag to reflect a side has been picked
         self.__wait_for_side_pick = False
+        # Reset side pick team
         self.__side_pick_team = None
 
+        # Check to see if a decider map needs to be picked
+        # This only really happens for the valorant game pick currently, because there is an even number of maps and
+        # there are too little maps for both teams to ban a map and play a best of three.
+        # If there are multiple remaining maps, one will be randomly selected.
         decider = None
-
         if len(self.__map_pick_ban_sequence) == 0:
-            index = random.randint(0, len(self.__unselected_maps) - 1)
-            decider = self.__unselected_maps.pop(index)
-            self.__picked_maps.append(decider)
+            decider = self.__get_decider_map()
 
-        return Side.get(side), status, decider
+        return Side.get(side), decider
 
-    def __get_captain_status(self, captain_id: str) -> CaptainStatus:
-        try:
-            if self.__team_a[0] == captain_id:
-                return CaptainStatus.CAPTAIN_A
-            elif self.__team_b[0] == captain_id:
-                return CaptainStatus.CAPTAIN_B
-            else:
-                return CaptainStatus.NOT_CAPTAIN
-        except IndexError:
-            return CaptainStatus.NOT_CAPTAIN
+    def __captain_turn(self, captain_id: int) -> bool:
+        return self.__player_pick_sequence[0] == self.__teams_manager.get_team_status_from_captain(captain_id)
 
-    def __captain_turn(self, captain_id: str) -> bool:
-        next_pick = self.__player_pick_sequence[0]
-        status = self.__get_captain_status(str(captain_id))
-
-        if status is CaptainStatus.NOT_CAPTAIN or (next_pick == "A" and status is not CaptainStatus.CAPTAIN_A) or \
-                (next_pick == "B" and status is not CaptainStatus.CAPTAIN_B):
-            return False
-        else:
-            return True
-
-    def __get_captain_team(self, captain_id: str) -> List[str]:
-        if self.__get_captain_status(str(captain_id)) == CaptainStatus.CAPTAIN_A:
-            return self.__team_a
-        elif self.__get_captain_status(str(captain_id)) == CaptainStatus.CAPTAIN_B:
-            return self.__team_b
-        else:
-            raise SyntaxError
-
-    def __map_pick_ban_helper(self, map: str, captain_id: str, is_ban: bool) -> Tuple[CaptainStatus, str]:
+    def __map_pick_ban_helper(self, game_map: str, captain_id: int, is_ban: bool):
         if len(self.__unselected_participants) > 0:
             raise SyntaxError
 
         if len(self.__map_pick_ban_sequence) == 0:
             raise SyntaxError
 
-        status = self.__get_captain_status(captain_id)
+        status = self.__teams_manager.get_team_status_from_captain(captain_id)
         self.__set_side_pick_team(status)
 
         try:
@@ -161,39 +210,36 @@ class TenMan:
         except IndexError:
             raise SyntaxError
 
-        next_pick_info = sequence.split("~")
-        mode = next_pick_info[0]
-        team = next_pick_info[1]
+        mode = sequence.get_mode()
+        team = sequence.get_team_status()
 
-        if status is CaptainStatus.NOT_CAPTAIN or (team == "A" and status is not CaptainStatus.CAPTAIN_A) or \
-                (team == "B" and status is not CaptainStatus.CAPTAIN_B):
+        if status != team:
             raise SyntaxError
 
-        if is_ban and mode == "P" or not is_ban and mode == "X":
+        if (is_ban and mode == PickBanMode.PICK) or (not is_ban and mode == PickBanMode.BAN):
             raise SyntaxError
 
-        if self.__wait_for_side_pick and ((mode == "P" and team == "B") or (mode == "X" and team == "A")):
+        if self.__wait_for_side_pick and ((mode == PickBanMode.PICK and team == TeamStatus.B) or
+                                          (mode == PickBanMode.BAN and team == TeamStatus.A)):
             raise SyntaxError
 
-        if map not in self.__unselected_maps:
+        if game_map not in self.__unselected_maps:
             raise SyntaxError
 
         self.__map_pick_ban_sequence.pop(0)
-        self.__unselected_maps.remove(map)
+        self.__unselected_maps.remove(game_map)
 
-        decider = None
-
-        if len(self.__map_pick_ban_sequence) == 0:
-            index = random.randint(0, len(self.__unselected_maps) - 1)
-            decider = self.__unselected_maps.pop(index)
-            self.__picked_maps.append(decider)
-
-        return status, decider
-
-    def __set_side_pick_team(self, map_pick_team: CaptainStatus):
-        if map_pick_team is not CaptainStatus.CAPTAIN_A and map_pick_team is not CaptainStatus.CAPTAIN_B:
+    def __set_side_pick_team(self, map_pick_team: TeamStatus):
+        if map_pick_team is not TeamStatus.A and map_pick_team is not TeamStatus.B:
             raise SyntaxError
-        elif map_pick_team is CaptainStatus.CAPTAIN_A:
-            self.__side_pick_team = CaptainStatus.CAPTAIN_B
-        elif map_pick_team is CaptainStatus.CAPTAIN_B:
-            self.__side_pick_team = CaptainStatus.CAPTAIN_A
+        elif map_pick_team is TeamStatus.A:
+            self.__side_pick_team = TeamStatus.B
+        elif map_pick_team is TeamStatus.B:
+            self.__side_pick_team = TeamStatus.A
+
+    def __get_decider_map(self) -> str:
+        if len(self.__map_pick_ban_sequence) != 0:
+            raise SyntaxError
+
+        index = randint(0, len(self.__unselected_maps) - 1)
+        return self.__unselected_maps.pop(index)

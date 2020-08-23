@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class Side(Enum):
-    CT = 0,
-    T = 1,
+    CT = 0
+    T = 1
     RANDOM = 2
 
     @staticmethod

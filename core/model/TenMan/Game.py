@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Game(Enum):
-    CSGO = 0,
+    CSGO = 0
     VALORANT = 1
 
     @staticmethod
