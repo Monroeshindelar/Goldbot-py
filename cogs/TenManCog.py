@@ -11,6 +11,7 @@ import yaml
 import logging
 import discord
 from random import randint
+import inspect
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -45,8 +46,8 @@ class TenManCog(commands.Cog):
         # Get the arguments from the command message. Game command is necessary (CSGO/Valorant)
         try:
             parsed_args = TenManArgParsers.TM_INIT_ARG_PARSER.parse_known_args(args)[0]
-        except ArgumentParserError as e:
-            raise commands.ArgumentParsingError(message=e.args[0])
+        except ArgumentParserError:
+            raise commands.MissingRequiredArgument(param=inspect.Parameter(name="Game"))
 
         game = Game.get(parsed_args.game)
 
@@ -56,11 +57,11 @@ class TenManCog(commands.Cog):
         # voice channel and creates a list of all their ids.
         general_voice = find(lambda v: v.name == Config.get_config_property("tenman", "generalVoice"),
                              ctx.guild.voice_channels)
-        # member_list = [m.id for m in general_voice.members]
-        member_list = [148297442452963329, 645696336469164107, 727670795081351188, 727672213871919215, 727672966539771934]
+        member_list = [m.id for m in general_voice.members]
+        # member_list = [148297442452963329, 645696336469164107, 727670795081351188, 727672213871919215, 727672966539771934]
         # If there are more than 10 or less than 10 members there is going to be a problem
-        # if len(member_list) is not 10:
-        #     raise SyntaxError
+        if len(member_list) is not 10:
+            raise SyntaxError
 
         self.__ongoing = TenMan(member_list, game)
 

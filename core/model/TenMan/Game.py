@@ -1,4 +1,5 @@
 from enum import Enum
+from discord.ext.commands import BadArgument
 
 
 class Game(Enum):
@@ -13,3 +14,5 @@ class Game(Enum):
             return Game.CSGO
         elif g == "valorant":
             return Game.VALORANT
+        else:
+            raise BadArgument("Not a recognized game.")

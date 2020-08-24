@@ -1,27 +1,23 @@
 import logging
 import pytz
 import asyncio
-import os
-from ErrorHandling.Exceptions.TenMan.EntityError import EntityError
-from ErrorHandling.Exceptions.TenMan.InitializationError import InitializationError
-from ErrorHandling.Exceptions.TenMan.TurnError import TurnError
-from ErrorHandling.Exceptions.TenMan.PhaseError import PhaseError
+import re
 from itertools import cycle
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from discord.ext import commands
 from discord.utils import find
 from _global.Config import Config
 from core.LeaderboardHandler import LeaderboardHandler
+from logging.handlers import TimedRotatingFileHandler
 
 
 LOGGER = logging.getLogger("goldlog")
 LOGGER.setLevel(logging.DEBUG)
 
-today = date.today()
-if not os.path.exists("bin/log"):
-    os.makedirs("bin/log")
-fh = logging.FileHandler("bin/log/" + str(today) + "_goldbot.log")
+fh = TimedRotatingFileHandler("bin/log/gold.log", when="midnight", interval=1)
 fh.setLevel(logging.DEBUG)
+fh.suffix = "%Y%m%d"
+fh.extMatch = re.compile(r"^\d{8}$")
 
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
@@ -39,11 +35,12 @@ TZ = pytz.timezone(Config.get_config_property("server", "timezone"))
 LEADERBOARD_HANDLER = LeaderboardHandler.get_leaderboard_handler()
 
 cogs = [
-    "cogs.TournamentCog",
+    "cogs.CommandErrorHandler",
+    "cogs.ServerCog",
     "cogs.UserAccountCog",
-    "cogs.SquadlockeCog",
     "cogs.TenManCog",
-    "cogs.ServerCog"
+    "cogs.TournamentCog",
+    "cogs.SquadlockeCog"
 ]
 
 bot = commands.Bot(command_prefix=BOT_PREFIX)
@@ -51,20 +48,6 @@ bot = commands.Bot(command_prefix=BOT_PREFIX)
 if __name__ == '__main__':
     for cog in cogs:
         bot.load_extension(cog)
-
-
-@bot.event
-async def on_command_error(ctx, error):
-    error = getattr(error, "original", error)
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.channel.send(content="You are missing required arguments for this command:\n`" + error.param.name +
-                                       "`")
-    elif isinstance(error, (commands.BadArgument, commands.UserInputError, commands.ArgumentParsingError,
-                            commands.MissingAnyRole, commands.MissingRole, EntityError, TurnError, PhaseError,
-                            InitializationError)):
-        await ctx.channel.send(content=error.args[0])
-    else:
-        LOGGER.error(msg=error.args[0])
 
 
 async def __leaderboard_job():

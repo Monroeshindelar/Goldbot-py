@@ -1,4 +1,5 @@
 from enum import Enum
+from discord.ext.commands import BadArgument
 
 
 class TeamStatus(Enum):
@@ -13,12 +14,4 @@ class TeamStatus(Enum):
         elif s == "b":
             return TeamStatus.B
         else:
-            raise SyntaxError
-
-    @staticmethod
-    def to_string(status: "TeamStatus") -> str:
-        if status == TeamStatus.A:
-            return "A"
-        elif status == TeamStatus.B:
-            return "B"
-
+            raise BadArgument("Unrecognized team status")

@@ -1,4 +1,5 @@
 from enum import Enum
+from discord.ext.commands import BadArgument
 
 
 class PickBanMode(Enum):
@@ -12,3 +13,5 @@ class PickBanMode(Enum):
             return PickBanMode.PICK
         elif s == "x":
             return PickBanMode.BAN
+        else:
+            raise BadArgument("Unrecognized pick/ban mode.")

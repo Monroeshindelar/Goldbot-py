@@ -32,8 +32,6 @@ class TenMan:
             self.__unselected_maps = [m.lower() for m in Config.get_config_property("tenman", "maps", "valorant")]
             self.__map_pick_ban_sequence = [MapPickBanEntry(s) for s in Config.get_config_property("tenman", "mapPickBanSequence", "valorant",
                                       self.__game_type).split("-")]
-        else:
-            raise SyntaxError()
 
         self.__teams_manager = None
 

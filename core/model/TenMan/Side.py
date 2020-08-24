@@ -1,4 +1,5 @@
 from enum import Enum
+from discord.ext.commands import BadArgument
 
 
 class Side(Enum):
@@ -16,4 +17,4 @@ class Side(Enum):
         elif s == "r" or s == "random":
             return Side.RANDOM
         else:
-            raise SyntaxError
+            raise BadArgument("Unrecognized side")
