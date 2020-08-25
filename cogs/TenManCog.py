@@ -105,10 +105,12 @@ class TenManCog(commands.Cog):
         # Get captains either randomly or manually (based on # of mentioned users)
         captain_ids = ctx.message.raw_mentions
         captains = self.__ongoing.set_or_pick_captains(captain_ids)
-        captain_a = find(lambda c: str(c.id) == str(captains[0]), ctx.guild.members)
+        captain_a = find(lambda c: c.id == captains[0], ctx.guild.members)
         captain_b = find(lambda c: str(c.id) == str(captains[1]), ctx.guild.members)
         await captain_a.add_roles(captain_a_role)
+        await self.__move_user_to_proper_voice(ctx, captain_a, TeamStatus.A)
         await captain_b.add_roles(captain_b_role)
+        await self.__move_user_to_proper_voice(ctx, captain_b, TeamStatus.B)
 
         # Pretty output for discord
         embed_a = discord.Embed(
@@ -161,6 +163,7 @@ class TenManCog(commands.Cog):
         role = find(lambda r: r.name == role_config_property, ctx.guild.roles)
 
         await ctx.message.mentions[0].add_roles(role)
+        await self.__move_user_to_proper_voice(ctx, ctx.message.mentions[0], captain_team_status)
 
         embed = discord.Embed(
             title="Player Selected",
@@ -383,6 +386,12 @@ class TenManCog(commands.Cog):
         await ctx.channel.send(content="Players freed.")
 
         self.__ongoing = None
+
+    @staticmethod
+    async def __move_user_to_proper_voice(ctx: commands.context.Context, user: discord.Member, status: TeamStatus):
+        voice = find(lambda v: v.name == Config.get_config_property("tenman", "team" + status.name, "voice"),
+                     ctx.guild.voice_channels)
+        await user.move_to(voice)
 
 
 def setup(bot):
