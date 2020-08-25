@@ -2,11 +2,11 @@ from discord.ext import commands
 from discord.utils import find
 from _global.Config import Config
 from core.TenMan import TenMan
-from core.model.TenMan.Game import Game
-from core.model.TenMan.TeamStatus import TeamStatus
-from core.model.TenMan.Side import Side
-from _global.ArgParsers.TenManArgParsers import TenManArgParsers
-from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
+from core.model.tenman.Game import Game
+from core.model.tenman.TeamStatus import TeamStatus
+from core.model.tenman.Side import Side
+from _global.argparsers.TenManArgParsers import TenManArgParsers
+from _global.argparsers.ThrowingArgumentParser import ArgumentParserError
 import yaml
 import logging
 import discord
@@ -19,7 +19,7 @@ LOGGER = logging.getLogger("goldlog")
 class TenManCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # core.model.TenMan
+        # core.model.tenman
         self.__ongoing = None
         # Message for displaying the current status of the tenman (teams, map picks, etc.)
         self.__status_message = None

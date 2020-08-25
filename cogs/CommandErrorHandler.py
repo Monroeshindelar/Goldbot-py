@@ -3,10 +3,10 @@ import traceback
 import sys
 import logging
 from discord.ext import commands
-from ErrorHandling.Exceptions.TenMan.EntityError import EntityError
-from ErrorHandling.Exceptions.TenMan.InitializationError import InitializationError
-from ErrorHandling.Exceptions.TenMan.TurnError import TurnError
-from ErrorHandling.Exceptions.TenMan.PhaseError import PhaseError
+from errorhandling.exceptions.tenman.EntityError import EntityError
+from errorhandling.exceptions.tenman.InitializationError import InitializationError
+from errorhandling.exceptions.tenman.TurnError import TurnError
+from errorhandling.exceptions.tenman.PhaseError import PhaseError
 
 LOGGER = logging.getLogger("goldlog")
 

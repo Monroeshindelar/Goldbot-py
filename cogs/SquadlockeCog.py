@@ -7,11 +7,11 @@ from cogs.helper.challonge import TournamentCommands
 from _global.Config import Config
 from utilities.Misc import read_save_file, save_file
 from _global.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
-from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
+from _global.argparsers.SquadlockeArgParsers import SquadlockeArgParsers
 from utilities.DiscordServices import build_embed
 from core.model.squadlocke.RouteEncounter import RouteEncounter
-from utilities.Parsers.SerebiiParser import SerebiiParser
-from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
+from utilities.parsers.SerebiiParser import SerebiiParser
+from _global.argparsers.ThrowingArgumentParser import ArgumentParserError
 
 LOGGER = logging.getLogger("goldlog")
 

@@ -1,16 +1,16 @@
 from _global.Config import Config
-from core.model.TenMan.Team import Team
-from core.model.TenMan.Game import Game
-from core.model.TenMan.TeamStatus import TeamStatus
-from core.model.TenMan.Side import Side
+from core.model.tenman.Team import Team
+from core.model.tenman.Game import Game
+from core.model.tenman.TeamStatus import TeamStatus
+from core.model.tenman.Side import Side
 from typing import Tuple, List
-from core.model.TenMan.TeamsManager import TeamsManager
-from core.model.TenMan.MapPickBanEntry import MapPickBanEntry
-from core.model.TenMan.PickBanMode import PickBanMode
-from ErrorHandling.Exceptions.TenMan.TurnError import TurnError
-from ErrorHandling.Exceptions.TenMan.PhaseError import PhaseError
-from ErrorHandling.Exceptions.TenMan.EntityError import EntityError
-from ErrorHandling.Exceptions.TenMan.InitializationError import InitializationError
+from core.model.tenman.TeamsManager import TeamsManager
+from core.model.tenman.MapPickBanEntry import MapPickBanEntry
+from core.model.tenman.PickBanMode import PickBanMode
+from errorhandling.exceptions.tenman.TurnError import TurnError
+from errorhandling.exceptions.tenman.PhaseError import PhaseError
+from errorhandling.exceptions.tenman.EntityError import EntityError
+from errorhandling.exceptions.tenman.InitializationError import InitializationError
 from random import randint
 
 

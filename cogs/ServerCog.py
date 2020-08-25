@@ -3,8 +3,8 @@ import json
 from tabulate import tabulate
 from discord.utils import find
 from discord.ext import commands
-from _global.ArgParsers.ServerArgParsers import ServerArgParsers
-from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
+from _global.argparsers.ServerArgParsers import ServerArgParsers
+from _global.argparsers.ThrowingArgumentParser import ArgumentParserError
 from _global.Config import Config
 
 LOGGER = logging.getLogger("goldlog")

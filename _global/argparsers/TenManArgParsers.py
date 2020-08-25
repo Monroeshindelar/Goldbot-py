@@ -1,4 +1,4 @@
-from _global.ArgParsers.ThrowingArgumentParser import ThrowingArgumentParser
+from _global.argparsers.ThrowingArgumentParser import ThrowingArgumentParser
 
 
 class TenManArgParsers:

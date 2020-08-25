@@ -1,5 +1,5 @@
-from core.model.TenMan.Team import Team
-from core.model.TenMan.TeamStatus import TeamStatus
+from core.model.tenman.Team import Team
+from core.model.tenman.TeamStatus import TeamStatus
 from typing import Tuple
 
 

@@ -1,4 +1,4 @@
-from core.model.TenMan.TeamStatus import TeamStatus
+from core.model.tenman.TeamStatus import TeamStatus
 from typing import List
 
 
