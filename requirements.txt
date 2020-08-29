@@ -1,0 +1,8 @@
+beautifulsoup4
+discord.py
+pandas
+pytz
+PyYAML
+numpy
+requests
+tabulate
