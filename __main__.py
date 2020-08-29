@@ -1,18 +1,18 @@
-from _global.Config import Config
-from utilities import Misc
-from core.Goldbot import Goldbot
+from _global.config import Config
+from utilities import misc
+from core.goldbot import Goldbot
 
-LOGGER = Misc.setup_logging()
+LOGGER = misc.setup_logging()
 
 
 def main():
     cogs = [
-        "cogs.CommandErrorHandler",
-        "cogs.ServerCog",
-        "cogs.UserAccountCog",
-        "cogs.TenManCog",
-        "cogs.TournamentCog",
-        "cogs.SquadlockeCog"
+        "cogs.commanderrorhandler",
+        #"cogs.servercog",
+        #"cogs.useraccountcog",
+        "cogs.tenmancog",
+        #"cogs.tournamentcog"
+        #"cogs.squadlockecog"
     ]
 
     bot = Goldbot(command_prefix=Config.get_config_property("prefix"))

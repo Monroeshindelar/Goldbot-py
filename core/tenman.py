@@ -1,16 +1,16 @@
-from _global.Config import Config
-from core.model.tenman.Team import Team
-from core.model.tenman.Game import Game
-from core.model.tenman.TeamStatus import TeamStatus
-from core.model.tenman.Side import Side
+from _global.config import Config
+from core.model.tenman.team import Team
+from core.model.tenman.game import Game
+from core.model.tenman.teamstatus import TeamStatus
+from core.model.tenman.side import Side
 from typing import Tuple, List
-from core.model.tenman.TeamsManager import TeamsManager
-from core.model.tenman.MapPickBanEntry import MapPickBanEntry
-from core.model.tenman.PickBanMode import PickBanMode
-from errorhandling.exceptions.tenman.TurnError import TurnError
-from errorhandling.exceptions.tenman.PhaseError import PhaseError
-from errorhandling.exceptions.tenman.EntityError import EntityError
-from errorhandling.exceptions.tenman.InitializationError import InitializationError
+from core.model.tenman.teamsmanager import TeamsManager
+from core.model.tenman.mappickbanentry import MapPickBanEntry
+from core.model.tenman.pickbanmode import PickBanMode
+from errorhandling.exceptions.tenman.turnerror import TurnError
+from errorhandling.exceptions.tenman.phaseerror import PhaseError
+from errorhandling.exceptions.tenman.entityerror import EntityError
+from errorhandling.exceptions.tenman.initializationerror import InitializationError
 from random import randint
 
 
@@ -24,14 +24,9 @@ class TenMan:
         self.__game_type = "bo3"
 
         # Get the list of maps for the game being played.
-        if self.__game == Game.CSGO:
-            self.__unselected_maps = [m.lower() for m in Config.get_config_property("tenman", "maps", "csgo")]
-            self.__map_pick_ban_sequence = [MapPickBanEntry(s) for s in Config.get_config_property("tenman", "mapPickBanSequence",
-                                      "csgo", self.__game_type).split("-")]
-        elif self.__game == Game.VALORANT:
-            self.__unselected_maps = [m.lower() for m in Config.get_config_property("tenman", "maps", "valorant")]
-            self.__map_pick_ban_sequence = [MapPickBanEntry(s) for s in Config.get_config_property("tenman", "mapPickBanSequence", "valorant",
-                                      self.__game_type).split("-")]
+        self.__unselected_maps = [m.lower() for m in Config.get_config_property("tenman", "maps", game.name.lower())]
+        self.__map_pick_ban_sequence = [MapPickBanEntry(s) for s in Config.get_config_property("tenman", "mapPickBanSequence",
+                                        game.name.lower(), self.__game_type).split("-")]
 
         self.__teams_manager = None
 

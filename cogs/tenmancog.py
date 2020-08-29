@@ -1,23 +1,28 @@
 from discord.ext import commands
 from discord.utils import find
-from _global.Config import Config
-from core.TenMan import TenMan
-from core.model.tenman.Game import Game
-from core.model.tenman.TeamStatus import TeamStatus
-from core.model.tenman.Side import Side
-from _global.argparsers.TenManArgParsers import TenManArgParsers
-from _global.argparsers.ThrowingArgumentParser import ArgumentParserError
+from _global.config import Config
+from core.tenman import TenMan
+from core.model.tenman.game import Game
+from core.model.tenman.teamstatus import TeamStatus
+from core.model.tenman.side import Side
+from _global.argparsers.tenmanargparsers import TenManArgParsers
+from _global.argparsers.throwingargumentparser import ArgumentParserError
+from random import randint
 import yaml
 import logging
 import discord
-from random import randint
 import inspect
 
 LOGGER = logging.getLogger("goldlog")
 
 
 class TenManCog(commands.Cog):
-    def __init__(self, bot):
+    """
+    The `Ten Man` module allows members of the discord server to start a ten man. A ten man is a game type where 10
+    players gather, form two teams, and compete against each other. A ten man can be orchestrated for
+    `Counter-Strike: Global Offensive` or `Valorant`
+    """
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         # core.model.tenman
         self.__ongoing = None
@@ -25,29 +30,33 @@ class TenManCog(commands.Cog):
         self.__status_message = None
         # Print help messages to help new users know which commands need to come next
         self.__display_help = False
+
         with open("bin/resources/tenman/resources.yml") as f:
             self.__resources = yaml.load(f, Loader=yaml.FullLoader)
         LOGGER.info("Initialized ten man command cog.")
 
     @commands.command(name="tm_init", aliases=["tm_start"])
     @commands.has_role(Config.get_config_property("tenman", "organizerRole"))
-    async def init(self, ctx, *args):
+    async def init(self, ctx: commands.context.Context, *args):
         """
         Initializes ten man with users in the general channel.
         Requires 10 users in the general voice channel
 
         SYNOPSIS
             .tm_init [-h] game
+
+        OPTIONS
+            -h --help   Provides help messages during the work flow
         """
         # Check if there is already a game going on and if there is bail
         if self.__ongoing is not None:
-            raise SyntaxError
+            raise commands.CommandError("There is already an ongoing ten man.")
 
         # Get the arguments from the command message. Game command is necessary (CSGO/Valorant)
         try:
-            parsed_args = TenManArgParsers.TM_INIT_ARG_PARSER.parse_known_args(args)[0]
+            parsed_args = TenManArgParsers.TM_INIT_ARG_PARSER.parse_known_args(args=args)[0]
         except ArgumentParserError:
-            raise commands.MissingRequiredArgument(param=inspect.Parameter(name="Game"))
+            raise commands.MissingRequiredArgument(inspect.Parameter(name="Game", kind=inspect.Parameter.POSITIONAL_OR_KEYWORD))
 
         game = Game.get(parsed_args.game)
 
@@ -58,12 +67,12 @@ class TenManCog(commands.Cog):
         general_voice = find(lambda v: v.name == Config.get_config_property("tenman", "generalVoice"),
                              ctx.guild.voice_channels)
         member_list = [m.id for m in general_voice.members]
-        # member_list = [148297442452963329, 645696336469164107, 727670795081351188, 727672213871919215, 727672966539771934]
+        member_list = [148297442452963329, 645696336469164107, 727670795081351188, 727672213871919215, 727672966539771934]
         # If there are more than 10 or less than 10 members there is going to be a problem
-        if len(member_list) is not 10:
-            raise SyntaxError
+        # if len(member_list) is not 10:
+        #     raise commands.CommandError("There were not enough players in the voice channel to start a ten man.")
 
-        self.__ongoing = TenMan(member_list, game)
+        self.__ongoing = TenMan(participant_id_list=member_list, game=game)
 
         # Pretty output for discord
         embed = discord.Embed(
@@ -71,10 +80,8 @@ class TenManCog(commands.Cog):
             description="Ten Man initialization completed!",
             color=discord.Color.dark_grey()
         )
-        if game == Game.CSGO:
-            logo = self.__resources["csgoLogo"]
-        elif game == Game.VALORANT:
-            logo = self.__resources["valorantLogo"]
+
+        logo = self.__resources[game.name.lower() + "Logo"]
 
         embed.add_field(name="Game", value=game.name)
         embed.add_field(name="Type", value="Best of 3")
@@ -93,10 +100,16 @@ class TenManCog(commands.Cog):
 
     @commands.command(name="tm_pick_captains", aliases=["pick_captains"])
     @commands.has_role(Config.get_config_property("tenman", "organizerRole"))
-    async def pick_captains(self, ctx):
+    async def pick_captains(self, ctx: commands.context.Context):
+        """
+        Makes mentioned players captain or selects two captains at random if none are provided
+
+        SYNOPSIS
+            .tm_pick_captains [@mention @mention]
+        """
         # Caller tried to manually select too many captains
         if len(ctx.message.mentions) > 2:
-            raise SyntaxError
+            raise commands.TooManyArguments("Attempted to pick too many captains.")
 
         # Create role objects for config
         captain_a_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamA", "captainRole"), ctx.guild.roles)
@@ -106,11 +119,9 @@ class TenManCog(commands.Cog):
         captain_ids = ctx.message.raw_mentions
         captains = self.__ongoing.set_or_pick_captains(captain_ids)
         captain_a = find(lambda c: c.id == captains[0], ctx.guild.members)
-        captain_b = find(lambda c: str(c.id) == str(captains[1]), ctx.guild.members)
+        captain_b = find(lambda c: c.id == captains[1], ctx.guild.members)
         await captain_a.add_roles(captain_a_role)
-        await self.__move_user_to_proper_voice(ctx, captain_a, TeamStatus.A)
         await captain_b.add_roles(captain_b_role)
-        await self.__move_user_to_proper_voice(ctx, captain_b, TeamStatus.B)
 
         # Pretty output for discord
         embed_a = discord.Embed(
@@ -134,6 +145,12 @@ class TenManCog(commands.Cog):
         await ctx.channel.send(embed=embed_a)
         await ctx.channel.send(embed=embed_b)
 
+        try:
+            await self.__move_user_to_proper_voice(ctx, captain_a, TeamStatus.A)
+            await self.__move_user_to_proper_voice(ctx, captain_b, TeamStatus.B)
+        except discord.errors.HTTPException:
+            pass
+
         status_embed = self.__status_message.embeds[0]
         rp_field = status_embed.fields[3]
         status_embed.set_field_at(index=3, name=rp_field.name, value="\n".join([find(lambda u: u.id == rp, ctx.guild.members).name for rp in self.__ongoing.get_remaining_participant_ids()]))
@@ -149,12 +166,21 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_pick_player", aliases=["pick_player"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
-    async def pick_player(self, ctx):
+    async def pick_player(self, ctx: commands.context.Context):
+        """
+        Adds player to calling captains team.
+
+        SYNOPSIS
+            .tm_pick_player @mention
+        """
         if len(ctx.message.raw_mentions) > 1:
-            raise SyntaxError
+            raise commands.TooManyArguments("Captain attempted to pick too many players.")
 
         captain_id = ctx.message.author.id
-        pick = ctx.message.mentions[0]
+        try:
+            pick = ctx.message.mentions[0]
+        except IndexError:
+            raise commands.MissingRequiredArgument(param=inspect.Parameter(name="Player", kind=inspect.Parameter.POSITIONAL_ONLY))
         captain_team_status = self.__ongoing.get_captain_team_status(captain_id)
 
         last_pick = self.__ongoing.pick_player(pick.id, captain_id)
@@ -163,7 +189,6 @@ class TenManCog(commands.Cog):
         role = find(lambda r: r.name == role_config_property, ctx.guild.roles)
 
         await ctx.message.mentions[0].add_roles(role)
-        await self.__move_user_to_proper_voice(ctx, ctx.message.mentions[0], captain_team_status)
 
         embed = discord.Embed(
             title="Player Selected",
@@ -174,6 +199,11 @@ class TenManCog(commands.Cog):
         embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
         embed.set_thumbnail(url=pick.avatar_url)
         await ctx.channel.send(embed=embed)
+
+        try:
+            await self.__move_user_to_proper_voice(ctx, ctx.message.mentions[0], captain_team_status)
+        except discord.errors.HTTPException:
+            pass
 
         status_embed = self.__status_message.embeds[0]
         team_field = status_embed.fields[4 if captain_team_status == TeamStatus.A else 5]
@@ -199,7 +229,8 @@ class TenManCog(commands.Cog):
             status_embed.remove_field(index=3)
             status_embed.set_field_at(index=(3 if last_pick[0] == TeamStatus.A else 4), name=team_field.name,
                                       value=(team_field.value + "\n" + last_pick_profile.name))
-            status_embed.set_field_at(index=5, name=status_embed.fields[5].name, value=status_embed.fields[5].value, inline=True)
+            status_embed.set_field_at(index=5, name=status_embed.fields[5].name, value=status_embed.fields[5].value,
+                                      inline=True)
         else:
             rp_field = status_embed.fields[3]
             status_embed.set_field_at(index=3, name=rp_field.name, value="\n".join(
@@ -223,7 +254,15 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_ban_map", aliases=["ban_map"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
-    async def ban_map(self, ctx, map_name):
+    async def ban_map(self, ctx: commands.context.Context, map_name: str):
+        """
+        Bans map and removes it from the selection pool
+
+        SYNOPSIS
+            .tm_ban_map map
+
+        :param map_name: Name of map selected for ban
+        """
         map_name = map_name.lower().replace(" ", "")
         captain_id = ctx.message.author.id
         status = self.__ongoing.get_captain_team_status(captain_id)
@@ -280,7 +319,14 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_pick_map", aliases=["pick_map"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
-    async def pick_map(self, ctx, map_name):
+    async def pick_map(self, ctx: commands.context.Context, map_name: str):
+        """
+        Selects map for play
+
+        SYNOPSIS:
+            .tm_pick_map map
+        :param map_name: Map picked to be played
+        """
         map_name = map_name.lower().replace(" ", "")
         captain_id = ctx.message.author.id
         status = self.__ongoing.get_captain_team_status(captain_id)
@@ -311,7 +357,15 @@ class TenManCog(commands.Cog):
     @commands.command(name="tm_pick_side", aliases=["pick_side"])
     @commands.has_any_role(Config.get_config_property("tenman", "teamA", "captainRole"),
                            Config.get_config_property("tenman", "teamB", "captainRole"))
-    async def pick_side(self, ctx, side):
+    async def pick_side(self, ctx: commands.context.Context, side: str):
+        """
+        Selects start side for team opposite of the one who last picked a map
+
+        SYNOPSIS
+            .tm_pick_side side
+
+        :param side: selected side
+        """
         captain_id = ctx.message.author.id
         side, decider = self.__ongoing.pick_side(captain_id, side)
         status = self.__ongoing.get_captain_team_status(captain_id)
@@ -325,15 +379,8 @@ class TenManCog(commands.Cog):
             title="Side Selected",
             color=discord.Color.red() if status == TeamStatus.A else discord.Color.blue()
         )
-        if side == Side.CT:
-            embed.set_thumbnail(url=self.__resources["csgoCTLogo"])
-        elif side == Side.T:
-            embed.set_thumbnail(url=self.__resources["csgoTLogo"])
-        elif side == Side.RANDOM:
-            embed.set_thumbnail(url=self.__resources["csgoBothLogo"])
-        else:
-            raise SyntaxError
 
+        embed.set_thumbnail(url=self.__resources["csgo" + side.name + "Logo"])
         embed.add_field(name="Side", value=side.name)
         embed.add_field(name="Team", value=status.name)
         embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
@@ -367,7 +414,13 @@ class TenManCog(commands.Cog):
 
     @commands.command(name="tm_free", aliases=["free"])
     @commands.has_role(Config.get_config_property("tenman", "organizerRole"))
-    async def free(self, ctx):
+    async def free(self, ctx: commands.context.Context):
+        """
+        Removes roles from all participating players
+
+        SYNOPSIS
+            .tm_free
+        """
         captain_a_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamA", "captainRole"),
                               ctx.guild.roles)
         captain_b_role = find(lambda r: r.name == Config.get_config_property("tenman", "teamB", "captainRole"),
@@ -394,5 +447,5 @@ class TenManCog(commands.Cog):
         await user.move_to(voice)
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(TenManCog(bot))

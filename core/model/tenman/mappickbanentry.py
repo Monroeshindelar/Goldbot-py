@@ -1,5 +1,5 @@
-from core.model.tenman.TeamStatus import TeamStatus
-from core.model.tenman.PickBanMode import PickBanMode
+from core.model.tenman.teamstatus import TeamStatus
+from core.model.tenman.pickbanmode import PickBanMode
 
 
 class MapPickBanEntry:

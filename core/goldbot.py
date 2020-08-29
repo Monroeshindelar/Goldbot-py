@@ -4,9 +4,10 @@ import pytz
 from itertools import cycle
 from datetime import datetime, timedelta
 from discord.utils import find
-from core.LeaderboardHandler import LeaderboardHandler
+from core.leaderboardhandler import LeaderboardHandler
 from discord.ext import commands
-from _global.Config import Config
+from _global.config import Config
+from cogs.helpcommand import HelpCommand
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -15,6 +16,7 @@ class Goldbot(commands.Bot):
     def __init__(self, command_prefix):
         super().__init__(command_prefix=command_prefix)
         self.loop.create_task(self.__leaderboard_job())
+        self.help_command = HelpCommand()
 
     async def __leaderboard_job(self):
         tz = pytz.timezone(Config.get_config_property("server", "timezone"))
@@ -65,7 +67,7 @@ class Goldbot(commands.Bot):
         if emoji is not None:
             LeaderboardHandler.get_leaderboard_handler().add_entry(message.author.id, message.created_at
                                                                    .replace(tzinfo=pytz.utc)
-                                                                   .astimezone(Config.get_config_property("server", "timezone")),
+                                                                   .astimezone(pytz.timezone(Config.get_config_property("server", "timezone"))),
                                                                    emoji.name)
 
         await self.process_commands(message)

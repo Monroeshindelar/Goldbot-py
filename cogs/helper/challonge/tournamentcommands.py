@@ -1,6 +1,6 @@
 import requests
 import logging
-from _global.Config import Config
+from _global.config import Config
 
 LOGGER = logging.getLogger("goldlog")
 API_KEY = Config.get_config_property("tournament", "challongeApiKey")

@@ -4,8 +4,8 @@ import os
 import shutil
 from datetime import datetime
 from datetime import timedelta
-from _global.Config import Config
-from utilities.Misc import read_json_safe
+from _global.config import Config
+from utilities.misc import read_json_safe
 
 LOGGER = logging.getLogger("goldlog")
 

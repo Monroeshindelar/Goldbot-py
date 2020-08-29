@@ -1,4 +1,4 @@
-from _global.argparsers.ThrowingArgumentParser import ThrowingArgumentParser
+from _global.argparsers.throwingargumentparser import ThrowingArgumentParser
 
 
 class ServerArgParsers:
