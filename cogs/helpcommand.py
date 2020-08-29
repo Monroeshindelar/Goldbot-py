@@ -3,6 +3,8 @@ import discord
 import asyncio
 
 # shamelessly stolen from https://github.com/Gobot1234/Light-Bot/blob/d6891814f3b75604ff009a3db200c095c159810b/Cogs/help.py#L173
+
+
 class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(command_attrs={"help": "Shows help about the bot, a command, or a cog"})
