@@ -1,6 +1,6 @@
 import re
 import logging
-import core.UserAccounts
+import core.useraccounts
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -27,5 +27,5 @@ class UserAccount:
             success = True
         else:
             LOGGER.error("UserAccount::set_friend_code - " + friend_code + " does not fit the friend code pattern.")
-        core.UserAccounts.save_accounts()
+        core.useraccounts.save_accounts()
         return success

@@ -1,7 +1,7 @@
 import logging
 from discord.ext import commands
-from core.UserAccounts import get_account
-from _global.Config import Config
+from core.useraccounts import get_account
+from _global.config import Config
 
 LOGGER = logging.getLogger("goldlog")
 

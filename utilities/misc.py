@@ -2,6 +2,8 @@ import os
 import pickle
 import logging
 import json
+import re
+from logging.handlers import TimedRotatingFileHandler
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -33,3 +35,26 @@ def read_json_safe(path):
         j = json.load(f)
 
     return j
+
+
+def setup_logging() -> logging.Logger:
+    logger = logging.getLogger("goldlog")
+    logger.setLevel(logging.DEBUG)
+
+    fh = TimedRotatingFileHandler("bin/log/gold.log", when="midnight", interval=1)
+    fh.setLevel(logging.DEBUG)
+    fh.suffix = "%Y%m%d"
+    fh.extMatch = re.compile(r"^\d{8}$")
+
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s')
+    ch.setFormatter(formatter)
+    fh.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+    return logger
+
+

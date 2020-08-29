@@ -1,6 +1,6 @@
-from utilities.Misc import read_save_file, save_file
-from core.model.accounts.UserAccount import UserAccount
-from _global.Config import Config
+from utilities.misc import read_save_file, save_file
+from core.model.accounts.useraccount import UserAccount
+from _global.config import Config
 
 ACCOUNTS_FILE_PATH = Config.get_config_property("saveDir") + "/accounts/accounts.pkl"
 ACCOUNTS = read_save_file(ACCOUNTS_FILE_PATH)

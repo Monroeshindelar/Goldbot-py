@@ -1,6 +1,6 @@
 import logging
 from discord.ext import commands
-from cogs.helper.challonge import TournamentCommands
+from cogs.helper.challonge import tournamentcommands
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -27,7 +27,7 @@ class TournamentCog(commands.Cog):
         elif len(args) > 1:
             extra_params = ctx.args[1:]
 
-        TournamentCommands.create_tournament(tournament_name=args[0], extra_params=extra_params)
+        tournamentcommands.create_tournament(tournament_name=args[0], extra_params=extra_params)
 
     @commands.command(name="destroy_tournament",
                       aliases=["delete_tournament"])
@@ -40,7 +40,7 @@ class TournamentCog(commands.Cog):
             LOGGER.warning("TournamentCommands::destroy_tournament - Failed call by " + ctx.message.author.name +
                            " due to insufficient number of arguments.")
             return
-        TournamentCommands.destroy_tournament(tournament_name=args[0])
+        tournamentcommands.destroy_tournament(tournament_name=args[0])
 
     @commands.command(name="start_tournament")
     async def start_tournament(self, ctx, *args):
@@ -52,7 +52,7 @@ class TournamentCog(commands.Cog):
             LOGGER.warning("TournamentCommand::start_tournament - Failed call by " + ctx.message.author.name +
                            " due to insufficient number of arguments")
             return
-        TournamentCommands.start_tournament(tournament_name=args[0])
+        tournamentcommands.start_tournament(tournament_name=args[0])
 
     @commands.command(name="finalize_tournament",
                       aliases=["end_tournament"])
@@ -65,7 +65,7 @@ class TournamentCog(commands.Cog):
             LOGGER.warning("TournamentCommand::finalize_tournament - Failed call by " + ctx.message.author.name +
                            " due to insufficient number of arguments")
             return
-        TournamentCommands.finalize_tournament(tournament_name=args[0])
+        tournamentcommands.finalize_tournament(tournament_name=args[0])
 
     @commands.command(name="add_users",
                       aliases=["add_user", "add_participants", "add_participant"])
@@ -83,7 +83,7 @@ class TournamentCog(commands.Cog):
         users = []
         for user in ctx.message.mentions:
             users.append(user.name)
-        TournamentCommands.add_users(tournament_name=args[0], users=users)
+        tournamentcommands.add_users(tournament_name=args[0], users=users)
 
     @commands.command(name="destroy_participant",
                       aliases=["delete_participant"])
@@ -97,7 +97,7 @@ class TournamentCog(commands.Cog):
             LOGGER.warning("TournamentCommand::destroy_participant - Failed call by " + ctx.message.author.name +
                            " due to insufficient number of arguments")
             return
-        TournamentCommands.destroy_participant(tournament_name=args[0], participant_name=args[1])
+        tournamentcommands.destroy_participant(tournament_name=args[0], participant_name=args[1])
 
     @commands.command(name="update_match")
     async def update_match(self, ctx, *args):
@@ -114,7 +114,7 @@ class TournamentCog(commands.Cog):
             LOGGER.warning("TournamentCommand::update_match - Failed call by " + ctx.message.author.name +
                            " due to insufficient number of arguments")
             return
-        TournamentCommands.update_match(tournament_name=args[0], participant1_name=args[1], participant2_name=args[2],
+        tournamentcommands.update_match(tournament_name=args[0], participant1_name=args[1], participant2_name=args[2],
                                         participant1_score=args[3], participant2_score=args[4])
 
 

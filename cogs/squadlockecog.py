@@ -3,15 +3,15 @@ import logging
 import yaml
 from discord.ext import commands
 from discord.ext.commands import UserConverter
-from cogs.helper.challonge import TournamentCommands
-from _global.Config import Config
-from utilities.Misc import read_save_file, save_file
-from _global.SquadlockeConstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
-from _global.ArgParsers.SquadlockeArgParsers import SquadlockeArgParsers
-from utilities.DiscordServices import build_embed
-from core.model.squadlocke.RouteEncounter import RouteEncounter
-from utilities.Parsers.SerebiiParser import SerebiiParser
-from _global.ArgParsers.ThrowingArgumentParser import ArgumentParserError
+from cogs.helper.challonge import tournamentcommands
+from _global.config import Config
+from utilities.misc import read_save_file, save_file
+from _global.squadlockeconstants import ENCOUNTER_AREA_DICT, WEATHER_DICT
+from _global.argparsers.squadlockeargparsers import SquadlockeArgParsers
+from utilities.discordservices import build_embed
+from core.model.squadlocke.routeencounter import RouteEncounter
+from utilities.parsers.serebiiparser import SerebiiParser
+from _global.argparsers.throwingargumentparser import ArgumentParserError
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -63,7 +63,7 @@ class SquadlockeCog(commands.Cog):
                 })
         await SquadlockeCog.__save_squadlocke()
         extra_params = None if len(args) > 1 else args[1:]
-        TournamentCommands.create_tournament(
+        tournamentcommands.create_tournament(
             tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
             extra_params=extra_params
         )
@@ -73,12 +73,12 @@ class SquadlockeCog(commands.Cog):
             participant = await UserConverter().convert(ctx=ctx, argument=str(participant))
             players.append(participant.name)
 
-        TournamentCommands.add_users(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), players)
+        tournamentcommands.add_users(SQUADLOCKE_NAME + "_" + str(CHECKPOINT), players)
 
         await ctx.channel.send(
             content="Squadlocke has been started.\n"
                     "Here is a link to the first tournament:\n" +
-                    TournamentCommands.get_tournament_url(SquadlockeCog.get_squadlocke_tournament_name())
+                    tournamentcommands.get_tournament_url(SquadlockeCog.get_squadlocke_tournament_name())
         )
 
     @commands.command(name="sl_ready_up")
@@ -98,11 +98,11 @@ class SquadlockeCog(commands.Cog):
                 start = False
                 break
         if start:
-            TournamentCommands.start_tournament(SQUADLOCKE_NAME + str(CHECKPOINT))
+            tournamentcommands.start_tournament(SQUADLOCKE_NAME + str(CHECKPOINT))
             await ctx.channel.send(
                 content="Everyone is ready. Starting the tournament.\n"
                         "View the bracket here:\n" +
-                        TournamentCommands.get_tournament_url(
+                        tournamentcommands.get_tournament_url(
                             tournament_name=SquadlockeCog.get_squadlocke_tournament_name()
                         )
             )
@@ -120,14 +120,14 @@ class SquadlockeCog(commands.Cog):
             )
             LOGGER.warning("SquadlockeCommand::sl_update_match - Failed due to insufficient number of arguments.")
             return
-        TournamentCommands.update_match(
+        tournamentcommands.update_match(
             tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
             participant1_name=args[0],
             participant2_name=args[1],
             participant1_score=args[2],
             participant2_score=args[3]
         )
-        matches = TournamentCommands.index_matches(
+        matches = tournamentcommands.index_matches(
             tournament_name=SquadlockeCog.get_squadlocke_tournament_name()
         )
 
@@ -140,7 +140,7 @@ class SquadlockeCog(commands.Cog):
                 break
 
         if finish:
-            TournamentCommands.finalize_tournament(
+            tournamentcommands.finalize_tournament(
                 tournament_name=SquadlockeCog.get_squadlocke_tournament_name()
             )
         # TODO: report to discord
@@ -163,16 +163,16 @@ class SquadlockeCog(commands.Cog):
 
     @commands.command(name="get_current_matches")
     async def get_matches_squadlocke(self, ctx):
-        open_matches = TournamentCommands.index_matches(
+        open_matches = tournamentcommands.index_matches(
             tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
             state="open"
         )
         for match in open_matches:
-            participant1 = TournamentCommands.get_participant_json_by_id(
+            participant1 = tournamentcommands.get_participant_json_by_id(
                 tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
                 participant_id=match["match"]["player1_id"]
             )
-            participant2 = TournamentCommands.get_participant_json_by_id(
+            participant2 = tournamentcommands.get_participant_json_by_id(
                 tournament_name=SquadlockeCog.get_squadlocke_tournament_name(),
                 participant_id=match["match"]["player2_id"]
             )

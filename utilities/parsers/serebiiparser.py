@@ -3,7 +3,7 @@ import pandas
 import os
 import logging
 import string
-from _global.SquadlockeConstants import COLUMNS, SECTION_REGEX, ENCOUNTER_TABLE_REGEX, GAME_REGEX, \
+from _global.squadlockeconstants import COLUMNS, SECTION_REGEX, ENCOUNTER_TABLE_REGEX, GAME_REGEX, \
     ENCOUNTER_AREA_REGEX, WEATHER_DICT, ENCOUNTER_AREA_DICT, ROUTE_CACHE, SEREBII_NAME_REPLACEMENT_DICT
 from bs4 import BeautifulSoup
 

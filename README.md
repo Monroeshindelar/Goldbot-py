@@ -63,15 +63,22 @@ library is used, so use a timezone value from a list like [this](https://stackov
 #### Ten Man
 Under the `tenman` yaml property. Configuration for the ten man module.
 
-* `masterRole` - Users with this role will be able to orchestrate a tenman
-* `captainARole` - Role to assign to the captain of Team A
-* `captainBRole` - Role to assign to the captain of Team B
-* `teamARole` - Role to assign to players picked by the Team A captain
-* `teamBRole` - Role to assign to players picked by the Team B captain
-* `teamAVoiceChannel` - Voice channel for Team A players
-* `teamBVoiceChannel` - Voice channel for Team B players
-* `masterVoice` - Voice channel tenman participants start in
-* `maps` - Current counterstrike competitive map pool. Should be 7 maps
+* `organizerRole` - Users with this role will be able to start a tenman and pick captains
+* `generalVoice` - Voice channel all participants start in before being moved to their team voice channels
+* `generalText` - Text channel where the bot will communicate the status of the 10 man
+* `team(A/B)` - Voice channels and roles that are team specific. Will have two entries (teamA and teamB) in the yaml
+    * `captainRole` - Role provided to the captain (to allow player and map selection) as well as grant access to voice chat
+    * `playerRole` - Role of a typical player to grant access to the voice channel
+    * `voice` - Voice channel for the team
+* `maps` - map pool per game
+    * `csgo` - csgo map pool as a yaml list
+    * `valorant` - valorant map pool as a yaml list
+* `playerPickSequence` - A hyphen(-) delimited list of A's and B's that represents the order in which teams pick players
+* `mapPickBanSequence` - A hyphen delimited list of map pick/ban entries, which are themselves a tilde(~) delimited list of X's or P's attached to A's or B's, with X representing a ban and P representing a pick, and A/B representing the team
+    * `csgo` - map pick/bans for csgo
+        * `bo3` - map pick/ban sequence for a best of 3
+    * `valorant` - map pick/bans for valorant
+        * `bo3` - map pick/ban sequence for a best of 3
 #### Tournament
 Under the `tournament` yaml property. Configuration for the tournament module
 

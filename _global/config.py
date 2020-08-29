@@ -25,5 +25,5 @@ class Config:
             raise Exception("Error: Cannot create another instance of Config, one already exists.")
         else:
             Config.__instance = self
-            with open('bin/config.yml') as f:
+            with open("bin/config.yml") as f:
                 self.CONF = yaml.load(f, Loader=yaml.FullLoader)

@@ -1,16 +1,13 @@
 import logging
-import pytz
 import json
 import os
 import shutil
 from datetime import datetime
 from datetime import timedelta
-from _global.Config import Config
-from utilities.Misc import read_json_safe
+from _global.config import Config
+from utilities.misc import read_json_safe
 
 LOGGER = logging.getLogger("goldlog")
-EMOJI_TIME_DICT = Config.get_config_property("server", "leaderboard", "emojiMap")
-TZ = pytz.timezone(Config.get_config_property("server", "timezone"))
 
 
 class LeaderboardHandler:
@@ -31,12 +28,13 @@ class LeaderboardHandler:
             self.__unprocessed_entries = []
 
     def add_entry(self, user_id, timestamp, emote):
+        emoji_time_dict = Config.get_config_property("server", "leaderboard", "emojiMap")
         for entry in self.__unprocessed_entries:
             if entry["user_id"] == user_id and entry["emote"] == emote:
                 return
-        if emote in EMOJI_TIME_DICT.keys():
+        if emote in emoji_time_dict.keys():
             fixed_timestamp = timestamp.time().replace(second=0, microsecond=0)
-            r_time = datetime.strptime(EMOJI_TIME_DICT[emote], "%H:%M").time()
+            r_time = datetime.strptime(emoji_time_dict[emote], "%H:%M").time()
             m_time = r_time.replace(hour=r_time.hour + 12)
             if fixed_timestamp == r_time or fixed_timestamp == m_time or fixed_timestamp == \
                     r_time.replace(minute=r_time.minute + 1) or fixed_timestamp == m_time.replace(minute=m_time.minute + 1):
@@ -46,18 +44,18 @@ class LeaderboardHandler:
 
     def process_entries(self):
         LOGGER.info("LeaderboardHandler::process_entries - Processing leaderboard entries")
-
+        emoji_time_dict = Config.get_config_property("server", "leaderboard", "emojiMap")
         today = datetime.now()
         if today.day == 1:
             self.__process_score_reset()
 
-        for emoji in EMOJI_TIME_DICT.keys():
+        for emoji in emoji_time_dict.keys():
             leaderboard_path = Config.get_config_property("saveDir") + "/leaderboards/307026836066533377/" + emoji \
                                + ".json"
             leaderboard_json = read_json_safe(leaderboard_path)
 
             entries = [entry for entry in self.__unprocessed_entries if entry["emote"] == emoji]
-            time = datetime.strptime(EMOJI_TIME_DICT[emoji], "%H:%M")
+            time = datetime.strptime(emoji_time_dict[emoji], "%H:%M")
             for entry in entries:
                 if (entry["timestamp"].hour == time.hour or entry["timestamp"].hour == time.hour + 12) and entry["timestamp"].minute == time.minute:
                     if entries.index(entry) == 0:
@@ -126,13 +124,14 @@ class LeaderboardHandler:
         global_leaderboard = read_json_safe(global_path)
         aggregate_scores_dict = {}
         yesterday = datetime.now() - timedelta(days=1)
+        emoji_time_dict = Config.get_config_property("server", "leaderboard", "emojiMap")
 
         try:
             os.makedirs(base_path + "old/" + str(yesterday.month) + "-" + str(yesterday.year))
         except OSError:
             pass
 
-        for emoji in EMOJI_TIME_DICT.keys():
+        for emoji in emoji_time_dict.keys():
             leaderboard_path = base_path + emoji + ".json"
             try:
                 leaderboard_json = read_json_safe(leaderboard_path)

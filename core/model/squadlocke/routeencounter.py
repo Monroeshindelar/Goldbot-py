@@ -3,8 +3,8 @@ import logging
 import string
 from tabulate import tabulate
 from numpy.random import choice
-from core.model.squadlocke.Encounter import Encounter
-from _global.SquadlockeConstants import ROUTE_CACHE, COLUMNS, WEATHER_DICT, ENCOUNTER_AREA_DICT
+from core.model.squadlocke.encounter import Encounter
+from _global.squadlockeconstants import ROUTE_CACHE, COLUMNS, WEATHER_DICT, ENCOUNTER_AREA_DICT
 
 LOGGER = logging.getLogger("goldlog")
 PRETTY_TABLE_HEADERS = ["Name(Sword)", "Name(Shield)", "Encounter Rate", "Encounter Area"]
