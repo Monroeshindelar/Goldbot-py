@@ -1,7 +1,6 @@
 from discord.ext import commands
 import discord
 import asyncio
-from Lib.textwrap import wrap
 
 
 class HelpCommand(commands.HelpCommand):
@@ -111,32 +110,6 @@ class HelpCommand(commands.HelpCommand):
         embed.set_footer(text="Page " + str(page + 2) + " of " + str(len(cogs) + 1))
 
         return embed
-
-    # async def bot_help_paginator(self, page: int, cogs) -> discord.Embed:
-    #     ctx = self.context
-    #     bot = ctx.bot
-    #
-    #     all_commands = [command for command in await self.filter_commands(bot.commands)]
-    #     cog = bot.get_cog(cogs[page])
-    #
-    #     embed = discord.Embed(title=f'Help with {cog.qualified_name} ({len(all_commands)} commands)',
-    #                           description=cog.description,
-    #                           color=discord.Colour.blurple())
-    #     embed.set_author(name=f'We are currently on page {page + 1}/{len(cogs)}', icon_url=ctx.author.avatar_url)
-    #     for c in cog.walk_commands():
-    #         try:
-    #             if await c.can_run(ctx) and not c.hidden:
-    #                 signature = self.get_command_signature(c)
-    #                 description = self.get_command_description(c)
-    #                 if c.parent:  # it is a sub-command
-    #                     embed.add_field(name=f'**╚╡**{signature}', value=description)
-    #                 else:
-    #                     embed.add_field(name=signature, value=description, inline=False)
-    #         except commands.CommandError:
-    #             pass
-    #     embed.set_footer(text=f'Use "{self.clean_prefix}help <command>" for more info on a command.',
-    #                      icon_url=ctx.bot.user.avatar_url)
-    #     return embed
 
     async def bot_help_paginator_reactor(self, message):
         reactions = (
