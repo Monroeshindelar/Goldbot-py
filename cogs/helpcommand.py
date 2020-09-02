@@ -101,10 +101,10 @@ class HelpCommand(commands.HelpCommand):
                     if await c.can_run(ctx) and not c.hidden:
                         signature = self.get_command_signature(c)
                         description = self.get_command_description(c)
-                        if c.parent:
-                            embed.add_field(name=f'**╚╡**{signature}', value=description)
-                        else:
-                            embed.add_field(name=signature, value=description, inline=False)
+                        # if c.parent:
+                        #     embed.add_field(name=f'**╚╡**{signature}', value=description)
+                        # else:
+                        embed.add_field(name=signature, value=description, inline=False)
                 except commands.CommandError:
                     pass
 

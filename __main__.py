@@ -8,7 +8,7 @@ LOGGER = misc.setup_logging()
 def main():
     cogs = [
         "cogs.commanderrorhandler",
-        #"cogs.servercog",
+        "cogs.servercog",
         #"cogs.useraccountcog",
         "cogs.tenmancog",
         #"cogs.tournamentcog"

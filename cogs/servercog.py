@@ -1,5 +1,6 @@
 import logging
 import json
+import discord
 from tabulate import tabulate
 from discord.utils import find
 from discord.ext import commands
@@ -22,19 +23,14 @@ class ServerCog(commands.Cog):
         except ArgumentParserError as e:
             raise commands.ArgumentParsingError(message=e.args[0])
 
-        if parsed_args.mobile:
-            headers = ["N", "S", "CS", "LS"]
-        else:
-            headers = ["Name", "Score", "Current Streak", "Longest Streak"]
-
         emoji = find(lambda em: str(em) == parsed_args.emoji, ctx.guild.emojis)
 
         try:
             if emoji.name not in Config.get_config_property("server", "leaderboard", "emojiMap").keys():
                 raise commands.BadArgument("There is no leaderboard associated with the emoji.")
 
-            with open(Config.get_config_property("saveDir") + "/leaderboards/" + str(ctx.guild.id) + "/" + emoji.name +
-                      ".json") as f:
+            with open("{0}/leaderboards/{1}/{2.name}.json".format(Config.get_config_property("saveDir"),
+                                                                  str(ctx.guild.id), emoji)) as f:
                 leaderboard_json = json.load(f)
 
             entries = sorted(leaderboard_json, key=lambda e: (leaderboard_json[e]["score"],
@@ -42,10 +38,8 @@ class ServerCog(commands.Cog):
                              reverse=True)
 
         except AttributeError as e:
-            LOGGER.error("ServerCog::leaderboard - Called with default emoji.")
             raise commands.BadArgument("Leaderboards don't exist for default emojis.")
         except FileNotFoundError as e:
-            LOGGER.error("ServerCog::leaderboard - No leaderboard data found for called emoji")
             raise commands.BadArgument("No leaderboard data found for called emoji.")
 
         try:
@@ -53,17 +47,24 @@ class ServerCog(commands.Cog):
         except TypeError:
             pass
         except IndexError:
-            LOGGER.warning("Specified a value that was larger than the amount of users with scores")
             pass
         except ValueError:
-            LOGGER.error("ServerCog::leaderboard - " + parsed_args.top + " is not an int")
             raise commands.BadArgument("Bad argument for top parameter. Expected integer.")
 
-        table = [[find(lambda u: str(u.id) == e, ctx.guild.members).name, leaderboard_json[e]["score"],
-                  leaderboard_json[e]["current_streak"], leaderboard_json[e]["longest_streak"]] for e in entries]
+        embed = discord.Embed(
+            title="Leaderboard | {0.name}".format(emoji)
+        )
 
-        await ctx.channel.send(str(emoji) + "***  Leaderboard  ***" + str(emoji) + "\n```" + tabulate(table,
-                               headers=headers) + "```")
+        embed.set_thumbnail(url=emoji.url)
+        embed.add_field(name="User", value="\n".join([find(lambda u: str(u.id) == e, ctx.guild.members).name for e in entries]))
+        embed.add_field(name="Score", value="\n".join([str(leaderboard_json[e]["score"]) for e in entries]))
+        embed.add_field(name="Streak", value="\n".join([str(leaderboard_json[e]["current_streak"]) for e in entries]))
+
+        await ctx.channel.send(embed=embed)
+
+
+        # await ctx.channel.send(str(emoji) + "***  Leaderboard  ***" + str(emoji) + "\n```" + tabulate(table,
+        #                        headers=headers) + "```")
 
 
 def setup(bot):
