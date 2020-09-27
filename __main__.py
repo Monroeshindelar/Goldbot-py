@@ -9,7 +9,7 @@ def main():
     cogs = [
         "cogs.commanderrorhandler",
         #"cogs.servercog",
-        #"cogs.useraccountcog",
+        "cogs.useraccountcog",
         "cogs.tenmancog",
         #"cogs.tournamentcog"
         #"cogs.squadlockecog"
