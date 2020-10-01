@@ -1,8 +1,6 @@
 import os
-import sys
-from pathlib import Path
-
 import yaml
+from pathlib import Path
 
 
 class Config:
@@ -29,6 +27,5 @@ class Config:
             raise Exception("Error: Cannot create another instance of Config, one already exists.")
         else:
             Config.__instance = self
-            project_dir = Path(os.path.abspath(sys.modules["__main__"].__file__)) / ".."
-            with open(project_dir / "bin/config.yml") as f:
+            with open(Path(os.getcwd()) / "bin/config.yml") as f:
                 self.CONF = yaml.load(f, Loader=yaml.FullLoader)
