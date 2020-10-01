@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
 
+from _global.config import Config
+
 LOGGER = logging.getLogger("goldlog")
 
 
@@ -43,7 +45,8 @@ def setup_logging() -> logging.Logger:
     logger = logging.getLogger("goldlog")
     logger.setLevel(logging.DEBUG)
 
-    fh = TimedRotatingFileHandler(Path(os.getcwd()) / "bin/log/gold.log", when="midnight", interval=1)
+    fh = TimedRotatingFileHandler(Path(Config.get_config_property("projectDir")) / "bin/log/gold.log", when="midnight",
+                                  interval=1)
     fh.setLevel(logging.DEBUG)
     fh.suffix = "%Y%m%d"
     fh.extMatch = re.compile(r"^\d{8}$")

@@ -14,6 +14,13 @@ class Config:
         return Config.__get_config_property_helper(Config.__instance.CONF, list(props))
 
     @staticmethod
+    def add_config_property(key: str, value: str):
+        if Config.__instance is None:
+            Config()
+
+        Config.__instance.CONF[key] = value
+
+    @staticmethod
     def __get_config_property_helper(conf, props):
         if len(props) == 0:
             return conf

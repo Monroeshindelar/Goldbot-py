@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from _global.config import Config
 from utilities import misc
 from core.goldbot import Goldbot
@@ -24,5 +26,7 @@ def main():
 
 
 if __name__ == '__main__':
+    # hack to get SystemV script to work
+    Config.add_config_property("projectDir", Path(__file__).parent)
     main()
 
