@@ -1,6 +1,8 @@
 import re
 from utilities.bidict import bidict
 
+# Horrible
+
 ROUTE_CACHE = "bin/cache/squadlocke/route_encounters/"
 COLUMNS = ["name_sw", "name_sh", "rate", "area", "section", "weather", "img_sw", "img_sh"]
 SEREBII_NAME_REPLACEMENT_DICT = {"Random in Grass": "Shadow", "In the Water": "Surfing"}

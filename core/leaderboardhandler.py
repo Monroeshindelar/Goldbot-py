@@ -5,7 +5,7 @@ import shutil
 from datetime import datetime
 from datetime import timedelta
 from _global.config import Config
-from utilities.misc import read_json_safe
+from utilities.misc import read_json_safe, get_project_dir
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -50,8 +50,8 @@ class LeaderboardHandler:
             self.__process_score_reset()
 
         for emoji in emoji_time_dict.keys():
-            leaderboard_path = Config.get_config_property("saveDir") + "/leaderboards/307026836066533377/" + emoji \
-                               + ".json"
+            leaderboard_path = str(get_project_dir() / "{0}/leaderboards/307026836066533377/{1}.json"
+                                    .format(Config.get_config_property("saveDir"), emoji))
             leaderboard_json = read_json_safe(leaderboard_path)
 
             entries = [entry for entry in self.__unprocessed_entries if entry["emote"] == emoji]

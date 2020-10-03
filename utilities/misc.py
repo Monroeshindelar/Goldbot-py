@@ -7,8 +7,6 @@ import sys
 from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
 
-from _global.config import Config
-
 LOGGER = logging.getLogger("goldlog")
 
 
@@ -41,12 +39,15 @@ def read_json_safe(path):
     return j
 
 
+def get_project_dir() -> Path:
+    return Path(os.path.abspath(sys.modules["__main__"].__file__)).parent
+
+
 def setup_logging() -> logging.Logger:
     logger = logging.getLogger("goldlog")
     logger.setLevel(logging.DEBUG)
 
-    fh = TimedRotatingFileHandler(Path(os.path.abspath(sys.modules["__main__"].__file__)).parent / "bin/log/gold.log",
-                                  when="midnight", interval=1)
+    fh = TimedRotatingFileHandler(str(get_project_dir() / "bin/log/gold.log"), when="midnight", interval=1)
     fh.setLevel(logging.DEBUG)
     fh.suffix = "%Y%m%d"
     fh.extMatch = re.compile(r"^\d{8}$")
@@ -61,5 +62,3 @@ def setup_logging() -> logging.Logger:
     logger.addHandler(fh)
     logger.addHandler(ch)
     return logger
-
-

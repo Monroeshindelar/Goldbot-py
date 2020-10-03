@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from _global.config import Config
 from utilities import misc
 from core.goldbot import Goldbot
@@ -8,14 +6,7 @@ LOGGER = misc.setup_logging()
 
 
 def main():
-    cogs = [
-        "cogs.commanderrorhandler",
-        #"cogs.servercog",
-        "cogs.useraccountcog",
-        "cogs.tenmancog",
-        #"cogs.tournamentcog"
-        #"cogs.squadlockecog"
-    ]
+    cogs = ["cogs.{0}cog".format(m) for m in Config.get_config_property("modules")]
 
     bot = Goldbot(command_prefix=Config.get_config_property("prefix"))
 

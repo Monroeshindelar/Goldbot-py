@@ -2,11 +2,11 @@ import logging
 from discord.ext import commands
 from core.useraccounts import get_account
 from _global.config import Config
+from utilities.misc import get_project_dir
 
 LOGGER = logging.getLogger("goldlog")
 
-SERVER_SAVE_FILE = Config.get_config_property("saveDir") + "server.pkl"
-OPTIONAL_ROLES = Config.get_config_property("server", "optionalRoles")
+SERVER_SAVE_FILE = get_project_dir() / "{0}/server.pkl".format(Config.get_config_property("saveDir"))
 
 
 class UserAccountCog(commands.Cog):
@@ -43,57 +43,6 @@ class UserAccountCog(commands.Cog):
         else:
             LOGGER.warning("UserCommand::get_friend_code called for invalid user.")
             raise commands.BadArgument("You requested the friend code for a user that does not exist")
-
-    @commands.command(name="add_role")
-    async def add_role(self, ctx):
-        if len(ctx.message.role_mentions) < 1:
-            LOGGER.warning("UserCommand::add_role call failed for " + ctx.message.author.name +
-                           ". Invalid number of arguments")
-            raise commands.BadArgument(message="You are missing required arguments for this command:\n`role "
-                                               "(@mention)`")
-        account = ctx.message.author
-        role = ctx.message.role_mentions[0]
-        if UserAccountCog.__role_is_optional(role):
-            await account.add_roles(role)
-            await ctx.channel.send(content="Role has been successfully assigned.")
-            LOGGER.info("UserCommand::add_role called for " + account.name + ":" + role.name)
-        else:
-            LOGGER.warning("UserCommand::add_role call failed due to invalid arguments.")
-            raise commands.BadArgument("The role you are trying to assign to yourself either doesnt exist or "
-                                       "is not a user manageable role.")
-
-    @commands.command(name="remove_role")
-    async def remove_role(self, ctx):
-        if len(ctx.message.role_mentions) < 1:
-            LOGGER.warning("UserCommand::remove_role failed for " + ctx.message.author.name
-                           + " because no role was mentioned")
-            raise commands.BadArgument(message="You are missing required arguments for this command:\n`role "
-                                               "(@mention)`")
-        account = ctx.message.author
-        role = ctx.message.role_mentions[0]
-        if role in account.roles:
-            if UserAccountCog.__role_is_optional(role):
-                await account.remove_roles(role)
-                await ctx.channel.send(content="Role has been successfully removed.")
-                LOGGER.info("UserCommands::remove_role successfully called for " + account.name + ":" + role.name)
-            else:
-                LOGGER.warning("UserCommands::remove_role call failed for " + account.name + ".  Bad arguments")
-                raise commands.BadArgument("The role you are trying to remove either doesnt exist or "
-                                           "is not a user manageable role.")
-
-    @commands.command(name="make_role_optional")
-    @commands.has_permissions(administrator=True)
-    async def make_role_optional(self, ctx):
-        return False
-
-    @staticmethod
-    def __role_is_optional(role):
-        optional = False
-        for role_name in OPTIONAL_ROLES:
-            if role.name == role_name:
-                optional = True
-                break
-        return optional
 
 
 def setup(bot):

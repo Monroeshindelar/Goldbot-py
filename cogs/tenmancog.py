@@ -7,6 +7,7 @@ from core.model.tenman.teamstatus import TeamStatus
 from core.model.tenman.side import Side
 from _global.argparsers.tenmanargparsers import TenManArgParsers
 from _global.argparsers.throwingargumentparser import ArgumentParserError
+from utilities.misc import get_project_dir
 from random import randint
 import yaml
 import logging
@@ -31,7 +32,7 @@ class TenManCog(commands.Cog):
         # Print help messages to help new users know which commands need to come next
         self.__display_help = False
 
-        with open("bin/resources/tenman/resources.yml") as f:
+        with open(str(get_project_dir() / "bin/resources/tenman/resources.yml")) as f:
             self.__resources = yaml.load(f, Loader=yaml.FullLoader)
         LOGGER.info("Initialized ten man command cog.")
 
@@ -185,9 +186,9 @@ class TenManCog(commands.Cog):
 
         last_pick = self.__ongoing.pick_player(pick.id, captain_id)
 
-        role_config_property = Config.get_config_property("tenman", "team" + captain_team_status.name, "playerRole")
+        role_config_property = Config.get_config_property("tenman", "team {0}".format(captain_team_status.name),
+                                                          "playerRole")
         role = find(lambda r: r.name == role_config_property, ctx.guild.roles)
-
         await ctx.message.mentions[0].add_roles(role)
 
         embed = discord.Embed(
@@ -195,8 +196,8 @@ class TenManCog(commands.Cog):
             color=discord.Color.red() if captain_team_status == TeamStatus.A else discord.Color.blue()
         )
         embed.add_field(name="Name", value=ctx.message.mentions[0].name)
-        embed.add_field(name="Picked By", value="Team " + captain_team_status.name)
-        embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
+        embed.add_field(name="Picked By", value="Team {0}".format(captain_team_status.name))
+        embed.add_field(name="Ten Man Status", value="[Link]({0})".format(self.__status_message.jump_url))
         embed.set_thumbnail(url=pick.avatar_url)
         await ctx.channel.send(embed=embed)
 
@@ -212,7 +213,8 @@ class TenManCog(commands.Cog):
 
         if last_pick[0] is not None and last_pick[1] is not None:
             last_pick_profile = find(lambda p: p.id == last_pick[0], ctx.guild.members)
-            role_config_property_lp = Config.get_config_property("tenman", "team" + last_pick[1].name, "playerRole")
+            role_config_property_lp = Config.get_config_property("tenman", "team {0}".format(last_pick[1].name),
+                                                                 "playerRole")
             role_lp = find(lambda r: r.name == role_config_property_lp, ctx.guild.roles)
 
             await last_pick_profile.add_roles(role_lp)
@@ -223,12 +225,12 @@ class TenManCog(commands.Cog):
             )
             embed_lp.set_thumbnail(url=last_pick_profile.avatar_url)
             embed_lp.add_field(name="Name", value=last_pick_profile.name)
-            embed_lp.add_field(name="Picked for", value="Team " + last_pick[1].name)
-            embed_lp.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
+            embed_lp.add_field(name="Picked for", value="Team {0}".format(last_pick[1].name))
+            embed_lp.add_field(name="Ten Man Status", value="[Link]({0})".format(self.__status_message.jump_url))
             await ctx.channel.send(embed=embed_lp)
             status_embed.remove_field(index=3)
             status_embed.set_field_at(index=(3 if last_pick[0] == TeamStatus.A else 4), name=team_field.name,
-                                      value=(team_field.value + "\n" + last_pick_profile.name))
+                                      value="{0}\n{1}".format(team_field.value, last_pick_profile.name))
             status_embed.set_field_at(index=5, name=status_embed.fields[5].name, value=status_embed.fields[5].value,
                                       inline=True)
         else:
@@ -241,14 +243,13 @@ class TenManCog(commands.Cog):
 
         if self.__display_help:
             try:
-                message = "***Help Message:***\nIt is Team " + self.__ongoing.peek_next_player_pick().name + "'s " \
-                          "turn to pick the next player.\nThey can do so by using the command\n`.pick_player @player`"
+                message = "***Help Message:***\nIt is Team {0}'s turn to pick the next player.\nThey can do so by " \
+                          "using the command\n`.pick_player @player`".format(self.__ongoing.peek_next_player_pick().name)
             except IndexError:
                 map_pick_ban_entry = self.__ongoing.peek_next_map_pick_ban()
                 message = "***Help Message:***\nIt is now time to move on to the map pick/ban phase. Team " \
-                          + map_pick_ban_entry.get_team_status().name + " can " + \
-                          map_pick_ban_entry.get_mode().name.lower() + " the first map.\nThey can do so by using the " \
-                          "command\n`." + map_pick_ban_entry.get_mode().name.lower() + "_map map`"
+                          "{0.get_team_status().name} can {0.get_mode().name.lower()} the first map.\nThey can do so" \
+                          "by using the command\n`{0.get_mode().name.lower()}_map map`".format(map_pick_ban_entry)
             await ctx.channel.send(message)
 
     @commands.command(name="tm_ban_map", aliases=["ban_map"])
@@ -274,17 +275,18 @@ class TenManCog(commands.Cog):
         )
         embed.set_image(url=self.__resources[map_name])
         embed.add_field(name="Map Name", value=map_name.capitalize())
-        embed.add_field(name="Banned by", value="Team " + status.name)
-        embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
+        embed.add_field(name="Banned by", value="Team {0}".format(status.name))
+        embed.add_field(name="Ten Man Status", value="[Link]({0})".format(self.__status_message.jump_url))
 
         await ctx.channel.send(embed=embed)
 
         status_embed = self.__status_message.embeds[0]
 
-        banned_text = map_name.capitalize() + " - Team " + status.name
+        banned_text = "{0} - Team {1}".format(map_name.capitalize(), status.name)
         try:
             banned_field = status_embed.fields[6]
-            status_embed.set_field_at(index=6, name=banned_field.name, value=banned_field.value + "\n" + banned_text)
+            status_embed.set_field_at(index=6, name=banned_field.name, value="{0}\n{1}".format(banned_field.value,
+                                                                                               banned_text))
         except IndexError:
             status_embed.add_field(name="Ban History", value=banned_text)
         finally:
@@ -299,7 +301,7 @@ class TenManCog(commands.Cog):
             embed_decider.set_image(url=self.__resources[decider])
             embed_decider.add_field(name="Map Name", value=decider.capitalize())
             embed_decider.add_field(name="Type", value="Decider")
-            embed_decider.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
+            embed_decider.add_field(name="Ten Man Status", value="[Link]({0})".format(self.__status_message.jump_url))
             status_embed.add_field(name="Decider", value=decider.capitalize())
             status_embed.remove_field(index=5)
             await ctx.channel.send(embed=embed_decider)
@@ -309,9 +311,9 @@ class TenManCog(commands.Cog):
         if self.__display_help:
             map_pick_ban_entry = self.__ongoing.peek_next_map_pick_ban()
             try:
-                message = "It is Team " + map_pick_ban_entry.get_team_status().name + "'s turn to " + \
-                          map_pick_ban_entry.get_mode().name.lower() + " a map.\nThey can do so by using the command" \
-                          "\n`." + map_pick_ban_entry.get_mode().name.lower() + "_map map`"
+                message = "It is Team {0.get_team_status().name}'s turn to {0.get_mode().name.lower()} a map." \
+                          "\nThey can do so by using the command\n`. {0.get_mode().name.lower}_map map`"\
+                          .format(map_pick_ban_entry)
             except IndexError:
                 message = "Map pick/ban phase is over. See you on the server!"
             await ctx.channel.send(message)
@@ -339,19 +341,19 @@ class TenManCog(commands.Cog):
         embed.set_image(url=self.__resources[map_name])
         embed.add_field(name="Map Name", value=map_name.capitalize())
         embed.add_field(name="Picked by", value="Team " + status.name)
-        embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
+        embed.add_field(name="Ten Man Status", value="[Link]({0})".format(self.__status_message.jump_url))
 
         await ctx.channel.send(embed=embed)
 
         status_embed = self.__status_message.embeds[0]
 
-        status_embed.add_field(name="Team " + status.name + "'s Pick", value=map_name.capitalize())
+        status_embed.add_field(name="Team {0}'s Pick".format(status.name), value=map_name.capitalize())
 
         await self.__status_message.edit(embed=status_embed)
 
         if self.__display_help:
-            message = "It is Team " + self.__ongoing.get_side_pick_team().name + "'s turn to pick a side.\nThey can" \
-                      " do so by using the command\n`.pick_side side`"
+            message = "It is Team {0}'s turn to pick a side.\nThey can do so by using the command\n`.pick_side side`" \
+                      .format(self.__ongoing.get_side_pick_team().name)
             await ctx.channel.send(message)
 
     @commands.command(name="tm_pick_side", aliases=["pick_side"])
@@ -371,19 +373,18 @@ class TenManCog(commands.Cog):
         status = self.__ongoing.get_captain_team_status(captain_id)
         status_embed = self.__status_message.embeds[0]
         pick_field = status_embed.fields[len(status_embed.fields) - 1]
-        status_embed.set_field_at(index=len(status_embed.fields) - 1, name=pick_field.name, value=pick_field.value +
-                                  "\n" + status.name + "'s Start Side: " + side.name)
+        status_embed.set_field_at(index=len(status_embed.fields) - 1, name=pick_field.name,
+                                  value="{0}\n{1}'s Start Side: {2}".format(pick_field.value, status.name, side.name))
         await self.__status_message.edit(embed=status_embed)
 
         embed = discord.Embed(
             title="Side Selected",
             color=discord.Color.red() if status == TeamStatus.A else discord.Color.blue()
         )
-
-        embed.set_thumbnail(url=self.__resources["csgo" + side.name + "Logo"])
+        embed.set_thumbnail(url=self.__resources["csgo{0}Logo".format(side.name)])
         embed.add_field(name="Side", value=side.name)
         embed.add_field(name="Team", value=status.name)
-        embed.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
+        embed.add_field(name="Ten Man Status", value="[Link]({0})".format(self.__status_message.jump_url))
         await ctx.channel.send(embed=embed)
 
         if decider is not None:
@@ -394,8 +395,9 @@ class TenManCog(commands.Cog):
             embed_decider.set_image(url=self.__resources[decider])
             embed_decider.add_field(name="Map Name", value=decider.capitalize())
             embed_decider.add_field(name="Type", value="Decider")
-            embed_decider.add_field(name="Ten Man Status", value="[Link](" + self.__status_message.jump_url + ")")
-            status_embed.add_field(name="Decider", value=decider.capitalize() + "\nB's Start Side: " + Side(randint(0, 1)).name)
+            embed_decider.add_field(name="Ten Man Status", value="[Link]({0})".format(self.__status_message.jump_url))
+            status_embed.add_field(name="Decider", value="{0}\nB's Start Side: {1}".format(decider.capitalize(),
+                                                                                           Side(randint(0, 1)).name))
             status_embed.set_field_at(index=5, name="\u200b", value="\u200b")
 
             await ctx.channel.send(embed=embed_decider)
@@ -405,9 +407,9 @@ class TenManCog(commands.Cog):
         if self.__display_help:
             try:
                 map_pick_ban_entry = self.__ongoing.peek_next_map_pick_ban()
-                message = "It is Team " + map_pick_ban_entry.get_team_status().name + "'s turn to " + \
-                          map_pick_ban_entry.get_mode().name.lower() + " a map.\nThey can do so by using the command" \
-                          "\n`." + map_pick_ban_entry.get_mode().name.lower() + "_map map`"
+                message = "It is Team {0.get_team_status().name}'s turn to {0.get_mode().name.lower()} a map.\nThey " \
+                          "can do so by using the command\n`.{0.get_mode().name.lower()}_map map`"\
+                          .format(map_pick_ban_entry)
             except IndexError:
                 message = "Map pick/ban phase is over. See you on the server!"
             await ctx.channel.send(message)
@@ -442,7 +444,7 @@ class TenManCog(commands.Cog):
 
     @staticmethod
     async def __move_user_to_proper_voice(ctx: commands.context.Context, user: discord.Member, status: TeamStatus):
-        voice = find(lambda v: v.name == Config.get_config_property("tenman", "team" + status.name, "voice"),
+        voice = find(lambda v: v.name == Config.get_config_property("tenman", "team{0}voice".format(status.name)),
                      ctx.guild.voice_channels)
         await user.move_to(voice)
 

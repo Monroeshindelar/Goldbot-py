@@ -6,6 +6,7 @@ from discord.ext import commands
 from _global.argparsers.serverargparsers import ServerArgParsers
 from _global.argparsers.throwingargumentparser import ArgumentParserError
 from _global.config import Config
+from utilities.misc import get_project_dir
 
 LOGGER = logging.getLogger("goldlog")
 
@@ -32,9 +33,9 @@ class ServerCog(commands.Cog):
         try:
             if emoji.name not in Config.get_config_property("server", "leaderboard", "emojiMap").keys():
                 raise commands.BadArgument("There is no leaderboard associated with the emoji.")
-
-            with open(Config.get_config_property("saveDir") + "/leaderboards/" + str(ctx.guild.id) + "/" + emoji.name +
-                      ".json") as f:
+            relative_path = "{0}/leaderboards/{1}/{2}.json".format(Config.get_config_property("saveDir"),
+                                                                   str(ctx.guild.id), emoji.name)
+            with open(str(get_project_dir() / relative_path)) as f:
                 leaderboard_json = json.load(f)
 
             entries = sorted(leaderboard_json, key=lambda e: (leaderboard_json[e]["score"],
@@ -62,8 +63,51 @@ class ServerCog(commands.Cog):
         table = [[find(lambda u: str(u.id) == e, ctx.guild.members).name, leaderboard_json[e]["score"],
                   leaderboard_json[e]["current_streak"], leaderboard_json[e]["longest_streak"]] for e in entries]
 
-        await ctx.channel.send(str(emoji) + "***  Leaderboard  ***" + str(emoji) + "\n```" + tabulate(table,
-                               headers=headers) + "```")
+        await ctx.channel.send("{0}*** Leaderboard ***{0}\n```{1}```".format(str(emoji), tabulate(table,
+                                                                                                  headers=headers)))
+
+    @commands.command(name="add_role", aliases=["subscribe"])
+    async def add_role(self, ctx):
+        if len(ctx.message.role_mentions) < 1:
+            raise commands.BadArgument(message="You are missing required arguments for this command:\n`role "
+                                               "(@mention)`")
+        account = ctx.message.author
+        role = ctx.message.role_mentions[0]
+        if ServerCog.__role_is_optional(role):
+            await account.add_roles(role)
+            await ctx.channel.send(content="Role has been successfully assigned.")
+        else:
+            raise commands.BadArgument("The role you are trying to assign to yourself either doesnt exist or "
+                                       "is not a user manageable role.")
+
+    @commands.command(name="remove_role", aliases=["unsubscribe"])
+    async def remove_role(self, ctx):
+        if len(ctx.message.role_mentions) < 1:
+            raise commands.BadArgument(message="You are missing required arguments for this command:\n`role "
+                                               "(@mention)`")
+        account = ctx.message.author
+        role = ctx.message.role_mentions[0]
+        if role in account.roles:
+            if ServerCog.__role_is_optional(role):
+                await account.remove_roles(role)
+                await ctx.channel.send(content="Role has been successfully removed.")
+            else:
+                raise commands.BadArgument("The role you are trying to remove either doesnt exist or "
+                                           "is not a user manageable role.")
+
+    @commands.command(name="make_role_subscribable")
+    @commands.has_permissions(administrator=True)
+    async def make_role_subscribable(self, ctx):
+        if len(ctx.message.role_mentions) < 1:
+            raise commands.BadArgument(message="You are missing required arguments for this command:\n`role "
+                                               "(@mention)`")
+        role_list = Config.get_config_property("server", "optionalRoles")
+        role_list.append(ctx.message.role_mentions[0].name)
+        Config.update_config_property_and_write("server/optionalRoles", role_list)
+
+    @staticmethod
+    def __role_is_optional(role):
+        return role.name in Config.get_config_property("server", "optionalRoles")
 
 
 def setup(bot):
