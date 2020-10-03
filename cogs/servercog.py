@@ -112,6 +112,11 @@ class ServerCog(commands.Cog):
                    .format(ctx.message.role_mentions[0].name, Config.get_config_property("prefix"))
         await ctx.channel.send(content=message)
 
+    @commands.command(name="subscribable")
+    async def subscribable(self, ctx):
+
+        await ctx.channel.send("```yaml\nsubscribable:\n - {0}```".format("\n - ".join(sorted(Config.get_config_property("server", "optionalRoles")))))
+
     @staticmethod
     def __role_is_optional(role):
         return role.name in Config.get_config_property("server", "optionalRoles")
