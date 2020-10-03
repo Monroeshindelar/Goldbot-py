@@ -1,4 +1,5 @@
 import os
+import sys
 import yaml
 from pathlib import Path
 
@@ -14,13 +15,6 @@ class Config:
         return Config.__get_config_property_helper(Config.__instance.CONF, list(props))
 
     @staticmethod
-    def add_config_property(key: str, value: str):
-        if Config.__instance is None:
-            Config()
-
-        Config.__instance.CONF[key] = value
-
-    @staticmethod
     def __get_config_property_helper(conf, props):
         if len(props) == 0:
             return conf
@@ -34,5 +28,5 @@ class Config:
             raise Exception("Error: Cannot create another instance of Config, one already exists.")
         else:
             Config.__instance = self
-            with open(Path(os.getcwd()) / "bin/config.yml") as f:
+            with open(Path(os.path.abspath(sys.modules["__main__"].__file__)).parent / "bin/config.yml") as f:
                 self.CONF = yaml.load(f, Loader=yaml.FullLoader)

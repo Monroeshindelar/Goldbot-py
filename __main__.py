@@ -26,7 +26,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # hack to get SystemV script to work
-    Config.add_config_property("projectDir", Path(__file__).parent)
     main()
 
