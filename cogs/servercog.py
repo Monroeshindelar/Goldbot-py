@@ -101,9 +101,16 @@ class ServerCog(commands.Cog):
         if len(ctx.message.role_mentions) < 1:
             raise commands.BadArgument(message="You are missing required arguments for this command:\n`role "
                                                "(@mention)`")
+        if ctx.message.role_mentions[0].name in Config.get_config_property("server", "optionalRoles"):
+            raise commands.BadArgument(message="Role is already a subscribable role.")
+
         role_list = Config.get_config_property("server", "optionalRoles")
         role_list.append(ctx.message.role_mentions[0].name)
         Config.update_config_property_and_write("server/optionalRoles", role_list)
+
+        message = "{0} is now a subscribable role!\nSubscribe to the role using `{1}subscribe @{0}`" \
+                   .format(ctx.message.role_mentions[0].name, Config.get_config_property("prefix"))
+        await ctx.channel.send(content=message)
 
     @staticmethod
     def __role_is_optional(role):
