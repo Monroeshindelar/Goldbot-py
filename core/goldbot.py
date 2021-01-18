@@ -1,6 +1,7 @@
 import logging
 import asyncio
 import pytz
+import discord
 from itertools import cycle
 from datetime import datetime, timedelta
 from discord.utils import find
@@ -14,7 +15,7 @@ LOGGER = logging.getLogger("goldlog")
 
 class Goldbot(commands.Bot):
     def __init__(self, command_prefix):
-        super().__init__(command_prefix=command_prefix)
+        super().__init__(command_prefix=command_prefix, intents=discord.Intents.all())
         self.loop.create_task(self.__leaderboard_job())
         self.help_command = HelpCommand()
 

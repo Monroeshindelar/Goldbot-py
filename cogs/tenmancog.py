@@ -68,7 +68,7 @@ class TenManCog(commands.Cog):
         general_voice = find(lambda v: v.name == Config.get_config_property("tenman", "generalVoice"),
                              ctx.guild.voice_channels)
         member_list = [m.id for m in general_voice.members]
-        member_list = [148297442452963329, 645696336469164107, 727670795081351188, 727672213871919215, 727672966539771934]
+        member_list = [148297442452963329, 727670795081351188, 727672213871919215, 727672966539771934, 645696336469164107]
         # If there are more than 10 or less than 10 members there is going to be a problem
         # if len(member_list) is not 10:
         #     raise commands.CommandError("There were not enough players in the voice channel to start a ten man.")
@@ -186,7 +186,7 @@ class TenManCog(commands.Cog):
 
         last_pick = self.__ongoing.pick_player(pick.id, captain_id)
 
-        role_config_property = Config.get_config_property("tenman", "team {0}".format(captain_team_status.name),
+        role_config_property = Config.get_config_property("tenman", "team{0}".format(captain_team_status.name),
                                                           "playerRole")
         role = find(lambda r: r.name == role_config_property, ctx.guild.roles)
         await ctx.message.mentions[0].add_roles(role)
@@ -213,7 +213,7 @@ class TenManCog(commands.Cog):
 
         if last_pick[0] is not None and last_pick[1] is not None:
             last_pick_profile = find(lambda p: p.id == last_pick[0], ctx.guild.members)
-            role_config_property_lp = Config.get_config_property("tenman", "team {0}".format(last_pick[1].name),
+            role_config_property_lp = Config.get_config_property("tenman", "team{0}".format(last_pick[1].name),
                                                                  "playerRole")
             role_lp = find(lambda r: r.name == role_config_property_lp, ctx.guild.roles)
 
@@ -444,7 +444,7 @@ class TenManCog(commands.Cog):
 
     @staticmethod
     async def __move_user_to_proper_voice(ctx: commands.context.Context, user: discord.Member, status: TeamStatus):
-        voice = find(lambda v: v.name == Config.get_config_property("tenman", "team{0}voice".format(status.name)),
+        voice = find(lambda v: v.name == Config.get_config_property("tenman", "team{0}".format(status.name), "voice"),
                      ctx.guild.voice_channels)
         await user.move_to(voice)
 

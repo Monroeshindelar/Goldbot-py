@@ -6,3 +6,4 @@ bin/log
 .idea/
 **/.DS_STORE
 **/__pycache__
+venv/

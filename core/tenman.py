@@ -217,7 +217,6 @@ class TenMan:
             raise PhaseError("Map pick/ban phase is over.")
 
         status = self.__teams_manager.get_team_status_from_captain(captain_id)
-        self.__set_side_pick_team(status)
 
         mode = sequence.get_mode()
         team = sequence.get_team_status()
@@ -236,6 +235,7 @@ class TenMan:
 
         self.__map_pick_ban_sequence.pop(0)
         self.__unselected_maps.remove(game_map)
+        self.__set_side_pick_team(status)
 
     def __set_side_pick_team(self, map_pick_team: TeamStatus):
         if map_pick_team is not TeamStatus.A and map_pick_team is not TeamStatus.B:
