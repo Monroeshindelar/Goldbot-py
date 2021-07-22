@@ -1,3 +1,4 @@
+import discord
 import logging
 import json
 from tabulate import tabulate
@@ -121,6 +122,54 @@ class ServerCog(commands.Cog):
     def __role_is_optional(role):
         return role.name in Config.get_config_property("server", "optionalRoles")
 
+    @commands.command()
+    async def reactrole(ctx, emoji, role: discord.Role,*,message):
+
+        emb = discord.Embed(description = message)
+        msg = await ctx.channel.send(embed=emb)
+        await msg.add_rection(emoji)
+
+        with open('reactrole.json') as json_file:
+            data = json.load(json_file)
+            new_rect_role = {
+                'role_name':role.name,
+                'role_id':role.id,
+                'emoji':emoji,
+                'message_id':msg.id
+            }
+
+            data.append(new_rect_role)
+
+        with open('reactrole.json', 'w') as j:
+            json.dump(data, j, indent=4)
+
+    @commands.event
+    async def on_raw_reaction_add(payload):
+        
+        if payload.member.bot:
+            pass
+        else:
+            with open('reactrole.json') as react_file:
+                data = json.load(react_file)
+                for x in data:
+                    if x['emoji'] == payload.emoji.name and x['message_id'] == payload.message_id:
+                        role = discord.utils.get(commands.get_guild(payload.guild_id).roles, id=x['role_id'])
+
+                        await payload.member.add_roles(role)    
+
+    @commands.event
+    async def on_raw_reaction_remove(payload):
+        
+        if payload.member.bot:
+            pass
+        else:
+            with open('reactrole.json') as react_file:
+                data = json.load(react_file)
+                for x in data:
+                    if x['emoji'] == payload.emoji.name and x['message_id'] == payload.message_id:
+                        role = discord.utils.get(commands.get_guild(payload.guild_id).roles, id=x['role_id'])
+
+                        await commands.get_guild(payload.guild_id).get_member(payload.user_id).remove_roles(role)
 
 def setup(bot):
     bot.add_cog(ServerCog(bot))
